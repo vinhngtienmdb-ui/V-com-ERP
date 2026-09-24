@@ -163,31 +163,31 @@ export function SupplierPortal() {
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4 relative overflow-hidden font-sans">
-        {/* Glow Effects */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]" />
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden font-sans">
+        {/* Soft Background Accents */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-100/50 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-100/50 rounded-full blur-[100px] pointer-events-none" />
 
-        <div className="w-full max-w-md bg-slate-900/80 border border-slate-800 rounded-2xl shadow-2xl p-8 backdrop-blur-xl relative z-10">
+        <div className="w-full max-w-md bg-white border border-slate-200/80 rounded-2xl shadow-xl p-8 relative z-10">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-blue-600/10 border border-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4 text-blue-500 shadow-lg">
+            <div className="w-16 h-16 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-600 shadow-xs">
               <Building2 className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-serif font-black tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-black tracking-tight text-slate-900">
               Supplier Portal
             </h1>
-            <p className="text-sm text-slate-400 mt-2">Cổng thông tin giao hàng dành riêng cho Nhà cung cấp VComm</p>
+            <p className="text-xs text-slate-500 mt-2">Cổng thông tin giao nhận và đối soát cho Nhà cung cấp VComm</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-blue-500" /> Chọn Nhà cung cấp
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-blue-600" /> Chọn Nhà cung cấp
               </label>
               <select
                 value={selectedSupplierId}
                 onChange={(e) => setSelectedSupplierId(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all font-semibold"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               >
                 {SUPPLIERS.map(s => (
                   <option key={s.id} value={s.id}>{s.name} ({s.id})</option>
@@ -196,37 +196,37 @@ export function SupplierPortal() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-blue-500" /> Mật khẩu truy cập
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-blue-600" /> Mật khẩu truy cập
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Nhập mật khẩu..."
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all font-mono"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono"
               />
-              <span className="text-[10px] text-slate-500 mt-1 block">Mẹo: Sử dụng mật khẩu mặc định "123456"</span>
+              <span className="text-[11px] text-slate-400 mt-1.5 block">Mẹo: Sử dụng mật khẩu mặc định "123456"</span>
             </div>
 
             {loginError && (
-              <div className="p-3 bg-red-950/50 border border-red-500/30 rounded-lg flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                <p className="text-xs text-red-400 font-medium">{loginError}</p>
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                <p className="text-xs text-rose-700 font-medium">{loginError}</p>
               </div>
             )}
 
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-lg text-sm transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl text-xs transition-all shadow-xs flex items-center justify-center gap-2"
             >
               <LogIn className="w-4 h-4" /> Đăng nhập hệ thống
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-slate-800 text-center">
-            <span className="text-xs text-slate-500">
-              Hệ sinh thái liên kết VComm &copy; 2026
+          <div className="mt-8 pt-6 border-t border-slate-100 text-center">
+            <span className="text-xs text-slate-400">
+              Hệ sinh thái liên kết VComm Enterprise &copy; 2026
             </span>
           </div>
         </div>
@@ -235,32 +235,32 @@ export function SupplierPortal() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-16">
+    <div className="min-h-screen bg-slate-50/60 text-slate-900 font-sans pb-16">
       {/* Top Header */}
-      <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 backdrop-blur-md bg-opacity-90">
+      <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-blue-600/10 border border-blue-500/20 rounded-lg flex items-center justify-center text-blue-500">
+            <div className="w-10 h-10 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center text-blue-600 shadow-xs">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-lg font-serif font-black tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              <h1 className="text-base font-black tracking-tight text-slate-900">
                 VComm Supplier Portal
               </h1>
-              <p className="text-[10px] text-slate-400">Kênh tương tác và đối soát nhà cung cấp</p>
+              <p className="text-[11px] text-slate-500">Cổng tương tác, xác nhận giao hàng và đối soát nhà cung cấp</p>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="text-right hidden md:block">
-              <p className="text-xs font-bold text-slate-200">{currentSupplier?.name}</p>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Đang kết nối
+              <p className="text-xs font-bold text-slate-800">{currentSupplier?.name}</p>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold uppercase tracking-wider mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Đang kết nối
               </span>
             </div>
             <button 
               onClick={() => setIsLoggedIn(false)}
-              className="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-lg font-semibold transition-colors"
+              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-3.5 py-1.5 rounded-xl font-bold transition-colors"
             >
               Đăng xuất
             </button>
@@ -269,56 +269,56 @@ export function SupplierPortal() {
       </header>
 
       {/* Main Body */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left Stats & Info Column */}
-        <div className="lg:col-span-3 space-y-6">
+        <div className="lg:col-span-3 space-y-5">
           {/* Supplier Card */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm space-y-4">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-              <ClipboardList className="w-4 h-4 text-blue-500" /> Thông tin nhà cung cấp
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-4">
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+              <ClipboardList className="w-4 h-4 text-blue-600" /> Thông tin nhà cung cấp
             </h3>
-            <div className="space-y-3 text-sm">
+            <div className="space-y-3 text-xs">
               <div>
-                <p className="text-xs text-slate-500">Mã đối tác</p>
-                <p className="font-mono font-bold text-blue-400">{currentSupplier?.id}</p>
+                <p className="text-[11px] text-slate-400">Mã đối tác</p>
+                <p className="font-mono font-bold text-blue-600 mt-0.5">{currentSupplier?.id}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-500">Địa chỉ kho gửi</p>
-                <p className="text-slate-300 font-medium leading-relaxed text-xs">{currentSupplier?.address}</p>
+                <p className="text-[11px] text-slate-400">Địa chỉ kho gửi</p>
+                <p className="text-slate-700 font-medium leading-relaxed mt-0.5">{currentSupplier?.address}</p>
               </div>
-              <div className="pt-2 border-t border-slate-800 space-y-2">
-                <div className="flex items-center gap-2 text-xs text-slate-400">
-                  <Phone className="w-3.5 h-3.5 text-slate-500" /> {currentSupplier?.phone}
+              <div className="pt-2 border-t border-slate-100 space-y-2">
+                <div className="flex items-center gap-2 text-slate-600">
+                  <Phone className="w-3.5 h-3.5 text-slate-400" /> {currentSupplier?.phone}
                 </div>
-                <div className="flex items-center gap-2 text-xs text-slate-400">
-                  <Mail className="w-3.5 h-3.5 text-slate-500" /> {currentSupplier?.email}
+                <div className="flex items-center gap-2 text-slate-600">
+                  <Mail className="w-3.5 h-3.5 text-slate-400" /> {currentSupplier?.email}
                 </div>
               </div>
             </div>
           </div>
 
           {/* Quick Stats */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm space-y-3">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-3">
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
               Thống kê giao nhận
             </h3>
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="bg-slate-950 border border-slate-850 p-3 rounded-lg text-center">
-                <p className="text-xs text-slate-500 font-medium">Chờ xác nhận</p>
-                <p className="text-xl font-black text-amber-500 mt-1">
+            <div className="grid grid-cols-2 gap-2.5 pt-1">
+              <div className="bg-amber-50/50 border border-amber-200/60 p-3 rounded-xl text-center">
+                <p className="text-[11px] text-amber-700 font-semibold">Chờ xác nhận</p>
+                <p className="text-xl font-black text-amber-600 mt-1">
                   {supplierPos.filter(p => !p.deliveryStatus || p.deliveryStatus === 'pending').length}
                 </p>
               </div>
-              <div className="bg-slate-950 border border-slate-850 p-3 rounded-lg text-center">
-                <p className="text-xs text-slate-500 font-medium">Đang giao</p>
-                <p className="text-xl font-black text-blue-400 mt-1">
+              <div className="bg-blue-50/50 border border-blue-200/60 p-3 rounded-xl text-center">
+                <p className="text-[11px] text-blue-700 font-semibold">Đang giao</p>
+                <p className="text-xl font-black text-blue-600 mt-1">
                   {supplierPos.filter(p => p.deliveryStatus === 'shipping').length}
                 </p>
               </div>
-              <div className="bg-slate-950 border border-slate-850 p-3 rounded-lg text-center col-span-2">
-                <p className="text-xs text-slate-500 font-medium">Đã giao thành công</p>
-                <p className="text-xl font-black text-emerald-400 mt-1">
+              <div className="bg-emerald-50/50 border border-emerald-200/60 p-3 rounded-xl text-center col-span-2">
+                <p className="text-[11px] text-emerald-700 font-semibold">Đã giao thành công</p>
+                <p className="text-xl font-black text-emerald-600 mt-1">
                   {supplierPos.filter(p => p.deliveryStatus === 'delivered').length}
                 </p>
               </div>
@@ -328,31 +328,31 @@ export function SupplierPortal() {
 
         {/* Right PO Management Column */}
         <div className="lg:col-span-9 space-y-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs">
             
             {/* Table Header Filter controls */}
-            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pb-5 border-b border-slate-100">
               <div>
-                <h2 className="text-lg font-bold text-slate-200">Đơn đặt hàng mua (Purchase Orders)</h2>
-                <p className="text-xs text-slate-400 mt-0.5">Xác nhận và phối hợp lộ trình giao hàng cho VComm</p>
+                <h2 className="text-base font-bold text-slate-900">Đơn đặt hàng mua (Purchase Orders)</h2>
+                <p className="text-xs text-slate-500 mt-0.5">Xác nhận đơn và cập nhật tiến độ giao hàng cho VComm</p>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 <div className="relative flex-1 md:w-60">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
                     placeholder="Tìm mã PO, tiêu đề..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   />
                 </div>
                 <div className="relative">
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="appearance-none bg-slate-950 border border-slate-800 rounded-lg pl-8 pr-8 py-2 text-sm font-semibold text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
+                    className="appearance-none bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-7 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
                   >
                     <option value="all">Tất cả trạng thái</option>
                     <option value="pending">Chờ xác nhận</option>
@@ -360,65 +360,65 @@ export function SupplierPortal() {
                     <option value="shipping">Đang giao hàng</option>
                     <option value="delivered">Đã giao hàng</option>
                   </select>
-                  <Filter className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                  <Filter className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 </div>
               </div>
             </div>
 
             {/* PO List Table */}
-            <div className="overflow-x-auto min-w-0 mt-6">
+            <div className="overflow-x-auto min-w-0 mt-4">
               <table className="w-full text-left border-collapse whitespace-nowrap">
                 <thead>
-                  <tr className="border-b border-slate-800 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    <th className="py-3 px-4">Mã đơn PO</th>
+                  <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                    <th className="py-3 px-4 rounded-l-xl">Mã đơn PO</th>
                     <th className="py-3 px-4">Nội dung mua hàng</th>
                     <th className="py-3 px-4 text-right">Tổng giá trị</th>
                     <th className="py-3 px-4 text-center">Tiến độ giao hàng</th>
-                    <th className="py-3 px-4 text-center">Hành động</th>
+                    <th className="py-3 px-4 text-center rounded-r-xl">Hành động</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-850/50">
+                <tbody className="divide-y divide-slate-100">
                   {supplierPos.map((po) => {
                     const dStatus = po.deliveryStatus || 'pending';
                     return (
-                      <tr key={po.id} className="hover:bg-slate-850/20 transition-colors group">
-                        <td className="py-4 px-4">
-                          <p className="text-xs font-mono font-bold text-blue-400 tracking-wider">
+                      <tr key={po.id} className="hover:bg-slate-50/60 transition-colors group">
+                        <td className="py-3.5 px-4">
+                          <p className="text-xs font-mono font-bold text-blue-600 tracking-wider">
                             PO-{po.id.replace('PR-', '')}
                           </p>
-                          <span className="text-[9px] text-slate-500 mt-1 block">Đề xuất: {po.id}</span>
+                          <span className="text-[10px] text-slate-400 mt-0.5 block">Đề xuất: {po.id}</span>
                         </td>
-                        <td className="py-4 px-4 max-w-xs truncate">
-                          <p className="text-xs font-bold text-slate-200 hover:text-blue-400 transition-colors cursor-pointer" onClick={() => setSelectedPo(po)}>
+                        <td className="py-3.5 px-4 max-w-xs truncate">
+                          <p className="text-xs font-bold text-slate-800 hover:text-blue-600 transition-colors cursor-pointer" onClick={() => setSelectedPo(po)}>
                             {po.title}
                           </p>
-                          <p className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
-                            <Package className="w-3 h-3 text-slate-500" /> Số lượng đặt: {po.itemsCount} đơn vị
+                          <p className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1">
+                            <Package className="w-3 h-3 text-slate-400" /> Số lượng đặt: {po.itemsCount} đơn vị
                           </p>
                         </td>
-                        <td className="py-4 px-4 text-right">
-                          <p className="text-xs font-black text-emerald-400">{formatCurrency(po.value)}</p>
-                          <span className="text-[9px] text-slate-500">VAT bao gồm</span>
+                        <td className="py-3.5 px-4 text-right">
+                          <p className="text-xs font-black text-emerald-600">{formatCurrency(po.value)}</p>
+                          <span className="text-[10px] text-slate-400">VAT bao gồm</span>
                         </td>
-                        <td className="py-4 px-4 text-center">
+                        <td className="py-3.5 px-4 text-center">
                           <span className={cn(
                             "px-2.5 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider inline-flex items-center gap-1",
-                            dStatus === 'delivered' ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" :
-                            dStatus === 'shipping' ? "bg-blue-500/10 text-blue-400 border border-blue-500/20" :
-                            dStatus === 'confirmed' ? "bg-purple-500/10 text-purple-400 border border-purple-500/20" :
-                            "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                            dStatus === 'delivered' ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                            dStatus === 'shipping' ? "bg-blue-50 text-blue-700 border border-blue-200" :
+                            dStatus === 'confirmed' ? "bg-purple-50 text-purple-700 border border-purple-200" :
+                            "bg-amber-50 text-amber-700 border border-amber-200"
                           )}>
-                            {dStatus === 'delivered' && <CheckCircle2 className="w-3 h-3 animate-pulse" />}
-                            {dStatus === 'shipping' && <Truck className="w-3 h-3 animate-bounce" />}
+                            {dStatus === 'delivered' && <CheckCircle2 className="w-3 h-3" />}
+                            {dStatus === 'shipping' && <Truck className="w-3 h-3" />}
                             {dStatus === 'confirmed' && <Clock className="w-3 h-3" />}
                             {dStatus === 'pending' && <AlertCircle className="w-3 h-3" />}
                             {dStatus === 'delivered' ? 'Đã giao' : dStatus === 'shipping' ? 'Đang giao' : dStatus === 'confirmed' ? 'Đang chuẩn bị' : 'Chờ xác nhận'}
                           </span>
                         </td>
-                        <td className="py-4 px-4 text-center">
+                        <td className="py-3.5 px-4 text-center">
                           <button
                             onClick={() => setSelectedPo(po)}
-                            className="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1 text-xs font-semibold rounded-lg transition-colors border border-slate-700"
+                            className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 text-xs font-bold rounded-lg transition-colors border border-slate-200"
                           >
                             Xem chi tiết
                           </button>
@@ -428,9 +428,9 @@ export function SupplierPortal() {
                   })}
                   {supplierPos.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-slate-500">
-                        <ShoppingBag className="w-8 h-8 mx-auto text-slate-600 mb-2" />
-                        <p className="text-xs">Không tìm thấy đơn hàng nào.</p>
+                      <td colSpan={5} className="py-12 text-center text-slate-400">
+                        <ShoppingBag className="w-8 h-8 mx-auto text-slate-300 mb-2" />
+                        <p className="text-xs">Không tìm thấy đơn hàng nào phù hợp.</p>
                       </td>
                     </tr>
                   )}
@@ -442,41 +442,41 @@ export function SupplierPortal() {
 
           {/* Selected PO Details Card */}
           {selectedPo && (
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm space-y-6 animate-in fade-in slide-in-from-bottom duration-300">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs space-y-6">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">
-                  <button onClick={() => setSelectedPo(null)} className="p-1.5 hover:bg-slate-850 rounded-lg text-slate-400 transition-colors">
+                  <button onClick={() => setSelectedPo(null)} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors">
                     <ArrowLeft className="w-4 h-4" />
                   </button>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                       Chi tiết đơn đặt hàng PO-{selectedPo.id.replace('PR-', '')}
                     </h3>
-                    <p className="text-[11px] text-slate-500">Yêu cầu mua từ phòng ban: {selectedPo.department}</p>
+                    <p className="text-[11px] text-slate-500">Yêu cầu mua từ phòng ban: {selectedPo.department || 'Ban Quản trị'}</p>
                   </div>
                 </div>
                 
-                <span className="text-xs text-slate-400 font-mono">Ngày tạo: {selectedPo.date}</span>
+                <span className="text-xs text-slate-500 font-mono">Ngày tạo: {selectedPo.date}</span>
               </div>
 
               {/* Grid content */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <p className="text-xs text-slate-500 mb-1">Mặt hàng & Yêu cầu kỹ thuật</p>
-                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-850">
-                      <p className="text-sm font-bold text-slate-200">{selectedPo.title}</p>
-                      <div className="flex justify-between items-center mt-3 text-xs text-slate-400">
+                    <p className="text-xs font-semibold text-slate-600 mb-1.5">Mặt hàng & Yêu cầu kỹ thuật</p>
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+                      <p className="text-xs font-bold text-slate-900">{selectedPo.title}</p>
+                      <div className="flex justify-between items-center mt-3 text-xs text-slate-600">
                         <span>Số lượng đặt:</span>
-                        <span className="font-bold text-slate-200">{selectedPo.itemsCount} đơn vị</span>
+                        <span className="font-bold text-slate-900">{selectedPo.itemsCount} đơn vị</span>
                       </div>
-                      <div className="flex justify-between items-center mt-2 text-xs text-slate-400">
+                      <div className="flex justify-between items-center mt-2 text-xs text-slate-600">
                         <span>Đơn giá tạm tính:</span>
-                        <span className="font-bold text-slate-200">{formatCurrency(selectedPo.value / (selectedPo.itemsCount || 1))}</span>
+                        <span className="font-bold text-slate-900">{formatCurrency(selectedPo.value / (selectedPo.itemsCount || 1))}</span>
                       </div>
-                      <div className="flex justify-between items-center mt-2 pt-2 border-t border-slate-900 text-xs font-bold text-slate-200">
+                      <div className="flex justify-between items-center mt-2.5 pt-2.5 border-t border-slate-200 text-xs font-bold text-slate-900">
                         <span>Tổng giá trị đơn hàng:</span>
-                        <span className="text-emerald-400 font-black">{formatCurrency(selectedPo.value)}</span>
+                        <span className="text-emerald-600 font-black">{formatCurrency(selectedPo.value)}</span>
                       </div>
                     </div>
                   </div>
@@ -484,36 +484,36 @@ export function SupplierPortal() {
 
                 <div className="space-y-4">
                   <div>
-                    <p className="text-xs text-slate-500 mb-2">Trạng thái vận chuyển & Phối hợp</p>
-                    <div className="bg-slate-955 p-4 rounded-xl border border-slate-850 space-y-3">
+                    <p className="text-xs font-semibold text-slate-600 mb-1.5">Trạng thái vận chuyển & Phối hợp</p>
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80 space-y-3">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-slate-400">Trạng thái:</span>
-                        <span className="font-bold text-blue-400 uppercase tracking-wider">
+                        <span className="text-slate-500">Trạng thái:</span>
+                        <span className="font-bold text-blue-600 uppercase tracking-wider">
                           {selectedPo.deliveryStatus || 'Chờ xác nhận'}
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-slate-400">Dự kiến giao hàng:</span>
-                        <span className="font-bold text-slate-200 flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5 text-blue-400" />
+                        <span className="text-slate-500">Dự kiến giao hàng:</span>
+                        <span className="font-bold text-slate-800 flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5 text-blue-600" />
                           {selectedPo.estDeliveryDate || 'Chưa thiết lập'}
                         </span>
                       </div>
 
                       {/* Date config */}
                       {(!selectedPo.deliveryStatus || selectedPo.deliveryStatus === 'pending' || selectedPo.deliveryStatus === 'confirmed') && (
-                        <div className="pt-2 border-t border-slate-900">
+                        <div className="pt-2.5 border-t border-slate-200">
                           <label className="block text-[10px] text-slate-500 font-bold mb-1.5 uppercase">Thiết lập ngày giao dự kiến</label>
                           <div className="flex gap-2">
                             <input 
                               type="date"
                               value={estDeliveryDate}
                               onChange={(e) => setEstDeliveryDate(e.target.value)}
-                              className="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-blue-500 flex-1"
+                              className="bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs text-slate-800 focus:outline-none focus:border-blue-500 flex-1"
                             />
                             <button
                               onClick={() => updatePoDelivery(selectedPo.id, selectedPo.deliveryStatus || 'pending', { estDeliveryDate })}
-                              className="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded border border-slate-700 text-slate-200 font-bold"
+                              className="bg-white hover:bg-slate-100 text-xs px-3 py-1 rounded-lg border border-slate-200 text-slate-800 font-bold shadow-xs"
                             >
                               Lưu
                             </button>
@@ -526,13 +526,13 @@ export function SupplierPortal() {
               </div>
 
               {/* Action buttons */}
-              <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-800 justify-end">
+              <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100 justify-end">
                 {/* 1. Accept PO */}
                 {(!selectedPo.deliveryStatus || selectedPo.deliveryStatus === 'pending') && (
                   <button
                     onClick={() => updatePoDelivery(selectedPo.id, 'confirmed')}
                     disabled={updatingStatus !== null}
-                    className="bg-purple-600 hover:bg-purple-500 text-white text-xs px-4 py-2.5 rounded-lg font-bold transition-all disabled:opacity-50 flex items-center gap-1.5 shadow-lg shadow-purple-600/10"
+                    className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-4 py-2.5 rounded-xl font-bold transition-all disabled:opacity-50 flex items-center gap-1.5 shadow-xs"
                   >
                     {updatingStatus === 'confirmed' && <Clock className="w-4 h-4 animate-spin" />}
                     Xác nhận đơn PO
@@ -544,7 +544,7 @@ export function SupplierPortal() {
                   <button
                     onClick={() => updatePoDelivery(selectedPo.id, 'shipping')}
                     disabled={updatingStatus !== null}
-                    className="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2.5 rounded-lg font-bold transition-all disabled:opacity-50 flex items-center gap-1.5 shadow-lg shadow-blue-600/10"
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-2.5 rounded-xl font-bold transition-all disabled:opacity-50 flex items-center gap-1.5 shadow-xs"
                   >
                     {updatingStatus === 'shipping' && <Clock className="w-4 h-4 animate-spin" />}
                     Bắt đầu giao hàng (Xuất kho NCC)
@@ -556,14 +556,14 @@ export function SupplierPortal() {
                   <>
                     <button
                       onClick={() => setShowQrModal(true)}
-                      className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs px-4 py-2.5 rounded-lg font-bold transition-all flex items-center gap-1.5"
+                      className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs px-4 py-2.5 rounded-xl font-bold transition-all flex items-center gap-1.5 shadow-xs"
                     >
-                      <QrCode className="w-4 h-4 text-blue-400" /> Tạo mã QR giao nhận
+                      <QrCode className="w-4 h-4 text-blue-600" /> Tạo mã QR giao nhận
                     </button>
                     <button
                       onClick={() => updatePoDelivery(selectedPo.id, 'delivered')}
                       disabled={updatingStatus !== null}
-                      className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-4 py-2.5 rounded-lg font-bold transition-all disabled:opacity-50 flex items-center gap-1.5 shadow-lg shadow-emerald-600/10"
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-4 py-2.5 rounded-xl font-bold transition-all disabled:opacity-50 flex items-center gap-1.5 shadow-xs"
                     >
                       {updatingStatus === 'delivered' && <Clock className="w-4 h-4 animate-spin" />}
                       Xác nhận Đã giao tới Kho
@@ -572,8 +572,8 @@ export function SupplierPortal() {
                 )}
 
                 {selectedPo.deliveryStatus === 'delivered' && (
-                  <span className="text-emerald-400 font-bold text-xs flex items-center gap-1.5 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/25">
-                    <CheckCircle2 className="w-4 h-4" /> Giao hàng hoàn tất & Đã nhập kho VComm 🟢
+                  <span className="text-emerald-700 font-bold text-xs flex items-center gap-1.5 bg-emerald-50 px-3.5 py-2 rounded-xl border border-emerald-200">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Giao hàng hoàn tất & Đã nhập kho VComm
                   </span>
                 )}
               </div>
@@ -587,30 +587,28 @@ export function SupplierPortal() {
 
       {/* QR Code Delivery Note Modal */}
       {showQrModal && selectedPo && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full text-center relative space-y-4">
-            <h3 className="text-sm font-bold text-slate-200">Mã QR Phiếu giao hàng (Delivery Note)</h3>
-            <p className="text-[11px] text-slate-400">Nhân viên kho VComm có thể quét mã này bằng điện thoại hoặc camera ERP để xác nhận nhập kho nhanh.</p>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-6 max-w-sm w-full text-center relative space-y-4 shadow-xl">
+            <h3 className="text-sm font-bold text-slate-900">Mã QR Phiếu giao hàng (Delivery Note)</h3>
+            <p className="text-[11px] text-slate-500">Nhân viên kho VComm có thể quét mã này bằng điện thoại hoặc camera ERP để xác nhận nhập kho nhanh.</p>
             
-            <div className="bg-white p-4 rounded-xl inline-block border border-slate-250 mx-auto shadow-inner">
-              {/* Visual Simulated QR code using CSS */}
-              <div className="w-48 h-48 bg-slate-950 flex flex-col items-center justify-center p-2 relative overflow-hidden rounded">
-                <div className="absolute inset-0 bg-[radial-gradient(#2563eb_1px,transparent_1px)] [background-size:16px_16px] opacity-10" />
-                <QrCode className="w-32 h-32 text-blue-400" />
-                <span className="text-[10px] text-slate-400 font-mono tracking-widest mt-2">DN-{selectedPo.id.replace('PR-', '')}</span>
+            <div className="bg-slate-50 p-4 rounded-xl inline-block border border-slate-200 mx-auto shadow-xs">
+              <div className="w-48 h-48 bg-white flex flex-col items-center justify-center p-2 relative overflow-hidden rounded-lg border border-slate-200">
+                <QrCode className="w-32 h-32 text-blue-600" />
+                <span className="text-[10px] text-slate-500 font-mono tracking-widest mt-2 font-bold">DN-{selectedPo.id.replace('PR-', '')}</span>
               </div>
             </div>
 
-            <div className="bg-slate-950 p-3 rounded-lg border border-slate-850 text-left text-xs font-mono space-y-1.5 text-slate-300">
-              <p>Mã PO: PO-{selectedPo.id.replace('PR-', '')}</p>
-              <p>Sản phẩm: {selectedPo.title}</p>
-              <p>Số lượng: {selectedPo.itemsCount} đơn vị</p>
-              <p>Nhà cung cấp: {currentSupplier?.name}</p>
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-left text-xs font-mono space-y-1.5 text-slate-700">
+              <p><span className="text-slate-400">Mã PO:</span> PO-{selectedPo.id.replace('PR-', '')}</p>
+              <p><span className="text-slate-400">Sản phẩm:</span> {selectedPo.title}</p>
+              <p><span className="text-slate-400">Số lượng:</span> {selectedPo.itemsCount} đơn vị</p>
+              <p><span className="text-slate-400">Nhà cung cấp:</span> {currentSupplier?.name}</p>
             </div>
 
             <button
               onClick={() => setShowQrModal(false)}
-              className="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs py-2 rounded-lg font-bold transition-colors"
+              className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs py-2.5 rounded-xl font-bold transition-colors border border-slate-200"
             >
               Đóng cửa sổ
             </button>

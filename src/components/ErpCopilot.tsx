@@ -320,3 +320,5 @@ export function ErpCopilot() {
     </>
   );
 }
+
+export default ErpCopilot;

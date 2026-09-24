@@ -39,7 +39,7 @@ import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, X
 
 const MOCK_AI_LOGS: AiTaskResult[] = [
  { id: 'AI-101', type: 'image_moderation', targetId: 'PRD-002', confidence: 0.98, status: 'flagged', result: { reason: 'Hình ảnh chứa watermark thương hiệu khác' }, timestamp: '10 phút trước' },
- { id: 'AI-102', type: 'dynamic_pricing', targetId: 'PRD-001', confidence: 0.85, status: 'fixed', result: { oldPrice: 34990000, newPrice: 34500000, reason: 'Cạnh tranh giá so với sàn Shopee' }, timestamp: '2 giờ trước' },
+ { id: 'AI-102', type: 'dynamic_pricing', targetId: 'PRD-001', confidence: 0.85, status: 'fixed', result: { oldPrice: 34990000, newPrice: 34500000, reason: 'Tối ưu giá chiến dịch FlashSale VComm' }, timestamp: '2 giờ trước' },
  { id: 'AI-103', type: 'fraud_alert', targetId: 'USR-8821', confidence: 0.92, status: 'flagged', result: { risk: 'Buff đơn ảo (Click farming)', location: 'IP Cluster' }, timestamp: '1 giờ trước' },
  { id: 'AI-104', type: 'recommendation', targetId: 'USR-9011', confidence: 0.88, status: 'fixed', result: { engine: 'collab-filtering', action: 'Gợi ý combo giày thể thao' }, timestamp: '3 phút trước' },
  { id: 'AI-105', type: 'chatbot', targetId: 'TKT-1922', confidence: 0.95, status: 'fixed', result: { action: 'Tự động duyệt hoàn tiền', intent: 'refund_request' }, timestamp: 'Vừa xong' },
@@ -175,97 +175,103 @@ export function AIOperations() {
  };
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-700 pb-12">
- <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
- <div className="header-title">
- <div className="flex items-center gap-2 mb-2">
- <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 bg-blue-950/50 border border-blue-900 px-2 py-0.5 rounded-none">Trung tâm Mạng Nơ-ron</span>
- <div className="w-1.5 h-1.5 bg-slate-800 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
- </div>
- <h1 className="font-serif tracking-tight text-3xl font-black text-slate-900 tracking-tight">AI Operations <span className="text-orange-700">(AIOps)</span></h1>
- <p className="text-sm text-slate-600 font-medium mt-1">Điều phối và giám sát hệ thống Multi-Agent vận hành toàn sàn thương mại.</p>
- </div>
- <div className="flex flex-wrap gap-3">
- <button className="bg-white border border-slate-300 px-5 py-2.5 rounded-none text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm border-b-2 active:translate-y-0.5">
- <Settings className="w-4 h-4 text-slate-500" />
- Cấu hình tham số
- </button>
- <button className="bg-slate-900 text-[#FAF9F5] px-5 py-2.5 rounded-none text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/20 flex items-center gap-2 hover:scale-[1.02] active:scale-95">
- <RefreshCw className="w-4 h-4" />
- Re-Train All Models
- </button>
- </div>
- </div>
+  <div className="space-y-6 pb-12">
+    {/* Banner & Header */}
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-orange-700 bg-orange-50 border border-orange-200 px-2.5 py-0.5 rounded-full">
+            Trung tâm Mạng Nơ-ron
+          </span>
+          <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+        </div>
+        <h1 className="font-sans tracking-tight text-2xl font-black text-slate-900">
+          AI Operations <span className="text-orange-600">(AIOps)</span>
+        </h1>
+        <p className="text-xs text-slate-500 font-medium mt-1">
+          Điều phối và giám sát hệ thống Multi-Agent vận hành toàn sàn thương mại.
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-2.5">
+        <button className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs border border-slate-200">
+          <Settings className="w-4 h-4 text-slate-500" />
+          Cấu hình tham số
+        </button>
+        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-2">
+          <RefreshCw className="w-4 h-4" />
+          Re-Train All Models
+        </button>
+      </div>
+    </div>
 
- <DraggableGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-stone-950 text-[#FAF9F5] p-7 rounded-none relative overflow-hidden group shadow-sm border border-slate-800">
- <div className="relative z-10 flex flex-col justify-between h-full">
- <div className="flex justify-between items-start mb-6">
- <div className="p-3 bg-slate-900 rounded-none shadow-sm shadow-slate-900/5  transition-transform duration-500">
- <Cpu className="w-6 h-6" />
- </div>
- <div className="flex flex-col items-end">
- <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">System Health</span>
- <span className="text-xs font-bold text-emerald-400">99.99%</span>
- </div>
- </div>
- <div>
- <div className="text-3xl font-black tracking-tight">12 Tác nhân</div>
- <p className="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-widest">Các Nút Nơ-ron Hoạt động</p>
- </div>
- </div>
- <div className="absolute top-0 right-0 w-32 h-32 bg-slate-900/5 rounded-full blur-3xl" />
- <Sparkles className="absolute -bottom-6 -right-6 w-32 h-32 text-[#FAF9F5]/5 group-hover:rotate-12 transition-transform duration-1000" />
- </div>
+    <DraggableGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" columns={4} gap={16}>
+      <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white p-6 rounded-2xl relative overflow-hidden group shadow-xs border border-slate-800">
+        <div className="relative z-10 flex flex-col justify-between h-full">
+          <div className="flex justify-between items-start mb-6">
+            <div className="p-3 bg-white/10 rounded-xl">
+              <Cpu className="w-6 h-6 text-indigo-300" />
+            </div>
+            <div className="flex flex-col items-end">
+              <span className="text-[10px] font-bold text-orange-400 uppercase tracking-wider">System Health</span>
+              <span className="text-xs font-bold text-emerald-400">99.99%</span>
+            </div>
+          </div>
+          <div>
+            <div className="text-3xl font-black tracking-tight">12 Tác nhân</div>
+            <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">Các Nút Nơ-ron Hoạt động</p>
+          </div>
+        </div>
+        <Sparkles className="absolute -bottom-6 -right-6 w-28 h-28 text-white/5 group-hover:rotate-12 transition-transform duration-1000 pointer-events-none" />
+      </div>
 
- {[
- { label: 'Duyệt AI tự động', value: '8,421', sub: 'Tác vụ / 24h', icon: ShieldCheck, color: 'emerald' },
- { label: 'Cảnh báo rủi ro', value: '12', sub: 'Detected today', icon: AlertTriangle, color: 'rose', alert: true },
- { label: 'Độ trễ suy luận', value: '140ms', sub: 'Avg Response', icon: Activity, color: 'blue' },
- ].map((stat) => (
- <div key={stat.label} className="bg-white p-7 rounded-none border border-slate-200 shadow-sm shadow-slate-200/50 flex items-center gap-6 group hover:shadow-slate-900/5 transition-all">
- <div className={cn(
- "p-4 rounded-none transition-transform  duration-500",
- stat.alert ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-slate-50 text-slate-700 border border-slate-200 group-hover:bg-slate-100 group-hover:text-orange-700"
- )}>
- <stat.icon className="w-6 h-6" />
- </div>
- <div>
- <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">{stat.label}</p>
- <div className={cn("text-2xl font-black tracking-tight", stat.alert ? "text-rose-600" : "text-slate-900")}>
- {stat.value}
- </div>
- <p className="text-[10px] text-slate-600 font-bold mt-0.5">{stat.sub}</p>
- </div>
- </div>
- ))}
- </DraggableGrid>
+      {[
+        { label: 'Duyệt AI tự động', value: '8,421', sub: 'Tác vụ / 24h', icon: ShieldCheck, color: 'emerald' },
+        { label: 'Cảnh báo rủi ro', value: '12', sub: 'Detected today', icon: AlertTriangle, color: 'rose', alert: true },
+        { label: 'Độ trễ suy luận', value: '140ms', sub: 'Avg Response', icon: Activity, color: 'blue' },
+      ].map((stat) => (
+        <div key={stat.label} className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-5 group hover:shadow-sm transition-all">
+          <div className={cn(
+            "p-3.5 rounded-xl transition-transform",
+            stat.alert ? "bg-rose-50 text-rose-600 border border-rose-200" : "bg-slate-50 text-slate-700 border border-slate-200/80 group-hover:bg-slate-100"
+          )}>
+            <stat.icon className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">{stat.label}</p>
+            <div className={cn("text-2xl font-black tracking-tight", stat.alert ? "text-rose-600" : "text-slate-900")}>
+              {stat.value}
+            </div>
+            <p className="text-[11px] text-slate-500 font-medium">{stat.sub}</p>
+          </div>
+        </div>
+      ))}
+    </DraggableGrid>
 
- <div className="bg-white rounded-none border border-slate-200 shadow-sm overflow-hidden">
- <div className="flex border-b border-slate-200 bg-slate-50/30 p-2 overflow-x-auto whitespace-nowrap scrollbar-hide min-w-0">
- {[
- { id: 'moderation', label: 'Bảo vệ Nội dung', icon: ShieldCheck },
- { id: 'pricing', label: 'AI Giá linh hoạt', icon: Zap },
- { id: 'fraud', label: 'Phát hiện Gian lận', icon: AlertTriangle },
- { id: 'recommendation', label: 'Gợi ý Sản phẩm', icon: Network },
- { id: 'chatbot', label: 'CSKH (Bot AI)', icon: Bot },
- { id: 'review', label: 'Human-in-the-loop', icon: UserCheck },
- { id: 'db_inspector', label: 'AI Database Inspector', icon: Terminal }
- ].map((tab) => (
- <button 
- key={tab.id}
- onClick={() => setActiveModel(tab.id as any)}
- className={cn(
- "px-6 py-4 text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 rounded-none",
- activeModel === tab.id ? "bg-slate-900 text-[#FAF9F5] shadow-sm shadow-slate-900/5" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
- )}
- >
- <tab.icon className="w-4 h-4" /> {tab.label}
- </button>
- ))}
- </div>
+    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div className="flex border-b border-slate-100 bg-slate-50/50 p-2 overflow-x-auto whitespace-nowrap scrollbar-hide min-w-0 gap-1">
+        {[
+          { id: 'moderation', label: 'Bảo vệ Nội dung', icon: ShieldCheck },
+          { id: 'pricing', label: 'AI Giá linh hoạt', icon: Zap },
+          { id: 'fraud', label: 'Phát hiện Gian lận', icon: AlertTriangle },
+          { id: 'recommendation', label: 'Gợi ý Sản phẩm', icon: Network },
+          { id: 'chatbot', label: 'CSKH (Bot AI)', icon: Bot },
+          { id: 'review', label: 'Human-in-the-loop', icon: UserCheck },
+          { id: 'db_inspector', label: 'AI Database Inspector', icon: Terminal }
+        ].map((tab) => (
+          <button 
+            key={tab.id}
+            onClick={() => setActiveModel(tab.id as any)}
+            className={cn(
+              "px-4 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer",
+              activeModel === tab.id ? "bg-white text-blue-700 shadow-xs border border-slate-200/60" : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/60"
+            )}
+          >
+            <tab.icon className="w-4 h-4" /> {tab.label}
+          </button>
+        ))}
+      </div>
 
- <div className="p-6">
+      <div className="p-6">
  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
  <div className="flex gap-4 w-full md:w-auto">
  <div className="relative flex-1 md:flex-initial">
@@ -499,41 +505,41 @@ export function AIOperations() {
 
       {/* Output Screen */}
       {(insightOutput || isLoadingInsight) && (
-        <div className="border border-slate-800 bg-[#070d1a] rounded-xl overflow-hidden shadow-inner">
-          <div className="bg-[#101930] px-4 py-3 border-b border-slate-800/80 flex items-center justify-between text-xs font-mono">
-            <span className="text-slate-400 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+        <div className="border border-slate-800 bg-slate-900 text-slate-100 rounded-2xl overflow-hidden shadow-xs">
+          <div className="bg-slate-950 px-4 py-3 border-b border-slate-800 flex items-center justify-between text-xs font-mono">
+            <span className="text-slate-300 flex items-center gap-2 font-medium">
+              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
               {insightStatusMsg || "Đang xử lý phân tích logic..."}
             </span>
-            <span className="text-slate-500 text-[10px] tracking-widest uppercase">AIOps Terminal v1.4</span>
+            <span className="text-slate-400 text-[10px] tracking-wider uppercase font-semibold">AIOps Terminal v1.4</span>
           </div>
           
-          <div className="p-6 overflow-y-auto max-h-[350px] space-y-4 font-mono select-text bg-[#070d1a]/80">
+          <div className="p-6 overflow-y-auto max-h-[350px] space-y-4 font-mono select-text bg-slate-900/95">
             {isLoadingInsight ? (
               <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                <div className="w-10 h-10 border-4 border-[#1e293b] border-t-orange-500 rounded-full animate-spin" />
-                <p className="text-xs text-slate-400 font-black uppercase tracking-widest animate-pulse leading-none py-1">
+                <div className="w-10 h-10 border-4 border-slate-700 border-t-blue-500 rounded-full animate-spin" />
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider animate-pulse leading-none py-1">
                   Đang khởi chạy luồng suy nghĩ nơ-ron ERP...
                 </p>
               </div>
             ) : (
               <>
-                <div className="space-y-2 text-slate-300">
+                <div className="space-y-2 text-slate-200">
                   {renderInsightText(insightOutput)}
                 </div>
                 
                 {/* Applied CTA block */}
-                <div className="mt-8 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="mt-8 pt-6 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1">
-                    <p className="text-xs font-bold text-slate-200">Bạn muốn triển khai khuyến nghị này?</p>
-                    <p className="text-[10px] text-slate-500 leading-relaxed text-slate-500">Kích hoạt nút dưới đây để phê duyệt, áp dụng thay đổi và lưu vết kiểm toán.</p>
+                    <p className="text-xs font-bold text-slate-100">Bạn muốn triển khai khuyến nghị này?</p>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">Kích hoạt nút dưới đây để phê duyệt, áp dụng thay đổi và lưu vết kiểm toán.</p>
                   </div>
                   <button
                     type="button"
                     onClick={handleApplyMitigation}
-                    className="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-950 font-black rounded-lg text-xs uppercase tracking-widest transition-all flex items-center gap-2 border-b-2 active:translate-y-0.5 cursor-pointer"
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs cursor-pointer"
                   >
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Phê Duyệt & Ghi Lịch Sử Audit
+                    <ShieldCheck className="w-4 h-4 text-emerald-300" /> Phê Duyệt & Ghi Lịch Sử Audit
                   </button>
                 </div>
               </>
@@ -545,23 +551,23 @@ export function AIOperations() {
   </div>
 
 <DraggableGrid className="grid grid-cols-1 md:grid-cols-2 gap-6" columns={2} gap={32}>
- <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm shadow-slate-200/40">
- <div className="flex justify-between items-center mb-10">
- <h3 className="text-xl font-black text-slate-900 flex items-center gap-4">
- <DollarSign className="w-6 h-6 text-emerald-500" /> Cost & Token Efficiency
+ <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
+ <div className="flex justify-between items-center mb-8">
+ <h3 className="text-lg font-black text-slate-900 flex items-center gap-3">
+ <DollarSign className="w-5 h-5 text-emerald-500" /> Cost & Token Efficiency
  </h3>
- <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Ngân sách Hàng tháng</span>
+ <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ngân sách Hàng tháng</span>
  </div>
- <DraggableGrid className="grid grid-cols-2 gap-6 mb-10" columns={2} gap={24}>
- <div className="p-6 bg-stone-950 text-[#FAF9F5] rounded-xl border border-slate-800 shadow-sm relative overflow-hidden group">
- <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest mb-2">Chi phí Thời gian thực</p>
- <p className="text-3xl font-black tracking-tight tracking-tighter">31,012,500đ</p>
+ <DraggableGrid className="grid grid-cols-2 gap-4 mb-8" columns={2} gap={16}>
+ <div className="p-5 bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl border border-slate-800 shadow-xs relative overflow-hidden group">
+ <p className="text-[10px] text-orange-400 font-bold uppercase tracking-wider mb-2">Chi phí Thời gian thực</p>
+ <p className="text-2xl font-black tracking-tight">31,012,500đ</p>
  <div className="absolute top-0 right-0 w-16 h-16 bg-slate-900/10 rounded-full blur-xl group-hover:bg-slate-900/20 transition-all" />
  </div>
- <div className="p-6 bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm shadow-emerald-500/10 group">
- <p className="text-[10px] text-emerald-600 font-black uppercase tracking-widest mb-2">Cache Hit Rate</p>
- <p className="text-3xl font-black text-emerald-700 tracking-tight tracking-tighter">32.4%</p>
- <TrendingUp className="absolute top-4 right-4 w-10 h-10 text-emerald-200 group-hover:text-emerald-300 group-hover:rotate-12 transition-all" />
+ <div className="p-5 bg-emerald-50 rounded-2xl border border-emerald-200 shadow-xs group">
+ <p className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider mb-2">Cache Hit Rate</p>
+ <p className="text-2xl font-black text-emerald-800 tracking-tight">32.4%</p>
+ <TrendingUp className="absolute top-4 right-4 w-8 h-8 text-emerald-200 group-hover:text-emerald-300 group-hover:rotate-12 transition-all" />
  </div>
  </DraggableGrid>
  <div className="space-y-4">
@@ -628,7 +634,7 @@ export function AIOperations() {
  <div className="p-5 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-sm  transition-transform duration-500">
  <BarChart4 className="w-10 h-10 text-orange-500" />
  </div>
- <h3 className="text-4xl font-black tracking-tight leading-tight italic font-serif">MoE Intelligence <br /> <span className="text-orange-600">Router</span></h3>
+ <h3 className="text-4xl font-black tracking-tight leading-tight italic font-sans">MoE Intelligence <br /> <span className="text-orange-600">Router</span></h3>
  </div>
  <p className="text-slate-500 text-lg font-medium leading-relaxed max-w-md">
  Tự động phân bổ tác vụ cho các cụm mô hình tối ưu nhất. Giảm thiểu chi phí lên tới 40% bằng cách sử dụng Small Model cho các tác vụ cơ bản.

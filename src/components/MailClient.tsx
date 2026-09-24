@@ -230,7 +230,7 @@ export function MailClient() {
           recipientEmail: userEmail,
           subject: '📊 Đề xuất ngân sách chạy chiến dịch quảng cáo TikTok Ads tuần 23',
           preview: 'Gửi anh duyệt bảng đề xuất kinh phí chạy Ads cho chiến dịch siêu sale ngày 6/6 sắp tới...',
-          body: `Chào anh Vinh,\n\nBên em đã lên ngân sách chi tiết cho đợt chạy quảng cáo TikTok Shop và Facebook Reels đón đầu chiến dịch 6/6 sắp tới.\n\nDự kiến ngân sách đề xuất là 45.000.000đ. Chi tiết hạng mục em đính kèm trong biên bản trình ký bên Request Hub.\n\nAnh xem duyệt sớm giúp em nhé!\n\nNhi ND`,
+          body: `Chào anh Vinh,\n\nBên em đã lên ngân sách chi tiết cho đợt chạy quảng cáo TikTok Ads và Facebook Reels kéo traffic về sàn TMĐT VComm đón đầu chiến dịch 6/6 sắp tới.\n\nDự kiến ngân sách đề xuất là 45.000.000đ. Chi tiết hạng mục em đính kèm trong biên bản trình ký bên Request Hub.\n\nAnh xem duyệt sớm giúp em nhé!\n\nNhi ND`,
           timestamp: 'Vừa xong',
           isRead: false,
           isFlagged: false,
@@ -1030,7 +1030,7 @@ export function MailClient() {
             
             <div className="p-6 space-y-5">
               <div className="text-center space-y-2">
-                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto border border-blue-100 font-serif font-black text-lg">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto border border-blue-100 font-sans font-black text-lg">
                   V
                 </div>
                 <h3 className="text-xs font-extrabold text-slate-905">Cấp quyền cho ứng dụng VComm ERP</h3>

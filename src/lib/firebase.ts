@@ -808,13 +808,68 @@ export const deleteDoc = async (docRef: SupabaseDocRef): Promise<any> => {
 };
 
 export const onSnapshot = (
-  queryRef: SupabaseQuery | SupabaseCollectionRef, 
+  queryRef: SupabaseQuery | SupabaseCollectionRef | SupabaseDocRef, 
   nextOrObserver: any, 
   errorCallback?: any
 ) => {
   const next = typeof nextOrObserver === 'function' ? nextOrObserver : nextOrObserver.next;
   const errorHandler = typeof nextOrObserver === 'function' ? errorCallback : nextOrObserver.error;
 
+  // Case A: SupabaseDocRef (Document listening)
+  if (queryRef instanceof SupabaseDocRef) {
+    const docRef = queryRef;
+    const cacheKey = `fs_cache_doc_${docRef.path}`;
+
+    // 1. Initial cached render
+    const cached = safeLocalStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        setTimeout(() => {
+          try {
+            next({
+              exists: () => Boolean(parsed.exists),
+              data: () => deserializeTimestamps(parsed.data),
+              id: docRef.id,
+              ref: docRef
+            });
+          } catch (e) {}
+        }, 0);
+      } catch (e) {}
+    }
+
+    // 2. Fetch fresh document
+    getDoc(docRef).then((snap) => {
+      next(snap);
+    }).catch((err) => {
+      if (errorHandler) errorHandler(err);
+    });
+
+    // 3. Realtime subscription for single document
+    const channel = supabase
+      .channel(`realtime-doc-${docRef.tableName}-${docRef.id}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: docRef.tableName, filter: `id=eq.${docRef.id}` }, async () => {
+        try {
+          const snap = await getDoc(docRef);
+          next(snap);
+        } catch (err) {
+          if (errorHandler) errorHandler(err);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      setTimeout(() => {
+        try {
+          supabase.removeChannel(channel);
+        } catch {
+          // Safe ignore during unmount
+        }
+      }, 500);
+    };
+  }
+
+  // Case B: Collection / Query listening
   const cacheKey = `fs_cache_docs_${queryRef.path}`;
 
   // 1. Initial cached render
@@ -848,7 +903,9 @@ export const onSnapshot = (
   });
 
   // 3. Subscribe to Realtime Postgres Changes
-  const tableName = queryRef instanceof SupabaseCollectionRef ? queryRef.tableName : queryRef.collectionRef.tableName;
+  const tableName = queryRef instanceof SupabaseCollectionRef 
+    ? queryRef.tableName 
+    : (queryRef as any).tableName || (queryRef as any).collectionRef?.tableName;
 
   const channel = supabase
     .channel(`realtime-${tableName}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`)
@@ -863,7 +920,13 @@ export const onSnapshot = (
     .subscribe();
 
   return () => {
-    supabase.removeChannel(channel);
+    setTimeout(() => {
+      try {
+        supabase.removeChannel(channel);
+      } catch {
+        // Safe ignore during unmount
+      }
+    }, 500);
   };
 };
 

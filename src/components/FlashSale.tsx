@@ -137,53 +137,68 @@ export function FlashSale() {
  const selectedProduct = MOCK_PRODUCTS.find(p => p.id === selectedProductId);
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500">
- <div className="flex items-center justify-between">
- <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Khuyến mãi & Group Buy</h1>
- <p className="text-sm text-[#6B7280] mt-1">Quản lý giảm giá, chiến dịch Flash Sale, Mã ưu đãi và mô hình "Mua chung sập giá".</p>
- </div>
- <button 
- onClick={() => setIsModalOpen(true)}
- className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
- >
- <Plus className="w-4 h-4" /> 
- {activeTab === 'group_buy' ? 'Tạo Mua Chung' : activeTab === 'flash_sale' ? 'Tạo Flash Sale' : 'Tạo Voucher'}
- </button>
- </div>
+  <div className="space-y-6 animate-in fade-in slide-in- duration-500 pb-12">
+    {/* Enterprise Header Action Bar */}
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white/85 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+          Khuyến mãi & Flash Sale Sàn TMĐT
+          <span className="text-[11px] font-semibold tracking-normal px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200/60">
+            4 Khung Giờ & Group Buy
+          </span>
+        </h1>
+        <p className="text-xs text-slate-500 font-medium">
+          Quản trị chiến dịch giảm giá sàn, 4 khung giờ vàng (0h - 9h - 12h - 20h), Mã Voucher Freeship và Mua chung sập giá.
+        </p>
+      </div>
+      <button 
+        onClick={() => setIsModalOpen(true)}
+        className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:from-orange-700 hover:to-red-700 transition-all shadow-xs flex items-center gap-2"
+      >
+        <Plus className="w-4 h-4" /> 
+        {activeTab === 'group_buy' ? 'Tạo Mua Chung' : activeTab === 'flash_sale' ? 'Tạo Flash Sale' : 'Tạo Voucher Sàn'}
+      </button>
+    </div>
 
- <div className="flex gap-4 border-b border-slate-300">
- <button 
- onClick={() => setActiveTab('group_buy')}
- className={cn(
- "px-4 py-2 border-b-2 text-sm font-medium transition-colors flex items-center gap-2",
- activeTab === 'group_buy' ? "border-[#2563EB] text-[#2563EB]" : "border-transparent text-slate-600 hover:text-slate-800"
- )}
- >
- <Users2 className="w-4 h-4" />
- Mua Chung Sập Giá
- </button>
- <button 
- onClick={() => setActiveTab('flash_sale')}
- className={cn(
- "px-4 py-2 border-b-2 text-sm font-medium transition-colors flex items-center gap-2",
- activeTab === 'flash_sale' ? "border-[#2563EB] text-[#2563EB]" : "border-transparent text-slate-600 hover:text-slate-800"
- )}
- >
- <Zap className="w-4 h-4" />
- Flash Sale
- </button>
- <button 
- onClick={() => setActiveTab('voucher')}
- className={cn(
- "px-4 py-2 border-b-2 text-sm font-medium transition-colors flex items-center gap-2",
- activeTab === 'voucher' ? "border-[#2563EB] text-[#2563EB]" : "border-transparent text-slate-600 hover:text-slate-800"
- )}
- >
- <Ticket className="w-4 h-4" />
- Voucher (Mã Giảm Giá)
- </button>
- </div>
+    {/* Segmented Navigation Tabs */}
+    <div className="flex gap-2 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80 w-fit">
+      <button 
+        onClick={() => setActiveTab('group_buy')}
+        className={cn(
+          "px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-2",
+          activeTab === 'group_buy' 
+            ? "bg-white text-orange-700 shadow-2xs border border-slate-200/80" 
+            : "text-slate-600 hover:text-slate-900"
+        )}
+      >
+        <Users2 className="w-4 h-4" />
+        Mua Chung Sập Giá
+      </button>
+      <button 
+        onClick={() => setActiveTab('flash_sale')}
+        className={cn(
+          "px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-2",
+          activeTab === 'flash_sale' 
+            ? "bg-white text-orange-700 shadow-2xs border border-slate-200/80" 
+            : "text-slate-600 hover:text-slate-900"
+        )}
+      >
+        <Zap className="w-4 h-4" />
+        Flash Sale 4 Khung Giờ
+      </button>
+      <button 
+        onClick={() => setActiveTab('voucher')}
+        className={cn(
+          "px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-2",
+          activeTab === 'voucher' 
+            ? "bg-white text-orange-700 shadow-2xs border border-slate-200/80" 
+            : "text-slate-600 hover:text-slate-900"
+        )}
+      >
+        <Ticket className="w-4 h-4" />
+        Voucher & Mã Giảm Giá
+      </button>
+    </div>
 
  {isModalOpen && activeTab === 'group_buy' && (
  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">

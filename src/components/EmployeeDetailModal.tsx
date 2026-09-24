@@ -84,7 +84,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
             { id: 'E1', name: 'MacBook Pro 14" M3', code: 'LAP-M3-016', assignDate: '16/05/2025', status: 'active', value: 39900000 }
           ],
           workHistory: employee.workHistory ?? [
-            { id: 'W1', company: 'Shopee Việt Nam', position: 'SEO Specialist', fromDate: '01/2023', toDate: '04/2025', reason: 'Thay đổi định hướng phát triển' }
+            { id: 'W1', company: 'Tập đoàn Công nghệ VNP', position: 'SEO Specialist', fromDate: '01/2023', toDate: '04/2025', reason: 'Thay đổi định hướng phát triển' }
           ],
           rewardsHistory: employee.rewardsHistory ?? [
             { id: 'R1', decisionNo: 'KT-045/VCOMM', type: 'reward', title: 'Thưởng nóng 2 triệu VNĐ', reason: 'Đạt thành tích xuất sắc trong chiến dịch truyền thông Q4', date: '15/01/2026' }

@@ -3,50 +3,73 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { safeLocalStorage } from './lib/storage';
 import nexhubProducts from './constants/nexhub_products.json';
 
-import { Sidebar } from './components/Sidebar';
-import { Header } from './components/Header';
-const Dashboard = React.lazy(() => import('./components/Dashboard').then(m => ({ default: m.Dashboard })));
-const Home = React.lazy(() => import('./components/Home').then(m => ({ default: m.Home })));
-const Orders = React.lazy(() => import('./components/Orders').then(m => ({ default: m.Orders })));
-const PIM = React.lazy(() => import('./components/PIM').then(m => ({ default: m.PIM })));
-const SellerManagement = React.lazy(() => import('./components/Sellers').then(m => ({ default: m.SellerManagement })));
-const Customers = React.lazy(() => import('./components/Customers').then(m => ({ default: m.Customers })));
-const Marketing = React.lazy(() => import('./components/Marketing').then(m => ({ default: m.Marketing })));
-const FlashSale = React.lazy(() => import('./components/FlashSale').then(m => ({ default: m.FlashSale })));
-const AffiliateManagement = React.lazy(() => import('./components/Affiliate').then(m => ({ default: m.AffiliateManagement })));
-const WarehouseModule = React.lazy(() => import('./components/Warehouse').then(m => ({ default: m.WarehouseModule })));
-const Procurement = React.lazy(() => import('./components/Procurement').then(m => ({ default: m.Procurement })));
-const Finance = React.lazy(() => import('./components/Finance').then(m => ({ default: m.Finance })));
-const SettlementManagement = React.lazy(() => import('./components/Settlement').then(m => ({ default: m.SettlementManagement })));
-const HumanResources = React.lazy(() => import('./components/HR').then(m => ({ default: m.HumanResources })));
-const Performance = React.lazy(() => import('./components/Performance').then(m => ({ default: m.Performance })));
-const Workspace = React.lazy(() => import('./components/Workspace').then(m => ({ default: m.Workspace })));
-const AnalyticsBI = React.lazy(() => import('./components/AnalyticsBI').then(m => ({ default: m.AnalyticsBI })));
-const SalesManagement = React.lazy(() => import('./components/Sales').then(m => ({ default: m.SalesManagement })));
-const LoyaltyManagement = React.lazy(() => import('./components/Loyalty').then(m => ({ default: m.LoyaltyManagement })));
-const SettingsPage = React.lazy(() => import('./components/Settings').then(m => ({ default: m.SettingsPage })));
-const UserProfile = React.lazy(() => import('./components/UserProfile').then(m => ({ default: m.UserProfile })));
-const WalletHub = React.lazy(() => import('./components/Wallet').then(m => ({ default: m.WalletHub })));
-const LiveCommerce = React.lazy(() => import('./components/LiveCommerce').then(m => ({ default: m.LiveCommerce })));
-const AdManager = React.lazy(() => import('./components/AdManager').then(m => ({ default: m.AdManager })));
-const Compliance = React.lazy(() => import('./components/Compliance').then(m => ({ default: m.Compliance })));
-const SellerFinance = React.lazy(() => import('./components/SellerFinance').then(m => ({ default: m.SellerFinance })));
-const SocialCommerce = React.lazy(() => import('./components/SocialCommerce').then(m => ({ default: m.SocialCommerce })));
-const OmniChat = React.lazy(() => import('./components/OmniChat').then(m => ({ default: m.OmniChat })));
-const WorkflowHub = React.lazy(() => import('./components/WorkflowHub').then(m => ({ default: m.WorkflowHub })));
-const AIOperations = React.lazy(() => import('./components/AIOperations').then(m => ({ default: m.AIOperations })));
-const AIPredictions = React.lazy(() => import('./components/AIPredictions').then(m => ({ default: m.AIPredictions })));
-const ErpCopilot = React.lazy(() => import('./components/ErpCopilot').then(m => ({ default: m.ErpCopilot })));
-const OrgStructure = React.lazy(() => import('./components/OrgStructure').then(m => ({ default: m.OrgStructure })));
-const EMenu = React.lazy(() => import('./components/EMenu').then(m => ({ default: m.EMenu })));
-const CustomerService = React.lazy(() => import('./components/CustomerService').then(m => ({ default: m.CustomerService })));
-const RequestHub = React.lazy(() => import('./components/RequestHub').then(m => ({ default: m.RequestHub })));
-const ContractManager = React.lazy(() => import('./components/ContractManager').then(m => ({ default: m.ContractManager })));
-const DocumentManager = React.lazy(() => import('./components/DocumentManager').then(m => ({ default: m.DocumentManager })));
-const SignatureHub = React.lazy(() => import('./components/SignatureHub').then(m => ({ default: m.SignatureHub })));
-const VCommSupermarket = React.lazy(() => import('./components/VCommSupermarket').then(m => ({ default: m.VCommSupermarket })));
-const DeviceLeasing = React.lazy(() => import('./components/DeviceLeasing').then(m => ({ default: m.DeviceLeasing })));
-const SupplierPortal = React.lazy(() => import('./components/SupplierPortal').then(m => ({ default: m.SupplierPortal })));
+import { MisaTopBar } from './components/MisaTopBar';
+import { CommandPalette } from './components/CommandPalette';
+import { cn } from './lib/utils';
+import { lazyWithRetry } from './lib/lazyWithRetry';
+
+const Dashboard = lazyWithRetry(() => import('./components/Dashboard'), 'Dashboard');
+const Home = lazyWithRetry(() => import('./components/Home'), 'Home');
+const Orders = lazyWithRetry(() => import('./components/Orders'), 'Orders');
+const PIM = lazyWithRetry(() => import('./components/PIM'), 'PIM');
+const SellerManagement = lazyWithRetry(() => import('./components/Sellers'), 'SellerManagement');
+const Customers = lazyWithRetry(() => import('./components/Customers'), 'Customers');
+const Marketing = lazyWithRetry(() => import('./components/Marketing'), 'Marketing');
+const FlashSale = lazyWithRetry(() => import('./components/FlashSale'), 'FlashSale');
+const AffiliateManagement = lazyWithRetry(() => import('./components/Affiliate'), 'AffiliateManagement');
+const WarehouseModule = lazyWithRetry(() => import('./components/Warehouse'), 'WarehouseModule');
+const Procurement = lazyWithRetry(() => import('./components/Procurement'), 'Procurement');
+const Finance = lazyWithRetry(() => import('./components/Finance'), 'Finance');
+const SettlementManagement = lazyWithRetry(() => import('./components/Settlement'), 'SettlementManagement');
+const HumanResources = lazyWithRetry(() => import('./components/HR'), 'HumanResources');
+const Performance = lazyWithRetry(() => import('./components/Performance'), 'Performance');
+const Workspace = lazyWithRetry(() => import('./components/Workspace'), 'Workspace');
+const AnalyticsBI = lazyWithRetry(() => import('./components/AnalyticsBI'), 'AnalyticsBI');
+const ExecutiveCockpit = lazyWithRetry(() => import('./components/ExecutiveCockpit'), 'ExecutiveCockpit');
+const SalesManagement = lazyWithRetry(() => import('./components/Sales'), 'SalesManagement');
+const LoyaltyManagement = lazyWithRetry(() => import('./components/Loyalty'), 'LoyaltyManagement');
+const SettingsPage = lazyWithRetry(() => import('./components/SystemAdministration'), 'SystemAdministration');
+const UserProfile = lazyWithRetry(() => import('./components/UserProfile'), 'UserProfile');
+const WalletHub = lazyWithRetry(() => import('./components/Wallet'), 'WalletHub');
+const LiveCommerce = lazyWithRetry(() => import('./components/LiveCommerce'), 'LiveCommerce');
+const AdManager = lazyWithRetry(() => import('./components/AdManager'), 'AdManager');
+const Compliance = lazyWithRetry(() => import('./components/Compliance'), 'Compliance');
+const SellerFinance = lazyWithRetry(() => import('./components/SellerFinance'), 'SellerFinance');
+const SocialCommerce = lazyWithRetry(() => import('./components/SocialCommerce'), 'SocialCommerce');
+const OmniChat = lazyWithRetry(() => import('./components/OmniChat'), 'OmniChat');
+const WorkflowHub = lazyWithRetry(() => import('./components/WorkflowHub'), 'WorkflowHub');
+const AIOperations = lazyWithRetry(() => import('./components/AIOperations'), 'AIOperations');
+const AIPredictions = lazyWithRetry(() => import('./components/AIPredictions'), 'AIPredictions');
+const ErpCopilot = lazyWithRetry(() => import('./components/ErpCopilot'), 'ErpCopilot');
+const OrgStructure = lazyWithRetry(() => import('./components/OrgStructure'), 'OrgStructure');
+const EMenu = lazyWithRetry(() => import('./components/EMenu'), 'EMenu');
+const CustomerService = lazyWithRetry(() => import('./components/CustomerService'), 'CustomerService');
+const RequestHub = lazyWithRetry(() => import('./components/RequestHub'), 'RequestHub');
+const ContractManager = lazyWithRetry(() => import('./components/ContractManager'), 'ContractManager');
+const DocumentManager = lazyWithRetry(() => import('./components/DocumentManager'), 'DocumentManager');
+const DocHub = lazyWithRetry(() => import('./components/DocHub'), 'DocHub');
+const SignatureHub = lazyWithRetry(() => import('./components/SignatureHub'), 'SignatureHub');
+const VCommSupermarket = lazyWithRetry(() => import('./components/VCommSupermarket'), 'VCommSupermarket');
+const DeviceLeasing = lazyWithRetry(() => import('./components/DeviceLeasing'), 'DeviceLeasing');
+const AssetManagement = lazyWithRetry(() => import('./components/AssetManagement'), 'AssetManagement');
+const SupplierPortal = lazyWithRetry(() => import('./components/SupplierPortal'), 'SupplierPortal');
+const MailClient = lazyWithRetry(() => import('./components/MailClient'), 'MailClient');
+const EmployeeDirectory = lazyWithRetry(() => import('./components/EmployeeDirectory'), 'EmployeeDirectory');
+const TaxPIT = lazyWithRetry(() => import('./components/TaxPIT'), 'TaxPIT');
+const OKRManagement = lazyWithRetry(() => import('./components/OKRManagement'), 'OKRManagement');
+const RecruitmentPipeline = lazyWithRetry(() => import('./components/RecruitmentPipeline'), 'RecruitmentPipeline');
+const InvoiceManager = lazyWithRetry(() => import('./components/InvoiceManager'), 'InvoiceManager');
+const SellerCredit = lazyWithRetry(() => import('./components/SellerCredit'), 'SellerCredit');
+const QuickNotes = lazyWithRetry(() => import('./components/QuickNotes'), 'QuickNotes');
+const StorefrontManager = lazyWithRetry(() => import('./components/StorefrontManager'), 'StorefrontManager');
+const EmployeeSelfService = lazyWithRetry(() => import('./components/ESS'), 'EmployeeSelfService');
+const AttendanceApp = lazyWithRetry(() => import('./components/AttendanceApp'), 'AttendanceApp');
+const PayrollApp = lazyWithRetry(() => import('./components/PayrollApp'), 'PayrollApp');
+const EmployeesApp = lazyWithRetry(() => import('./components/EmployeesApp'), 'EmployeesApp');
+const InsuranceApp = lazyWithRetry(() => import('./components/InsuranceApp'), 'InsuranceApp');
+const LaborCompliance = lazyWithRetry(() => import('./components/LaborCompliance'), 'LaborCompliance');
+const ITHelpdesk = lazyWithRetry(() => import('./components/ITHelpdesk'), 'ITHelpdesk');
+const LMSManagement = lazyWithRetry(() => import('./components/LMSManagement'), 'LMSManagement');
 
 
 import { useAuth } from './context/AuthContext';
@@ -59,56 +82,96 @@ import { AccessDenied } from './components/AccessDenied';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { supabase } from './lib/supabase';
 import { useNotifications } from './context/NotificationContext';
+import { EntityProvider } from './context/EntityContext';
+import { UniversalEntityPeekDrawer } from './components/ui/design-system';
 
 function AppLayout() {
   const location = useLocation();
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
   const { addNotification } = useNotifications();
   
   // Start SePay Webhook event polling globally
   useSepayListener();
 
   React.useEffect(() => {
-    // 1. Listen for new orders on Supabase Realtime
-    const ordersChannel = supabase
-      .channel('realtime-orders')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'orders' },
-        (payload) => {
-          console.log('[Realtime] New order received:', payload.new);
-          const order = payload.new;
-          addNotification(
-            'Đơn hàng mới',
-            `Đơn hàng ${order.id || ''} trị giá ${Number(order.total || 0).toLocaleString('vi-VN')}đ đã được tạo.`
-          );
-        }
-      )
-      .subscribe();
+    let isMounted = true;
+    let ordersChannel: any = null;
+    let stockChannel: any = null;
 
-    // 2. Listen for safety stock alerts on warehouse_stock
-    const stockChannel = supabase
-      .channel('realtime-stock')
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'warehouse_stock' },
-        (payload) => {
-          const stock = payload.new;
-          const quantity = Number(stock.quantity || 0);
-          const safetyStock = Number(stock.safety_stock || 0);
-          if (quantity < safetyStock) {
-            console.log('[Realtime] Low stock warning:', stock);
+    try {
+      // 1. Listen for new orders on Supabase Realtime
+      ordersChannel = supabase
+        .channel(`realtime-orders-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'orders' },
+          (payload) => {
+            if (!isMounted) return;
+            console.log('[Realtime] New order received:', payload.new);
+            const order = payload.new;
             addNotification(
-              'Cảnh báo tồn kho',
-              `Sản phẩm "${stock.product_name || stock.product_id}" có lượng tồn kho (${quantity}) thấp hơn ngưỡng an toàn (${safetyStock}).`
+              'Đơn hàng mới',
+              `Đơn hàng ${order.id || ''} trị giá ${Number(order.total || 0).toLocaleString('vi-VN')}đ đã được tạo.`
             );
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe((status, err) => {
+          if (err && isMounted) {
+            console.warn('[Realtime ordersChannel warning]', err);
+          }
+        });
+
+      // 2. Listen for safety stock alerts on warehouse_stock
+      stockChannel = supabase
+        .channel(`realtime-stock-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`)
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'warehouse_stock' },
+          (payload) => {
+            if (!isMounted) return;
+            const stock = payload.new;
+            const quantity = Number(stock.quantity || 0);
+            const safetyStock = Number(stock.safety_stock || 0);
+            if (quantity < safetyStock) {
+              console.log('[Realtime] Low stock warning:', stock);
+              addNotification(
+                'Cảnh báo tồn kho',
+                `Sản phẩm "${stock.product_name || stock.product_id}" có lượng tồn kho (${quantity}) thấp hơn ngưỡng an toàn (${safetyStock}).`
+              );
+            }
+          }
+        )
+        .subscribe((status, err) => {
+          if (err && isMounted) {
+            console.warn('[Realtime stockChannel warning]', err);
+          }
+        });
+    } catch (e) {
+      console.warn('[Realtime] Subscription initialization warning:', e);
+    }
 
     return () => {
-      supabase.removeChannel(ordersChannel);
-      supabase.removeChannel(stockChannel);
+      isMounted = false;
+      // Tránh đóng kênh khi WebSocket handshake đang trong giai đoạn CONNECTING (gây ra WebSocket closed without opened)
+      setTimeout(() => {
+        try {
+          if (ordersChannel) supabase.removeChannel(ordersChannel);
+          if (stockChannel) supabase.removeChannel(stockChannel);
+        } catch {
+          // ignore unmount cleanup warnings
+        }
+      }, 500);
     };
   }, [addNotification]);
 
@@ -285,15 +348,30 @@ function AppLayout() {
     }
   }, []);
 
+  const isHomePage = location.pathname === '/';
+  const isWorkspaceLikePage = ['/omnichat', '/chat', '/operations', '/bi'].includes(location.pathname);
+
   return (
-  <div className="flex h-screen bg-slate-50 overflow-hidden erp-modernized">
-  <Sidebar />
-  <div className="flex-1 flex flex-col min-w-0">
-  <Header />
-  <main className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar">
-  <div className="max-w-7xl mx-auto h-full col-span-12">
-  <ErrorBoundary>
-  <Suspense fallback={<LoadingScreen />}>
+    <div className="flex flex-col h-screen overflow-hidden font-sans bg-slate-900">
+      {!isHomePage && <MisaTopBar onOpenCommandPalette={() => setIsCommandPaletteOpen(true)} />}
+      <main className={cn(
+        "min-w-0 relative",
+        isHomePage 
+          ? "h-screen w-screen overflow-hidden" 
+          : isWorkspaceLikePage
+            ? "flex-1 overflow-hidden bg-slate-100"
+            : "flex-1 overflow-y-auto bg-slate-100 custom-scrollbar"
+      )}>
+        <div className={cn(
+          "h-full w-full", 
+          isHomePage 
+            ? "" 
+            : isWorkspaceLikePage 
+              ? "p-2 sm:p-2.5 overflow-hidden flex flex-col" 
+              : "p-4 md:p-6 lg:p-8"
+        )}>
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingScreen />}>
             <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/dashboard" element={<Dashboard />} />
@@ -312,7 +390,8 @@ function AppLayout() {
     <Route path="/hr" element={<HumanResources />} />
     <Route path="/performance" element={<Performance />} />
     <Route path="/workspace" element={<Workspace />} />
-    <Route path="/bi" element={<AnalyticsBI />} />
+    <Route path="/bi" element={<ExecutiveCockpit />} />
+    <Route path="/operations" element={<ExecutiveCockpit />} />
     <Route path="/sales" element={<SalesManagement />} />
     <Route path="/loyalty" element={<LoyaltyManagement />} />
     <Route path="/wallet" element={<WalletHub />} />
@@ -322,27 +401,60 @@ function AppLayout() {
     <Route path="/seller-finance" element={<SellerFinance />} />
     <Route path="/social" element={<SocialCommerce />} />
     <Route path="/workflow" element={<WorkflowHub />} />
-    <Route path="/requests" element={<RequestHub />} />
     <Route path="/contracts" element={<ContractManager />} />
+    <Route path="/sales-contracts" element={<ContractManager defaultTab="quotes" />} />
     <Route path="/documents" element={<DocumentManager />} />
+    <Route path="/official-dispatch" element={<DocumentManager />} />
+    <Route path="/dochub" element={<DocHub />} />
+    <Route path="/risk-management" element={<Compliance />} />
     <Route path="/signature" element={<SignatureHub />} />
     <Route path="/ai-ops" element={<AIOperations />} />
     <Route path="/ai-predictions" element={<AIPredictions />} />
     <Route path="/org" element={<OrgStructure />} />
     <Route path="/vcomm-supermarket" element={<VCommSupermarket />} />
     <Route path="/device-leasing" element={<DeviceLeasing />} />
+    <Route path="/assets" element={<AssetManagement />} />
     <Route path="/analytics" element={<AnalyticsBI />} />
     <Route path="/settings" element={<SettingsPage />} />
     <Route path="/profile" element={<UserProfile />} />
+    <Route path="/e-menu" element={<EMenu />} />
+    <Route path="/omnichat" element={<OmniChat />} />
+    <Route path="/chat" element={<OmniChat />} />
+    <Route path="/mail" element={<MailClient />} />
+    <Route path="/procurement" element={<Procurement />} />
+    <Route path="/supplier-portal" element={<SupplierPortal />} />
+    <Route path="/directory" element={<EmployeeDirectory />} />
+    <Route path="/tax-pit" element={<TaxPIT />} />
+    <Route path="/okr" element={<OKRManagement />} />
+    <Route path="/recruitment" element={<RecruitmentPipeline />} />
+    <Route path="/invoices" element={<InvoiceManager />} />
+    <Route path="/seller-credit" element={<SellerCredit />} />
+    <Route path="/notes" element={<QuickNotes />} />
+    <Route path="/storefront" element={<StorefrontManager />} />
+    <Route path="/attendance" element={<AttendanceApp />} />
+    <Route path="/payroll" element={<PayrollApp />} />
+    <Route path="/employees" element={<EmployeesApp />} />
+    <Route path="/insurance" element={<InsuranceApp />} />
+    <Route path="/labor-compliance" element={<LaborCompliance />} />
+    <Route path="/ess" element={<EmployeeSelfService />} />
+    <Route path="/it-helpdesk" element={<ITHelpdesk />} />
+    <Route path="/lms" element={<LMSManagement />} />
     <Route path="*" element={<Dashboard />} />
   </Routes>
   </Suspense>        
         </ErrorBoundary>
-  <ErpCopilot />
-  </div>
-  </main>
-  </div>
-  </div>
+          <Suspense fallback={null}>
+            <ErrorBoundary fallback={null}>
+              <ErpCopilot />
+            </ErrorBoundary>
+          </Suspense>
+        </div>
+      </main>
+      {isCommandPaletteOpen && (
+        <CommandPalette onClose={() => setIsCommandPaletteOpen(false)} />
+      )}
+      <UniversalEntityPeekDrawer />
+    </div>
   );
 }
 
@@ -387,7 +499,9 @@ function AppContent() {
 
   return (
     <Router>
-      <AppLayout />
+      <EntityProvider>
+        <AppLayout />
+      </EntityProvider>
     </Router>
   );
 }

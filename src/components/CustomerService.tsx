@@ -1,4 +1,6 @@
 import { DraggableGrid } from './ui/DraggableGrid';
+import { CompactPageHeader } from './common/CompactPageHeader';
+import { CompactStatsRibbon, MetricRibbonItem } from './common/CompactStatsRibbon';
 import { 
   BarChart, 
   Bar, 
@@ -53,7 +55,15 @@ import {
  Users,
  UserPlus,
  Shield,
- Headset
+ Headset,
+ Mic,
+ MicOff,
+ PhoneOff,
+ Pause,
+ Play,
+ Delete,
+ Volume2,
+ RefreshCw
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -71,36 +81,82 @@ import {
 
 // --- MOCK DATA ---
 const MOCK_THREADS: ChatThread[] = [
- { id: 'T1', channel: 'zalo', userName: 'Phạm Thị Lan', lastMessage: 'Đơn hàng của tôi bao giờ tới?', unreadCount: 2, updatedAt: '14:20' },
- { id: 'T2', channel: 'facebook', userName: 'Hoàng Anh Tuấn', lastMessage: 'Shop có túi xách màu kem không?', unreadCount: 0, updatedAt: '12:05' },
- { id: 'T3', channel: 'web', userName: 'Khách vãng lai #42', lastMessage: 'Sản phẩm này có bảo hành không ạ?', unreadCount: 1, updatedAt: '10:15' },
+  { id: 'T1', channel: 'zalo', userName: 'Phạm Thị Lan', lastMessage: 'Đơn hàng của tôi bao giờ tới?', unreadCount: 2, updatedAt: '14:20' },
+  { id: 'T2', channel: 'facebook', userName: 'Hoàng Anh Tuấn', lastMessage: 'Shop có túi xách màu kem không?', unreadCount: 0, updatedAt: '12:05' },
+  { id: 'T3', channel: 'web', userName: 'Khách vãng lai #42', lastMessage: 'Sản phẩm này có bảo hành không ạ?', unreadCount: 1, updatedAt: '10:15' },
+  { id: 'T4', channel: 'call', userName: 'Trần Văn Bình', lastMessage: 'Ghi âm cuộc gọi nhỡ: 0987654321', unreadCount: 1, updatedAt: '09:40' },
+  { id: 'T5', channel: 'zalo', userName: 'Đặng Văn Lâm', lastMessage: 'Cho mình xin mã ZNS theo dõi đơn vận chuyển', unreadCount: 0, updatedAt: '08:15' },
+  { id: 'T6', channel: 'web', userName: 'Nguyễn Thị Tuyết', lastMessage: 'Em muốn đổi size máy in bill khổ K80', unreadCount: 0, updatedAt: 'Hôm qua' },
+];
+
+export interface CskhAgent {
+  id: string;
+  name: string;
+  role: string;
+  skills: ('complaint' | 'inquiry' | 'technical' | 'return' | 'feedback' | 'all')[];
+  activeTickets: number;
+  isOnline: boolean;
+  avatar: string;
+}
+
+export const CSKH_AGENTS: CskhAgent[] = [
+  { id: 'AGT-01', name: 'Nguyễn Mai Anh', role: 'Chuyên viên Đổi trả & Khiếu nại', skills: ['complaint', 'return'], activeTickets: 2, isOnline: true, avatar: 'M' },
+  { id: 'AGT-02', name: 'Trần Văn Bình', role: 'Kỹ thuật viên & Cổng Thanh toán', skills: ['technical'], activeTickets: 1, isOnline: true, avatar: 'B' },
+  { id: 'AGT-03', name: 'Lê Thị Thu Thảo', role: 'Tư vấn viên Sản phẩm & CSKH', skills: ['inquiry', 'feedback', 'all'], activeTickets: 1, isOnline: true, avatar: 'T' },
+  { id: 'AGT-04', name: 'Hoàng Quốc Dũng', role: 'Chăm sóc Khách hàng VIP', skills: ['all'], activeTickets: 2, isOnline: true, avatar: 'D' }
 ];
 
 const MOCK_TICKETS = [
- { id: 'TKT-1042', customerName: 'Nguyễn Văn A', subject: 'Hàng nhận bị móp hộp', status: 'open', priority: 'high', type: 'complaint', createdAt: '10:45 20/04/2026', sentiment: 'critical' },
- { id: 'TKT-1041', customerName: 'Trần Thị B', subject: 'Hỏi về thời gian bảo hành', status: 'in_progress', priority: 'medium', type: 'inquiry', createdAt: '09:12 20/04/2026', sentiment: 'neutral' },
- { id: 'TKT-1040', customerName: 'Lê Văn C', subject: 'Lỗi thanh toán Momo', status: 'closed', priority: 'high', type: 'technical', createdAt: '16:30 19/04/2026', sentiment: 'negative' },
- { id: 'TKT-1039', customerName: 'Phạm D', subject: 'Cần đổi size áo', status: 'open', priority: 'medium', type: 'return', createdAt: '08:05 19/04/2026', sentiment: 'neutral' },
- { id: 'TKT-1038', customerName: 'Hoàng E', subject: 'Khen ngợi dịch vụ shipper', status: 'closed', priority: 'low', type: 'feedback', createdAt: '14:20 18/04/2026', sentiment: 'positive' },
-];
-
-const MOCK_FEEDBACKS = [
- { id: 'FB-001', customerName: 'Đặng F', rating: 5, comment: 'Giao hàng siêu nhanh, đóng gói cẩn thận. Sẽ ủng hộ shop dài dài!', date: 'Hôm nay', channel: 'shopee' },
- { id: 'FB-002', customerName: 'Vũ G', rating: 2, comment: 'Nhân viên tư vấn chậm, phản hồi khách hơi lâu.', date: 'Hôm qua', channel: 'zalo' },
- { id: 'FB-003', customerName: 'Bùi H', rating: 4, comment: 'Chất lượng oki, nhưng giá hơi cao so với thị trường một chút.', date: '18/04/2026', channel: 'web' },
-];
-
-const MOCK_CAMPAIGNS = [
- { id: 'CMP-01', name: 'Chúc mừng Sinh nhật Tháng 4', type: 'email', target: 'Khách hàng có sinh nhật trong tháng', sent: 1250, openRate: 45, clickRate: 12, status: 'active' },
- { id: 'CMP-02', name: 'Nhắc nhở sử dụng Voucher', type: 'sms', target: 'Khách hàng có voucher sắp hết hạn', sent: 840, openRate: 92, clickRate: 35, status: 'active' },
- { id: 'CMP-03', name: 'Khảo sát CSAT Q1', type: 'zalo', target: 'Khách hàng mua hàng trong Q1', sent: 5000, openRate: 68, clickRate: 20, status: 'completed' },
+ { id: 'TKT-1042', customerName: 'Nguyễn Văn A', subject: 'Hàng nhận bị móp hộp', status: 'open', priority: 'high', type: 'complaint', createdAt: '10:45 20/04/2026', sentiment: 'critical', assignedAgent: 'Nguyễn Mai Anh', channel: 'zalo', phone: '0981234567' },
+ { id: 'TKT-1041', customerName: 'Trần Thị B', subject: 'Hỏi về thời gian bảo hành', status: 'in_progress', priority: 'medium', type: 'inquiry', createdAt: '09:12 20/04/2026', sentiment: 'neutral', assignedAgent: 'Lê Thị Thu Thảo', channel: 'web', phone: '0912345678' },
+ { id: 'TKT-1040', customerName: 'Lê Văn C', subject: 'Lỗi thanh toán Momo', status: 'closed', priority: 'high', type: 'technical', createdAt: '16:30 19/04/2026', sentiment: 'negative', assignedAgent: 'Trần Văn Bình', channel: 'facebook', phone: '0901234567' },
+ { id: 'TKT-1039', customerName: 'Phạm D', subject: 'Cần đổi size áo', status: 'open', priority: 'medium', type: 'return', createdAt: '08:05 19/04/2026', sentiment: 'neutral', assignedAgent: 'Nguyễn Mai Anh', channel: 'zalo', phone: '0934567890' },
+ { id: 'TKT-1038', customerName: 'Hoàng E', subject: 'Khen ngợi dịch vụ shipper', status: 'closed', priority: 'low', type: 'feedback', createdAt: '14:20 18/04/2026', sentiment: 'positive', assignedAgent: 'Hoàng Quốc Dũng', channel: 'vcomm', phone: '0977889900' },
 ];
 
 // --- COMPONENT ---
 export function CustomerService() {
   const [activeTab, setActiveTab] = useState<any>('dashboard');
   const [tickets, setTickets] = useState(MOCK_TICKETS);
+  const [agents, setAgents] = useState<CskhAgent[]>(CSKH_AGENTS);
+  const [isAutoDistributing, setIsAutoDistributing] = useState(false);
   const [znsToast, setZnsToast] = useState<{ show: boolean, message: string, logContent: string } | null>(null);
+  const [selectedChatChannel, setSelectedChatChannel] = useState<'all' | 'facebook' | 'zalo' | 'web' | 'call'>('all');
+  const [chatSearchText, setChatSearchText] = useState<string>('');
+
+  // Thuật toán chia ticket tự động Round-Robin kết hợp Kỹ năng (Skill-based)
+  const handleRoundRobinDistribute = () => {
+    setIsAutoDistributing(true);
+    setTimeout(() => {
+      const onlineAgents = agents.filter(a => a.isOnline);
+      if (onlineAgents.length === 0) {
+        alert('Không có nhân viên trực nào đang Online!');
+        setIsAutoDistributing(false);
+        return;
+      }
+
+      let agentIdx = 0;
+      let assignedCount = 0;
+      const updated = tickets.map(t => {
+        if (!t.assignedAgent || t.status === 'open') {
+          // Phân bổ theo kỹ năng tương thích hoặc luân phiên Round-robin
+          const matched = onlineAgents.find(a => a.skills.includes(t.type as any) || a.skills.includes('all')) || onlineAgents[agentIdx % onlineAgents.length];
+          agentIdx++;
+          assignedCount++;
+          return {
+            ...t,
+            assignedAgent: matched.name,
+            status: 'in_progress'
+          };
+        }
+        return t;
+      });
+
+      setTickets(updated);
+      setIsAutoDistributing(false);
+      setSuccessToast(`Đã hoàn tất phân bổ Round-Robin tự động ${assignedCount} ticket cho các nhân sự trực ca!`);
+    }, 600);
+  };
   
   // Zalo ZNS state variables
   const [znsLogs, setZnsLogs] = useState<any[]>([]);
@@ -114,6 +170,75 @@ export function CustomerService() {
   const [testVar2, setTestVar2] = useState<string>('1,850,000đ');
 
   const [logsSearchQuery, setLogsSearchQuery] = useState<string>('');
+
+  // --- OmiCall & WebRTC SIP Softphone State ---
+  const [dialNumber, setDialNumber] = useState<string>('0901234567');
+  const [callState, setCallState] = useState<'idle' | 'calling' | 'connected' | 'ended'>('idle');
+  const [callSeconds, setCallSeconds] = useState<number>(0);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [isHold, setIsHold] = useState<boolean>(false);
+  const [callLogs, setCallLogs] = useState([
+    { time: '14:20 20/04/2026', duration: '02:45', status: 'missed', caller: '0901234567', type: 'inbound', name: 'Nguyễn Văn A', hasAudio: false },
+    { time: '10:15 20/04/2026', duration: '08:12', status: 'completed', caller: '0987654321', type: 'outbound', name: 'Trần Thị B', hasAudio: true },
+    { time: '09:05 19/04/2026', duration: '01:20', status: 'completed', caller: '0919876543', type: 'inbound', name: 'Lê Văn C', hasAudio: true }
+  ]);
+
+  useEffect(() => {
+    let timer: any = null;
+    if (callState === 'connected') {
+      timer = setInterval(() => {
+        setCallSeconds(prev => prev + 1);
+      }, 1000);
+    } else if (callState === 'idle') {
+      setCallSeconds(0);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [callState]);
+
+  const formatTimer = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  };
+
+  const handleStartCall = () => {
+    if (!dialNumber.trim()) {
+      alert('Vui lòng nhập số điện thoại cần gọi!');
+      return;
+    }
+    setCallState('calling');
+    setTimeout(() => {
+      setCallState('connected');
+    }, 1500);
+  };
+
+  const handleEndCall = () => {
+    const durationFormatted = formatTimer(callSeconds);
+    const now = new Date();
+    const timeFormatted = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} ${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+    
+    setCallLogs(prev => [
+      {
+        time: timeFormatted,
+        duration: durationFormatted || '00:01',
+        status: 'completed',
+        caller: dialNumber,
+        type: 'outbound',
+        name: `Khách hàng (${dialNumber})`,
+        hasAudio: true
+      },
+      ...prev
+    ]);
+
+    setCallState('ended');
+    setTimeout(() => {
+      setCallState('idle');
+      setIsMuted(false);
+      setIsHold(false);
+    }, 1200);
+  };
 
   useEffect(() => {
     setZnsLogs(getZnsLogs());
@@ -236,7 +361,7 @@ export function CustomerService() {
  const [isSimulatingTicket, setIsSimulatingTicket] = useState<boolean>(false);
  const [successToast, setSuccessToast] = useState<string | null>(null);
  const [activeAlerts, setActiveAlerts] = useState<any[]>([
-   { id: 'TKT-1042', customerName: 'Nguyễn Văn A', subject: 'Hàng nhận bị móp hộp', priority: 'high', channel: 'shopee', waitingTime: '24 phút', sentiment: 'critical' },
+   { id: 'TKT-1042', customerName: 'Nguyễn Văn A', subject: 'Hàng nhận bị móp hộp', priority: 'high', channel: 'vcomm', waitingTime: '24 phút', sentiment: 'critical' },
    { id: 'TKT-1039', customerName: 'Phạm D', subject: 'Cần đổi size áo', priority: 'medium', channel: 'facebook', waitingTime: '18 phút', sentiment: 'neutral' },
    { id: 'TKT-1041', customerName: 'Trần Thị B', subject: 'Hỏi về thời gian bảo hành', priority: 'medium', channel: 'zalo', waitingTime: '15 phút', sentiment: 'neutral' },
    { id: 'TKT-1040', customerName: 'Lê Văn C', subject: 'Lỗi thanh toán Momo', priority: 'high', channel: 'web', waitingTime: '32 phút', sentiment: 'negative' },
@@ -247,7 +372,7 @@ export function CustomerService() {
    setTimeout(() => {
      const customers = ['Đặng Văn Lâm', 'Nguyễn Thị Tuyết', 'Hồ Hoài Nam', 'Phạm Quỳnh Anh'];
      const issues = ['Hỏi về mã khuyến mãi giảm 20%', 'Sản phẩm giao bị thiếu quà tặng', 'Lỗi thanh toán ngân hàng báo thành công nhưng app báo chờ', 'Tư vấn đóng gói quà sinh nhật'];
-     const channels = ['facebook', 'zalo', 'web', 'shopee'];
+     const channels = ['facebook', 'zalo', 'web', 'vcomm'];
      const priorities = ['high', 'medium', 'low'];
      const sentiments = ['critical', 'neutral', 'negative'];
 
@@ -286,7 +411,7 @@ export function CustomerService() {
    if (dashboardChannel === 'facebook') modifier *= 0.35;
    else if (dashboardChannel === 'zalo') modifier *= 0.28;
    else if (dashboardChannel === 'web') modifier *= 0.20;
-   else if (dashboardChannel === 'shopee') modifier *= 0.17;
+   else if (dashboardChannel === 'vcomm') modifier *= 0.17;
 
    if (dashboardPriority === 'high') modifier *= 0.30;
    else if (dashboardPriority === 'medium') modifier *= 0.45;
@@ -387,165 +512,174 @@ export function CustomerService() {
  setIsAiProcessing(false);
  };
 
- const handleSimulateAiReply = () => {
- setAiDrafting(true);
- setTimeout(() => {
- setDraftedMessage(`Dạ em chào anh/chị ${selectedTicket.customerName}, em bên bộ phận CSKH xin ghi nhận thông tin về vấn đề "${selectedTicket.subject}". Bộ phận liên quan đang tiến hành kiểm tra lại và sẽ xử lý ngay lập tức ạ. Xin lỗi vì sự bất tiện này.`);
- setAiDrafting(false);
- }, 1500);
- };
+  const handleConvertChatToTicket = () => {
+    if (!activeThread) return;
+    const newId = `TKT-${Math.floor(1000 + Math.random() * 9000)}`;
+    const newTkt = {
+      id: newId,
+      customerName: activeThread.userName,
+      subject: activeThread.lastMessage || `Yêu cầu hỗ trợ từ kênh ${activeThread.channel.toUpperCase()}`,
+      status: 'open' as const,
+      priority: 'high' as const,
+      type: 'inquiry' as const,
+      createdAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' ' + new Date().toLocaleDateString('vi-VN'),
+      sentiment: 'critical' as const,
+      assignedAgent: agents.find(a => a.isOnline)?.name || 'Nguyễn Mai Anh',
+      channel: activeThread.channel,
+      phone: '0981234567',
+      slaDeadline: '30 phút (P2)',
+      slaStatus: 'on_track'
+    };
+    setTickets(prev => [newTkt as any, ...prev]);
+    setSuccessToast(`Đã chuyển đổi hội thoại khách hàng "${activeThread.userName}" thành Ticket #${newId} với giám sát SLA!`);
+  };
 
- return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
- {/* Header */}
- <div className="flex items-center justify-between">
- <div className="header-title">
- <div className="flex items-center gap-3">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Chăm sóc Khách hàng</h1>
- <div className="flex bg-slate-100/80 p-1 rounded-lg border border-slate-300 shadow-inner">
- <button 
- onClick={() => setRoleScope('platform')}
- className={cn("px-3 py-1.5 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all", roleScope === 'platform' ? "bg-white text-primary-700 shadow-sm" : "text-slate-600 hover:text-slate-800")}
- >
- <Building2 className="w-3.5 h-3.5" /> Quản trị Sàn
- </button>
- <button 
- onClick={() => setRoleScope('seller')}
- className={cn("px-3 py-1.5 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all", roleScope === 'seller' ? "bg-white text-emerald-700 shadow-sm" : "text-slate-600 hover:text-slate-800")}
- >
- <Store className="w-3.5 h-3.5" /> Quản trị Nhà Bán
- </button>
- </div>
- </div>
- <p className="text-sm text-[#6B7280] mt-1">
- {roleScope === 'platform' ? 'Quản lý vận hành hệ thống, giám sát đánh giá cửa hàng và hỗ trợ tranh chấp.' : 'Quản lý khiếu nại, phản hồi, và tự động hóa CSKH cho cửa hàng của bạn.'}
- </p>
- </div>
- <div className="flex gap-3">
- <button onClick={() => setActiveTab('dashboard')} className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
- <BarChart2 className="w-4 h-4 text-emerald-600" />
- Báo cáo SLA
- </button>
- <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
- <Ticket className="w-4 h-4" />
- Tạo Ticket mới
- </button>
- </div>
- </div>
+  const handleUpdateTicketStatus = (ticketId: string, newStatus: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, status: newStatus as any } : t));
+    setSuccessToast(`Đã cập nhật trạng thái Ticket #${ticketId} thành ${newStatus.toUpperCase()}`);
+  };
 
- {/* Overview Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
- <div className="absolute right-0 top-0 w-24 h-24 bg-red-50 rounded-bl-full -z-0 opacity-50 transition-transform " />
- <div className="flex justify-between items-start relative z-10 mb-2">
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tiếp nhận mới (Mở)</p>
- <AlertCircle className="w-4 h-4 text-red-500" />
- </div>
- <p className="text-3xl font-bold text-slate-900 relative z-10">24</p>
- <div className="mt-2 text-[10px] text-red-500 font-bold bg-red-50 px-2 py-1 rounded-lg w-fit">Cần xử lý gấp: 5</div>
- </div>
- 
- <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
- <div className="absolute right-0 top-0 w-24 h-24 bg-slate-100 rounded-bl-full -z-0 opacity-50 transition-transform " />
- <div className="flex justify-between items-start relative z-10 mb-2">
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Thời gian P/hồi TB (SLA)</p>
- <Clock className="w-4 h-4 text-orange-600" />
- </div>
- <p className="text-3xl font-bold text-slate-900 relative z-10">14 <span className="text-sm font-medium text-slate-600">phút</span></p>
- <div className="flex justify-between items-center mt-2 group/btn">
-					<div className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Nhanh hơn 5p so với tuần trước</div>
-					<button onClick={(e) => { e.stopPropagation(); setActiveTab('dashboard'); }} className="text-[10px] text-primary-600 font-extrabold hover:underline flex items-center gap-0.5 transition-all">Biểu đồ &rarr;</button>
-				</div>
- </div>
+  const handleSimulateAiReply = () => {
+    setAiDrafting(true);
+    setTimeout(() => {
+      setDraftedMessage(`Dạ em chào anh/chị ${selectedTicket?.customerName || 'Quý khách'}, em bên bộ phận CSKH VComm xin ghi nhận thông tin về vấn đề "${selectedTicket?.subject || ''}". Bộ phận kỹ thuật đang tiến hành kiểm tra lại và sẽ xử lý ngay lập tức trong cam kết SLA ạ. Xin lỗi vì sự bất tiện này.`);
+      setAiDrafting(false);
+    }, 1200);
+  };
 
- <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm relative overflow-hidden group">
- <div className="absolute right-0 top-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0 opacity-50 transition-transform " />
- <div className="flex justify-between items-start relative z-10 mb-2">
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Đánh giá chung (CSAT)</p>
- <Star className="w-4 h-4 text-yellow-500" />
- </div>
- <p className="text-3xl font-bold text-slate-900 relative z-10">4.8<span className="text-xl text-slate-500">/5</span></p>
- <div className="mt-2 text-[10px] text-emerald-500 font-medium">Rất xuất sắc</div>
- </div>
+  const csRibbonItems: MetricRibbonItem[] = [
+    {
+      id: 'open',
+      icon: <AlertCircle className="w-3.5 h-3.5" />,
+      label: 'Tiếp Nhận Mới',
+      value: 24,
+      subText: 'Gấp: 5 ticket',
+      colorVariant: 'rose',
+      onClick: () => setActiveTab('tickets')
+    },
+    {
+      id: 'sla',
+      icon: <Clock className="w-3.5 h-3.5" />,
+      label: 'Phản Hồi TB (SLA)',
+      value: '14 phút',
+      subText: 'Nhanh hơn 5p',
+      colorVariant: 'blue'
+    },
+    {
+      id: 'csat',
+      icon: <Star className="w-3.5 h-3.5" />,
+      label: 'Hài Lòng (CSAT)',
+      value: '4.8 / 5.0',
+      subText: '96.4% 5 sao',
+      colorVariant: 'amber'
+    },
+    {
+      id: 'bot',
+      icon: <Sparkles className="w-3.5 h-3.5" />,
+      label: 'AI Auto-Reply',
+      value: '68%',
+      subText: 'Tự động sơ bộ',
+      colorVariant: 'purple'
+    }
+  ];
 
- <div className="bg-white p-5 rounded-lg border border-slate-800 shadow-sm relative overflow-hidden group">
- <div className="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-bl-full -z-0 transition-transform " />
- <div className="flex justify-between items-start relative z-10 mb-2">
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">AI Autofill / Auto-reply</p>
- <Sparkles className="w-4 h-4 text-primary-400" />
- </div>
- <p className="text-3xl font-bold text-[#FAF9F5] relative z-10">68%</p>
- <div className="mt-2 text-[10px] text-primary-200 font-medium tracking-wide">Tỷ lệ tự động hóa tin nhắn</div>
- </div>
- </DraggableGrid>
+  return (
+    <div className="space-y-3 animate-in fade-in slide-in- duration-500 pb-12 font-sans">
+      {/* Compact Standardized Header */}
+      <CompactPageHeader
+        icon={<Headphones className="w-4 h-4 text-blue-600" />}
+        title="Chăm Sóc Khách Hàng & Tổng Đài VComm"
+        badge={{ text: "Omnichannel CSKH", variant: "blue" }}
+        description={roleScope === 'platform' ? 'Trung tâm điều phối hỗ trợ đa kênh, giải quyết tranh chấp sàn và giám sát cam kết SLA nhà bán.' : 'Quản lý khiếu nại, phản hồi đánh giá và tự động hóa CSKH bằng trí tuệ nhân tạo.'}
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Scope Switcher */}
+            <div className="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+              <button 
+                onClick={() => setRoleScope('platform')}
+                className={cn("px-2.5 py-1 text-xs font-bold rounded-md flex items-center gap-1 transition-all cursor-pointer", roleScope === 'platform' ? "bg-white text-blue-700 shadow-2xs" : "text-slate-600 hover:text-slate-900")}
+              >
+                <Building2 className="w-3 h-3" /> Sàn
+              </button>
+              <button 
+                onClick={() => setRoleScope('seller')}
+                className={cn("px-2.5 py-1 text-xs font-bold rounded-md flex items-center gap-1 transition-all cursor-pointer", roleScope === 'seller' ? "bg-white text-emerald-700 shadow-2xs" : "text-slate-600 hover:text-slate-900")}
+              >
+                <Store className="w-3 h-3" /> Nhà bán
+              </button>
+            </div>
+
+            <button 
+              onClick={() => setActiveTab('dashboard')} 
+              className="bg-white border border-slate-200 hover:bg-slate-50 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+            >
+              <BarChart2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Báo Cáo SLA</span>
+            </button>
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer">
+              <Ticket className="w-3.5 h-3.5" />
+              <span>Tạo Ticket</span>
+            </button>
+          </div>
+        }
+      />
+
+      {/* Compact Stats Ribbon */}
+      <CompactStatsRibbon
+        items={csRibbonItems}
+        storageKey="customer_service_stats_ribbon"
+      />
 
  {/* Main Content Area */}
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col">
- {/* Navigation Tabs */}
- <div className="flex bg-slate-50 border-b border-slate-300 p-2 gap-2 overflow-x-auto hidden-scrollbar min-w-0">
+  {/* Navigation Tabs */}
+  <div className="flex bg-slate-50 border-b border-slate-300 p-2 gap-2 overflow-x-auto hidden-scrollbar min-w-0">
+   <button 
+     onClick={() => setActiveTab('chat')}
+     className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0 cursor-pointer", activeTab === 'chat' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+   >
+     <MessageSquare className="w-4 h-4 text-orange-600" /> Hộp Thư Chat Đa Kênh (Omnichannel)
+   </button>
   <button 
-    onClick={() => setActiveTab('dashboard')}
-    className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'dashboard' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+  onClick={() => setActiveTab('tickets')}
+  className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0 cursor-pointer", activeTab === 'tickets' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
   >
-    <LayoutGridIcon className="w-4 h-4" /> Tổng quan Dashboard
+  <Ticket className="w-4 h-4 text-blue-600" /> Quản Lý Tickets & SLA
   </button>
- <button 
- onClick={() => setActiveTab('tickets')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'tickets' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <Ticket className="w-4 h-4" /> Quản lý Tickets
- </button>
- <button 
- onClick={() => setActiveTab('campaigns')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'campaigns' ? "bg-white text-emerald-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <Mail className="w-4 h-4" /> Chiến dịch Chăm sóc (Loyalty)
- </button>
- <button 
- onClick={() => setActiveTab('feedback')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'feedback' ? "bg-white text-purple-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <Star className="w-4 h-4" /> Phản hồi & Đánh giá
- </button>
- <button 
- onClick={() => setActiveTab('chat')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'chat' ? "bg-white text-orange-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <MessageSquare className="w-4 h-4" /> Chat Đa kênh (FB/Zalo)
- </button>
- <button 
- onClick={() => setActiveTab('calls')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'calls' ? "bg-white text-emerald-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <PhoneCall className="w-4 h-4" /> Tổng đài OmiCall
- </button>
- <button 
- onClick={() => setActiveTab('livechat')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'livechat' ? "bg-white text-primary-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <MessageCircle className="w-4 h-4" /> Livechat Website
- </button>
- <button 
- onClick={() => setActiveTab('agents')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'agents' ? "bg-white text-rose-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <Users className="w-4 h-4" /> Đội ngũ & Extension
- </button>
- <button 
- onClick={() => setActiveTab('config')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'config' ? "bg-white text-slate-900 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
- >
- <Settings className="w-4 h-4" /> Cấu hình Kênh
- </button>
- <button 
- onClick={() => setActiveTab('zalo_zns')}
- className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0", activeTab === 'zalo_zns' ? "bg-white text-blue-700 shadow-sm border border-blue-200" : "text-slate-600 hover:bg-slate-100")}
- >
- <MessageSquare className="w-4 h-4 text-blue-600" /> Bản tin Zalo ZNS
- </button>
- </div>
+  <button 
+  onClick={() => setActiveTab('calls')}
+  className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0 cursor-pointer", activeTab === 'calls' ? "bg-white text-emerald-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+  >
+  <PhoneCall className="w-4 h-4 text-emerald-600" /> Tổng Đài WebRTC (VoIP)
+  </button>
+  <button 
+  onClick={() => setActiveTab('zalo_zns')}
+  className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0 cursor-pointer", activeTab === 'zalo_zns' ? "bg-white text-blue-700 shadow-sm border border-blue-200" : "text-slate-600 hover:bg-slate-100")}
+  >
+  <MessageCircle className="w-4 h-4 text-blue-600" /> Cổng Zalo ZNS Realtime
+  </button>
+  <button 
+  onClick={() => setActiveTab('agents')}
+  className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0 cursor-pointer", activeTab === 'agents' ? "bg-white text-rose-600 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+  >
+  <Users className="w-4 h-4 text-rose-600" /> Đội Ngũ Trực Ca & Kỹ Năng
+  </button>
+   <button 
+     onClick={() => setActiveTab('dashboard')}
+     className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0 cursor-pointer", activeTab === 'dashboard' ? "bg-white text-emerald-700 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+   >
+     <BarChart2 className="w-4 h-4 text-emerald-600" /> Báo Cáo SLA & CSAT
+   </button>
+  <button 
+  onClick={() => setActiveTab('config')}
+  className={cn("px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shrink-0 cursor-pointer", activeTab === 'config' ? "bg-white text-slate-900 shadow-sm border border-slate-300" : "text-slate-600 hover:bg-slate-100")}
+  >
+  <Settings className="w-4 h-4 text-slate-600" /> Cấu Hình Kênh Kết Nối
+  </button>
+  </div>
 
- {/* Filters */}
+  {/* Filters */}
  <div className="p-4 border-b border-stone-50 flex flex-wrap gap-4 items-center justify-between">
  <div className="flex gap-4">
  <div className="relative">
@@ -606,7 +740,7 @@ export function CustomerService() {
 								<option value="facebook">Facebook Messenger</option>
 								<option value="zalo">Zalo OA</option>
 								<option value="web">Website Chat widget</option>
-								<option value="shopee">Shopee Chat</option>
+								<option value="vcomm">VComm App Chat</option>
 							</select>
 						</div>
 
@@ -792,7 +926,7 @@ export function CustomerService() {
 										<div className="text-[10px] font-mono text-slate-500 uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
 											{alert.channel === 'facebook' ? <span className="text-blue-600 font-bold">Facebook</span> : 
 											 alert.channel === 'zalo' ? <span className="text-sky-600 font-bold">Zalo</span> : 
-											 alert.channel === 'shopee' ? <span className="text-orange-600 font-bold">Shopee</span> : 
+											 alert.channel === 'vcomm' ? <span className="text-orange-600 font-bold">VComm App</span> : 
 											 <span className="text-emerald-600 font-bold font-sans">Web Engine</span>}
 										</div>
 									</td>
@@ -848,63 +982,182 @@ export function CustomerService() {
 	)}
 
 {activeTab === 'tickets' && (
- <table className="w-full text-left border-collapse whitespace-nowrap">
- <thead>
- <tr className="bg-slate-50/50 border-b border-slate-200">
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Ticket ID & KH</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Vấn đề / Tiêu đề</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Trạng thái</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Mức độ ưu tiên</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-right leading-relaxed">Thời gian</th>
- </tr>
- </thead>
- <tbody className="divide-y divide-slate-100">
- {tickets.map(ticket => (
- <tr 
- key={ticket.id} 
- onClick={() => setSelectedTicket(ticket)}
- className={cn("hover:bg-slate-100/50 cursor-pointer transition-colors group", ticket.status === 'open' ? 'bg-white' : 'bg-slate-50/30')}
- >
- <td className="px-6 py-4">
- <p className="text-xs font-mono font-bold text-slate-700 mb-0.5">{ticket.id}</p>
- <p className="text-sm font-bold text-slate-900 group-hover:text-orange-700 transition-colors">{ticket.customerName}</p>
- </td>
- <td className="px-6 py-4">
- <div className="flex items-center gap-2">
- {ticket.sentiment === 'critical' ? <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> : 
- ticket.sentiment === 'negative' ? <span className="w-2 h-2 rounded-full bg-orange-500" /> : 
- <span className="w-2 h-2 rounded-full bg-emerald-500" />}
- <div>
- <p className="text-sm font-bold text-slate-800">{ticket.subject}</p>
- <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-0.5">{ticket.type}</p>
+ <div className="space-y-4 p-4">
+   {/* Round-Robin & Agent Roster Header Banner */}
+   <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-4 rounded-2xl border border-blue-200/80 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+     <div className="flex items-center gap-3">
+       <div className="p-2.5 bg-blue-600 text-white rounded-xl shadow-xs">
+         <Headphones className="w-5 h-5" />
+       </div>
+       <div>
+         <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
+           Đội Ngũ Trực Tổng Đài & Thuật Toán Phân Bổ Round-Robin
+           <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold border border-emerald-200">
+             {agents.filter(a => a.isOnline).length} Nhân Sự Online
+           </span>
+         </h4>
+         <p className="text-xs text-slate-500 mt-0.5">
+           Tự động cân bằng tải và điều phối ticket theo kỹ năng chuyên môn (Khiếu nại, Kỹ thuật, Đổi trả, VIP).
+         </p>
+       </div>
+     </div>
+
+     {/* Action button */}
+     <div className="flex items-center gap-2 w-full md:w-auto">
+       <button
+         onClick={handleRoundRobinDistribute}
+         disabled={isAutoDistributing}
+         className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50"
+       >
+         <RefreshCw className={cn("w-3.5 h-3.5", isAutoDistributing && "animate-spin")} />
+         {isAutoDistributing ? 'Đang phân bổ...' : 'Phân Bổ Tự Động Round-Robin'}
+       </button>
+     </div>
+   </div>
+
+   {/* Agent Quick Status Strip */}
+   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+     {agents.map(ag => (
+       <div key={ag.id} className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between shadow-2xs">
+         <div className="flex items-center gap-2.5">
+           <div className="relative">
+             <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-black text-xs flex items-center justify-center border border-indigo-200">
+               {ag.avatar}
+             </div>
+             <span className={cn(
+               "absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white",
+               ag.isOnline ? "bg-emerald-500" : "bg-slate-300"
+             )} />
+           </div>
+           <div>
+             <div className="text-xs font-bold text-slate-800 leading-tight">{ag.name}</div>
+             <div className="text-[10px] text-slate-400 mt-0.5 leading-tight">{ag.role}</div>
+           </div>
+         </div>
+         <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono">
+           {tickets.filter(t => (t as any).assignedAgent === ag.name && t.status !== 'closed').length} xử lý
+         </span>
+       </div>
+     ))}
+   </div>
+
+   {/* Tickets Table */}
+   <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-2xs">
+     <table className="w-full text-left border-collapse whitespace-nowrap">
+      <thead>
+      <tr className="bg-slate-50/70 border-b border-slate-200">
+      <th className="px-6 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Ticket ID & KH</th>
+      <th className="px-6 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Vấn đề & Kênh</th>
+      <th className="px-6 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Nhân Sự CSKH (Agent)</th>
+      <th className="px-6 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Cam kết SLA</th>
+      <th className="px-6 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Trạng thái</th>
+      <th className="px-6 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Mức độ</th>
+      <th className="px-6 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-right leading-relaxed">Thao tác SLA</th>
+      </tr>
+      </thead>
+      <tbody className="divide-y divide-slate-100">
+      {tickets.map(ticket => (
+      <tr 
+      key={ticket.id} 
+      onClick={() => setSelectedTicket(ticket)}
+      className={cn("hover:bg-slate-50 cursor-pointer transition-colors group", ticket.status === 'open' ? 'bg-white' : 'bg-slate-50/30')}
+      >
+      <td className="px-6 py-3.5">
+      <p className="text-xs font-mono font-bold text-slate-700 mb-0.5">{ticket.id}</p>
+      <p className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{ticket.customerName}</p>
+      </td>
+      <td className="px-6 py-3.5">
+      <div className="flex items-center gap-2">
+      {ticket.sentiment === 'critical' ? <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> : 
+      ticket.sentiment === 'negative' ? <span className="w-2 h-2 rounded-full bg-orange-500" /> : 
+      <span className="w-2 h-2 rounded-full bg-emerald-500" />}
+      <div>
+      <p className="text-sm font-bold text-slate-800">{ticket.subject}</p>
+      <div className="flex items-center gap-1.5 mt-0.5">
+        <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">{ticket.type}</span>
+        <span className="text-[10px] text-slate-400">•</span>
+        <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-bold uppercase">{ticket.channel || 'Zalo OA'}</span>
+      </div>
+      </div>
+      </div>
+      </td>
+      <td className="px-6 py-3.5">
+        {(ticket as any).assignedAgent ? (
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-indigo-50 text-indigo-700 font-bold text-[10px] flex items-center justify-center border border-indigo-200">
+              {(ticket as any).assignedAgent[0]}
+            </div>
+            <span className="text-xs font-bold text-slate-800">{(ticket as any).assignedAgent}</span>
+          </div>
+        ) : (
+          <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+            Chờ phân bổ Round-Robin
+          </span>
+        )}
+      </td>
+      <td className="px-6 py-3.5 text-center">
+        <span className={cn(
+          "px-2.5 py-0.5 rounded-full text-[10px] font-bold border flex items-center justify-center gap-1 mx-auto w-fit",
+          (ticket as any).slaStatus === 'breached' ? "bg-rose-50 text-rose-700 border-rose-200" :
+          (ticket as any).slaStatus === 'met' || ticket.status === 'closed' ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+          "bg-sky-50 text-sky-700 border-sky-200"
+        )}>
+          <Clock className="w-3 h-3" />
+          <span>{(ticket as any).slaDeadline || (ticket.priority === 'high' ? '30 phút (P1)' : '2 giờ (P2)')}</span>
+        </span>
+      </td>
+      <td className="px-6 py-3.5 text-center">
+      <span className={cn(
+      "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
+      ticket.status === 'open' ? "bg-red-50 text-red-700 border border-red-200" : 
+      ticket.status === 'in_progress' ? "bg-amber-100 text-amber-700" : "bg-slate-200 text-slate-600"
+      )}>
+      {ticket.status === 'open' ? 'MỚI' : ticket.status === 'in_progress' ? 'ĐANG XỬ LÝ' : 'ĐÃ ĐÓNG'}
+      </span>
+      </td>
+      <td className="px-6 py-3.5 text-center">
+      <span className={cn(
+      "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border",
+      ticket.priority === 'high' ? "border-red-200 text-red-600 bg-red-50" : 
+      ticket.priority === 'medium' ? "border-amber-200 text-amber-600 bg-amber-50" : "border-slate-300 text-slate-600 bg-white"
+      )}>
+      {ticket.priority}
+      </span>
+      </td>
+      <td className="px-6 py-3.5 text-right" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-end gap-1.5">
+          {ticket.status !== 'closed' ? (
+            <button
+              type="button"
+              onClick={(e) => handleUpdateTicketStatus(ticket.id, 'closed', e)}
+              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold transition-all shadow-2xs cursor-pointer"
+            >
+              Đóng phiếu
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={(e) => handleUpdateTicketStatus(ticket.id, 'in_progress', e)}
+              className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[10px] font-bold transition-all cursor-pointer"
+            >
+              Mở lại
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setSelectedTicket(ticket)}
+            className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded text-[10px] font-bold transition-all cursor-pointer"
+          >
+            Chi tiết
+          </button>
+        </div>
+      </td>
+      </tr>
+      ))}
+      </tbody>
+      </table>
+   </div>
  </div>
- </div>
- </td>
- <td className="px-6 py-4 text-center">
- <span className={cn(
- "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
- ticket.status === 'open' ? "bg-[#EAE7DF] text-orange-800" : 
- ticket.status === 'in_progress' ? "bg-amber-100 text-amber-700" : "bg-slate-200 text-slate-600"
- )}>
- {ticket.status === 'open' ? 'MỚI' : ticket.status === 'in_progress' ? 'ĐANG XỬ LÝ' : 'ĐÃ ĐÓNG'}
- </span>
- </td>
- <td className="px-6 py-4 text-center">
- <span className={cn(
- "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border",
- ticket.priority === 'high' ? "border-red-200 text-red-600 bg-red-50" : 
- ticket.priority === 'medium' ? "border-amber-200 text-amber-600 bg-amber-50" : "border-slate-300 text-slate-600 bg-white"
- )}>
- {ticket.priority}
- </span>
- </td>
- <td className="px-6 py-4 text-right">
- <p className="text-xs text-slate-700 font-medium">{ticket.createdAt}</p>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
  )}
 
  {activeTab === 'campaigns' && (
@@ -985,59 +1238,95 @@ export function CustomerService() {
 
  {activeTab === 'chat' && (
  <div className="flex bg-white h-[600px] overflow-hidden">
- {/* Sidebar - Thread List */}
- <div className="w-[320px] border-r border-[#F3F4F6] flex flex-col bg-slate-50/50">
- <div className="p-4 border-b border-[#F3F4F6]">
- <h2 className="text-sm font-bold text-[#111827] flex items-center gap-2 mb-3">
- Kênh tương tác (API)
- </h2>
- <div className="flex gap-2">
- <button className="flex-1 bg-slate-900 text-[#FAF9F5] text-[10px] font-bold py-1.5 rounded-lg flex justify-center items-center gap-1 shadow-sm"><span className="w-3 h-3 flex items-center justify-center rounded-full bg-slate-900 text-orange-700">f</span> Fanpage</button>
- <button className="flex-1 bg-slate-800 text-[#FAF9F5] text-[10px] font-bold py-1.5 rounded-lg flex justify-center items-center gap-1 shadow-sm"><MessageSquare className="w-3 h-3" /> Zalo OA</button>
- </div>
- <div className="relative mt-4">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
- <input 
- type="text" 
- placeholder="Tìm khách hàng..." 
- className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-orange-600 transition-all shadow-sm"
- />
- </div>
- </div>
- <div className="flex-1 overflow-y-auto">
- {MOCK_THREADS.map(thread => (
- <button
- key={thread.id}
- onClick={() => setActiveThreadId(thread.id)}
- className={cn(
- "w-full p-4 flex gap-3 hover:bg-slate-50 transition-all border-b border-[#F3F4F6] text-left relative cursor-pointer",
- activeThreadId === thread.id && "bg-white border-l-2 border-l-blue-600 shadow-sm"
- )}
- >
- <div className="relative">
- <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">
- {thread.userAvatar ? <img src={thread.userAvatar} alt="" className="rounded-full" /> : thread.userName[0]}
- </div>
- <div className={cn("absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white", thread.channel === 'facebook' ? "bg-slate-900" : thread.channel === 'zalo' ? "bg-slate-800" : "bg-slate-500")}>
- {thread.channel === 'facebook' ? <span className="text-[8px] font-bold text-[#FAF9F5]">f</span> : thread.channel === 'zalo' ? <MessageSquare className="w-2 h-2 text-[#FAF9F5]" /> : <Globe className="w-2 h-2 text-[#FAF9F5]" />}
- </div>
- </div>
- <div className="flex-1 min-w-0">
- <div className="flex justify-between items-start">
- <h3 className="text-sm font-bold text-[#111827] truncate">{thread.userName}</h3>
- <span className="text-[9px] text-[#9CA3AF]">{thread.updatedAt}</span>
- </div>
- <p className="text-xs text-[#6B7280] truncate mt-0.5">{thread.lastMessage}</p>
- </div>
- {thread.unreadCount > 0 && (
- <div className="absolute top-1/2 -translate-y-1/2 right-4 w-4 h-4 bg-red-500 text-[#FAF9F5] rounded-full text-[10px] font-bold flex items-center justify-center">
- {thread.unreadCount}
- </div>
- )}
- </button>
- ))}
- </div>
- </div>
+  {/* Sidebar - Thread List */}
+  <div className="w-[320px] border-r border-[#F3F4F6] flex flex-col bg-slate-50/50">
+    <div className="p-3 border-b border-[#F3F4F6] space-y-2.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-black uppercase tracking-wider text-slate-700">Kênh Hội Thoại</span>
+        <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Real-time</span>
+      </div>
+      <div className="flex gap-1 flex-wrap">
+        {[
+          { id: 'all', label: 'Tất cả' },
+          { id: 'facebook', label: 'Fanpage' },
+          { id: 'zalo', label: 'Zalo ZNS' },
+          { id: 'web', label: 'Livechat' },
+          { id: 'call', label: 'VoIP' }
+        ].map(ch => (
+          <button
+            key={ch.id}
+            onClick={() => setSelectedChatChannel(ch.id as any)}
+            className={cn(
+              "px-2.5 py-1 text-[10px] font-black rounded-lg transition-all cursor-pointer",
+              selectedChatChannel === ch.id
+                ? "bg-slate-900 text-white shadow-xs"
+                : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+            )}
+          >
+            {ch.label}
+          </button>
+        ))}
+      </div>
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#9CA3AF]" />
+        <input 
+          type="text" 
+          value={chatSearchText}
+          onChange={e => setChatSearchText(e.target.value)}
+          placeholder="Tìm hội thoại, khách hàng..." 
+          className="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+        />
+      </div>
+    </div>
+    <div className="flex-1 overflow-y-auto">
+      {MOCK_THREADS.filter(thread => {
+        const matchChannel = selectedChatChannel === 'all' || thread.channel === selectedChatChannel;
+        const matchSearch = !chatSearchText.trim() ||
+          thread.userName.toLowerCase().includes(chatSearchText.toLowerCase()) ||
+          thread.lastMessage.toLowerCase().includes(chatSearchText.toLowerCase());
+        return matchChannel && matchSearch;
+      }).map(thread => (
+        <button
+          key={thread.id}
+          onClick={() => setActiveThreadId(thread.id)}
+          className={cn(
+            "w-full p-3.5 flex gap-3 hover:bg-slate-50 transition-all border-b border-[#F3F4F6] text-left relative cursor-pointer",
+            activeThreadId === thread.id && "bg-white border-l-2 border-l-blue-600 shadow-sm"
+          )}
+        >
+          <div className="relative">
+            <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">
+              {thread.userAvatar ? <img src={thread.userAvatar} alt="" className="rounded-full" /> : thread.userName[0]}
+            </div>
+            <div className={cn(
+              "absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white",
+              thread.channel === 'facebook' ? "bg-blue-600 text-white" :
+              thread.channel === 'zalo' ? "bg-blue-500 text-white" :
+              thread.channel === 'call' ? "bg-emerald-600 text-white" :
+              "bg-indigo-600 text-white"
+            )}>
+              {thread.channel === 'facebook' ? <span className="text-[8px] font-bold">f</span> :
+               thread.channel === 'zalo' ? <MessageSquare className="w-2.5 h-2.5" /> :
+               thread.channel === 'call' ? <PhoneCall className="w-2.5 h-2.5" /> :
+               <Globe className="w-2.5 h-2.5" />}
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex justify-between items-start">
+              <h3 className="text-sm font-bold text-[#111827] truncate">{thread.userName}</h3>
+              <span className="text-[9px] text-[#9CA3AF]">{thread.updatedAt}</span>
+            </div>
+            <p className="text-xs text-[#6B7280] truncate mt-0.5">{thread.lastMessage}</p>
+          </div>
+          {thread.unreadCount > 0 && (
+            <div className="absolute top-1/2 -translate-y-1/2 right-4 w-4 h-4 bg-red-500 text-[#FAF9F5] rounded-full text-[10px] font-bold flex items-center justify-center">
+              {thread.unreadCount}
+            </div>
+          )}
+        </button>
+      ))}
+    </div>
+  </div>
 
  {/* Main Chat Area */}
  <div className="flex-1 flex flex-col bg-[#F9FAFB]">
@@ -1056,11 +1345,29 @@ export function CustomerService() {
  </div>
  </div>
  <div className="flex items-center gap-2">
- <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><PhoneCall className="w-4 h-4 text-[#6B7280]" /></button>
- <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><History className="w-4 h-4 text-[#6B7280]" /></button>
- <div className="h-6 w-[1px] bg-slate-200 mx-2" />
- <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><MoreVertical className="w-4 h-4 text-[#6B7280]" /></button>
- </div>
+  <button 
+    onClick={handleConvertChatToTicket}
+    className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+    title="Chuyển hội thoại khách hàng thành Ticket hỗ trợ có giám sát SLA"
+  >
+    <Ticket className="w-3.5 h-3.5" />
+    <span>Chuyển thành Ticket SLA</span>
+  </button>
+  <button 
+    onClick={() => {
+      setDialNumber('0981234567');
+      setActiveTab('calls');
+      handleStartCall();
+    }}
+    title="Gọi thoại trực tiếp qua WebRTC Softphone"
+    className="p-2 hover:bg-emerald-50 text-slate-500 hover:text-emerald-600 rounded-full transition-colors cursor-pointer"
+  >
+    <PhoneCall className="w-4 h-4" />
+  </button>
+  <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><History className="w-4 h-4 text-[#6B7280]" /></button>
+  <div className="h-6 w-[1px] bg-slate-200 mx-2" />
+  <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><MoreVertical className="w-4 h-4 text-[#6B7280]" /></button>
+  </div>
  </div>
 
  {/* Messages List */}
@@ -1166,6 +1473,38 @@ export function CustomerService() {
  </div>
  </div>
 
+ {/* Click-to-call & Customer details */}
+ <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-2">
+ <div className="flex items-center justify-between text-xs text-slate-500">
+ <span>Số điện thoại:</span>
+ <span className="font-mono font-bold text-slate-900">0981234567</span>
+ </div>
+ <div className="flex items-center justify-between text-xs text-slate-500">
+ <span>Tổng chi tiêu sàn:</span>
+ <span className="font-bold text-emerald-600">8,450,000đ</span>
+ </div>
+ <div className="pt-1 flex gap-2">
+ <button
+ onClick={() => {
+ setDialNumber('0981234567');
+ setActiveTab('calls');
+ handleStartCall();
+ }}
+ className="flex-1 py-2 px-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[11px] font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+ >
+ <PhoneCall className="w-3.5 h-3.5" />
+ <span>Click-to-Call</span>
+ </button>
+ <button
+ onClick={handleConvertChatToTicket}
+ className="flex-1 py-2 px-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[11px] font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+ >
+ <Ticket className="w-3.5 h-3.5" />
+ <span>Tạo Ticket</span>
+ </button>
+ </div>
+ </div>
+
  <div className="space-y-4">
  <div className="flex justify-between items-center border-b border-[#F3F4F6] pb-2">
  <h4 className="text-xs font-bold text-[#111827] uppercase tracking-widest">Đơn hàng gần đây</h4>
@@ -1203,234 +1542,288 @@ export function CustomerService() {
  </div>
  )}
 
- {activeTab === 'calls' && (
- <div className="flex h-[600px]">
- {/* OmiCall Dialer */}
- <div className="w-1/3 border-r border-slate-300 bg-slate-50/50 p-6 flex flex-col items-center">
- <h3 className="font-bold text-slate-900 text-lg mb-2 text-center w-full">Tổng đài OmiCall (VoIP)</h3>
- <div className="flex items-center gap-2 mb-8 bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold">
- <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> SIP Registered • Ext: 101
- </div>
- 
- <div className="bg-white w-full max-w-sm rounded-xl p-6 shadow-sm border border-slate-300 flex flex-col items-center">
- <div className="w-full bg-slate-100 h-16 rounded-lg flex items-center justify-center mb-8 text-2xl font-mono font-bold text-slate-800 tracing-widest">
- 090 123 4567
- </div>
- 
- <div className="grid grid-cols-3 gap-4 w-full px-4 mb-8">
- {[1,2,3,4,5,6,7,8,9,'*',0,'#'].map(num => (
- <button key={num} className="h-14 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-800 text-xl font-bold flex items-center justify-center transition-all active:scale-95 shadow-sm">
- {num}
- </button>
- ))}
- </div>
- 
- <button className="w-16 h-16 rounded-full bg-emerald-500 hover:bg-emerald-600 text-[#FAF9F5] flex items-center justify-center shadow-sm shadow-emerald-500/30 transition-all active:scale-95">
- <PhoneCall className="w-8 h-8" />
- </button>
- </div>
- </div>
+  {activeTab === 'calls' && (
+    <div className="flex flex-col xl:flex-row min-h-[640px]">
+      {/* OmiCall & WebRTC SIP Softphone */}
+      <div className="w-full xl:w-[420px] border-r border-slate-200 bg-slate-50/70 p-6 flex flex-col items-center justify-between">
+        <div className="w-full flex flex-col items-center">
+          <div className="w-full flex items-center justify-between mb-4">
+            <h3 className="font-black text-slate-900 text-base flex items-center gap-2">
+              <Headset className="w-5 h-5 text-emerald-600" />
+              Tổng đài WebRTC Softphone
+            </h3>
+            <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              SIP 101 ONLINE
+            </div>
+          </div>
 
- {/* Call Logs */}
- <div className="flex-1 bg-white p-6">
- <div className="flex justify-between items-center mb-6">
- <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2"><History className="w-5 h-5 text-orange-700" /> Lịch sử cuộc gọi (Call Logs)</h3>
- <button className="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg font-bold hover:bg-slate-200 transition-all">Đồng bộ OmiCall API</button>
- </div>
+          {/* Softphone Body */}
+          <div className="bg-white w-full rounded-2xl p-5 shadow-xs border border-slate-200 flex flex-col items-center space-y-4">
+            {/* Screen display */}
+            <div className="w-full bg-slate-900 text-white rounded-xl p-4 flex flex-col items-center justify-center relative overflow-hidden shadow-inner min-h-[96px]">
+              <div className="absolute top-2 left-3 flex items-center gap-1 text-[9px] font-mono text-emerald-400 font-bold">
+                <Zap className="w-2.5 h-2.5" /> OPUS 48kHz HD
+              </div>
+              <div className="absolute top-2 right-3 text-[9px] font-mono text-slate-400 font-bold">
+                WSS: sip.vcomm.vn
+              </div>
 
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden overflow-x-auto min-w-0">
- <table className="w-full text-left border-collapse whitespace-nowrap">
- <thead>
- <tr className="bg-slate-50/50 border-b border-slate-200">
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">Khách hàng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Loại Hướng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Trạng thái</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">Thời lượng</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-center leading-relaxed">File Ghi âm</th>
- <th className="px-6 py-4 text-[11px] font-bold text-slate-600 uppercase tracking-widest text-right leading-relaxed">Thời gian / Ghi chú</th>
- </tr>
- </thead>
- <tbody className="divide-y divide-slate-100">
- {[
- { time: '14:20 20/04/2026', duration: '02:45', status: 'missed', caller: '0901234567', type: 'inbound', name: 'Nguyễn Văn A', hasAudio: false },
- { time: '10:15 20/04/2026', duration: '08:12', status: 'completed', caller: '0987654321', type: 'outbound', name: 'Trần Thị B', hasAudio: true },
- { time: '09:05 19/04/2026', duration: '01:20', status: 'completed', caller: '0919876543', type: 'inbound', name: 'Le Van C', hasAudio: true }
- ].map((log, i) => (
- <tr key={i} className="hover:bg-slate-50 transition-colors">
- <td className="px-6 py-4">
- <p className="text-sm font-bold text-slate-900">{log.name}</p>
- <p className="text-[10px] text-slate-600 font-mono mt-0.5">{log.caller}</p>
- </td>
- <td className="px-6 py-4 text-center">
- <span className={cn("px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border", log.type === 'inbound' ? "border-orange-200 text-orange-700 bg-slate-100" : "border-purple-200 text-purple-600 bg-purple-50")}>
- {log.type === 'inbound' ? 'GỌI VÀO' : 'GỌI RA'}
- </span>
- </td>
- <td className="px-6 py-4 text-center">
- <span className={cn("px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest", log.status === 'completed' ? "text-emerald-600 bg-emerald-50" : "text-red-600 bg-red-50")}>
- {log.status === 'completed' ? 'THÀNH CÔNG' : 'GỌI NHỠ'}
- </span>
- </td>
- <td className="px-6 py-4 text-center text-sm font-mono text-slate-700 font-bold">
- {log.duration}
- </td>
- <td className="px-6 py-4 text-center">
- {log.hasAudio ? (
- <button className="inline-flex p-1.5 bg-slate-100 text-orange-700 rounded-lg items-center justify-center hover:bg-[#EAE7DF] transition-colors tooltip" title="Nghe lại">
- <Headphones className="w-4 h-4" />
- </button>
- ) : (
- <span className="text-slate-500">-</span>
- )}
- </td>
- <td className="px-6 py-4 text-right">
- <div className="text-xs text-slate-600 font-medium mb-1 border-b border-dashed border-slate-300 pb-1 inline-block">
- {log.time}
- </div>
- <div>
- <button className="text-[10px] font-bold text-orange-700 hover:text-blue-800 uppercase tracking-widest mt-0.5">Thêm ghi chú</button>
- </div>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
- </div>
- </div>
- )}
- {activeTab === 'livechat' && (
- <div className="flex h-[600px]">
- {/* Livechat Inbox Sidebar */}
- <div className="w-1/3 border-r border-[#F3F4F6] flex flex-col bg-slate-50/50">
- <div className="p-4 border-b border-slate-300 bg-white">
- <h3 className="font-bold text-slate-900 flex items-center gap-2 mb-2">
- <Laptop className="w-5 h-5 text-primary-600" /> Web Livechat
- </h3>
- <div className="flex bg-slate-100 p-1 rounded-lg">
- <button className="flex-1 bg-white shadow-sm text-xs font-bold py-1.5 rounded-md text-slate-800 transition-all text-center">Đang chờ (12)</button>
- <button className="flex-1 text-xs font-bold py-1.5 rounded-md text-slate-600 hover:text-slate-800 transition-all text-center">Đang xử lý (5)</button>
- </div>
- </div>
- <div className="flex-1 overflow-y-auto p-3 space-y-2">
- <div className="bg-white p-3 rounded-lg border border-primary-200 shadow-sm relative overflow-hidden cursor-pointer">
- <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary-500" />
- <div className="flex justify-between items-start mb-1">
- <p className="text-sm font-bold text-slate-900">Khách vãng lai #889</p>
- <span className="text-[10px] text-slate-500">Vừa xong</span>
- </div>
- <p className="text-xs text-slate-700 truncate">Sản phẩm này có size XL không shop?</p>
- <div className="mt-2 flex items-center gap-2">
- <span className="px-2 py-0.5 bg-primary-50 text-primary-600 rounded text-[9px] font-bold uppercase tracking-wider border border-primary-100">Đang hoạt động trên web</span>
- </div>
- </div>
- 
- <div className="bg-white p-3 rounded-lg border border-slate-300 hover:border-slate-400 cursor-pointer transition-all opacity-70">
- <div className="flex justify-between items-start mb-1">
- <p className="text-sm font-bold text-slate-900">Khách vãng lai #885</p>
- <span className="text-[10px] text-slate-500">5p trước</span>
- </div>
- <p className="text-xs text-slate-700 truncate">Mình muốn đổi hàng thì làm sao?</p>
- <div className="mt-2 flex items-center gap-2">
- <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[9px] font-bold uppercase tracking-wider">Đã rời web</span>
- </div>
- </div>
- </div>
- </div>
- 
- {/* Livechat Main Area */}
- <div className="flex-1 flex flex-col bg-[#F9FAFB]">
- <div className="p-4 bg-white border-b border-slate-300 flex justify-between items-center z-10 shadow-sm">
- <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
- <Laptop className="w-5 h-5" />
- </div>
- <div>
- <h3 className="font-bold text-slate-900 text-sm">Khách vãng lai #889</h3>
- <p className="text-[10px] text-emerald-500 font-bold flex items-center gap-1"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Đang xem: Giày thể thao nam siêu nhẹ</p>
- </div>
- </div>
- <div className="flex gap-2">
- <button className="px-3 py-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-all">Lịch sử Duyệt web</button>
+              {callState === 'idle' && (
+                <div className="mt-2 flex items-center justify-between w-full px-2">
+                  <span className="text-2xl font-mono font-black text-white tracking-wider truncate">
+                    {dialNumber || 'Nhập số...'}
+                  </span>
+                  {dialNumber && (
+                    <button
+                      onClick={() => setDialNumber(prev => prev.slice(0, -1))}
+                      className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all"
+                      title="Xóa ký tự cuối"
+                    >
+                      <Delete className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              )}
 
- {roleScope === 'platform' ? (
- <button className="px-3 py-1.5 text-xs font-bold text-[#FAF9F5] bg-rose-600 hover:bg-rose-700 rounded-lg transition-all shadow-sm flex items-center gap-1.5">
- <Shield className="w-3.5 h-3.5" /> Can thiệp Tranh chấp
- </button>
- ) : (
- <>
- <button className="px-3 py-1.5 text-xs font-bold text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-lg transition-all flex items-center gap-1.5">
- <Building2 className="w-3.5 h-3.5" /> Gọi CSKH Sàn
- </button>
- <button className="px-3 py-1.5 text-xs font-bold text-[#FAF9F5] bg-primary-600 hover:bg-primary-700 rounded-lg transition-all shadow-sm">Tạo Đơn Hàng</button>
- </>
- )}
- </div>
- </div>
- 
- <div className="flex-1 overflow-y-auto p-4 space-y-4 relative">
- <div className="text-center text-xs text-slate-500 font-medium my-4">— Cuộc trò chuyện bắt đầu lúc 10:24 —</div>
- <div className="flex flex-col gap-1 items-start">
- <div className="px-4 py-2 bg-white border border-slate-300 rounded-lg rounded-tl-sm text-sm text-slate-800 max-w-[70%] shadow-sm">
- Sản phẩm này có size XL không shop?
- </div>
- <span className="text-[10px] text-slate-500">10:24</span>
- </div>
- 
- <div className="flex flex-col gap-1 items-end">
- <div className="px-4 py-2 bg-primary-600 text-[#FAF9F5] rounded-lg rounded-tr-sm text-sm max-w-[70%] shadow-sm">
- Chào bạn, sản phẩm hiện tại vẫn còn size XL nha bạn ơi. Mình mua hôm nay đang có mã giảm giá 10% đấy ạ.
- </div>
- <span className="text-[10px] text-slate-500">10:25 ✓</span>
- </div>
+              {callState === 'calling' && (
+                <div className="mt-2 flex flex-col items-center text-center">
+                  <p className="text-xs text-amber-300 font-bold uppercase tracking-wider animate-pulse flex items-center gap-1.5">
+                    <PhoneCall className="w-3.5 h-3.5 animate-bounce" />
+                    Đang kết nối cuộc gọi...
+                  </p>
+                  <p className="text-lg font-mono font-black text-white tracking-widest mt-0.5">{dialNumber}</p>
+                </div>
+              )}
 
- {roleScope === 'platform' && (
- <div className="my-6">
- <div className="flex items-center justify-center gap-4">
- <div className="h-px bg-rose-200 flex-1" />
- <span className="text-[10px] font-bold text-rose-500 uppercase tracking-widest bg-rose-50 px-3 py-1 rounded-full border border-rose-100">
- CSKH Sàn (Admin) đã tham gia
- </span>
- <div className="h-px bg-rose-200 flex-1" />
- </div>
- <div className="flex flex-col gap-1 items-end mt-4">
- <div className="px-4 py-2 bg-rose-600 text-[#FAF9F5] rounded-lg rounded-tr-sm text-sm max-w-[70%] shadow-sm">
- Chào bạn, mình là Admin từ hệ thống. Bạn đang gặp vấn đề gì với cửa hàng này ạ?
- </div>
- <span className="text-[10px] text-slate-500">10:28 ✓</span>
- </div>
- </div>
- )}
- 
- <div className="flex flex-col gap-1 items-start">
- <div className="flex items-center gap-2 text-xs text-slate-600 mb-1">
- <div className="flex gap-1">
- <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
- <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
- <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
- </div>
- Khách hàng đang nhập...
- </div>
- </div>
- </div>
- 
- <div className="p-4 bg-white border-t border-slate-300">
- <div className="relative">
- <input 
- type="text" 
- placeholder="Nhập tin nhắn (Nhấn Enter để gửi)..." 
- className="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-medium"
- />
- <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex flex-col items-center justify-center bg-primary-600 text-[#FAF9F5] rounded-lg hover:bg-primary-700 transition-all">
- <Send className="w-4 h-4 ml-0.5" />
- </button>
- </div>
- </div>
- </div>
- </div>
- )}
+              {callState === 'connected' && (
+                <div className="mt-2 flex flex-col items-center text-center">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                    <span className="text-xl font-mono font-black text-emerald-400 tracking-wider">
+                      {formatTimer(callSeconds)}
+                    </span>
+                  </div>
+                  <p className="text-[11px] font-medium text-slate-300 mt-0.5">
+                    Đàm thoại: <span className="font-mono font-bold text-white">{dialNumber}</span>
+                  </p>
+                  {/* Fake audio waveform bars */}
+                  <div className="flex items-center gap-1 mt-1.5 h-3">
+                    {[12, 24, 16, 28, 8, 20, 14, 26, 18, 10].map((h, i) => (
+                      <span
+                        key={i}
+                        className="w-1 bg-emerald-400 rounded-full transition-all duration-150"
+                        style={{ height: isHold ? '3px' : `${Math.max(4, (h * ((i % 3) + 1)) % 14)}px` }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
 
- {activeTab === 'agents' && (
+              {callState === 'ended' && (
+                <div className="mt-2 flex flex-col items-center text-center">
+                  <p className="text-xs text-rose-400 font-bold uppercase tracking-wider">Cuộc gọi đã kết thúc</p>
+                  <p className="text-sm font-mono text-slate-300 mt-0.5">Đã lưu bản ghi âm</p>
+                </div>
+              )}
+            </div>
+
+            {/* In-call controls (when connected) */}
+            {callState === 'connected' && (
+              <div className="flex items-center justify-center gap-3 w-full py-1">
+                <button
+                  onClick={() => setIsMuted(!isMuted)}
+                  className={cn(
+                    "flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-[10px] font-bold transition-all cursor-pointer",
+                    isMuted ? "bg-rose-50 text-rose-700 border border-rose-200" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  )}
+                >
+                  {isMuted ? <MicOff className="w-4 h-4 text-rose-600" /> : <Mic className="w-4 h-4" />}
+                  {isMuted ? 'Tắt Mic' : 'Bật Mic'}
+                </button>
+
+                <button
+                  onClick={() => setIsHold(!isHold)}
+                  className={cn(
+                    "flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-[10px] font-bold transition-all cursor-pointer",
+                    isHold ? "bg-amber-50 text-amber-700 border border-amber-200" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  )}
+                >
+                  {isHold ? <Play className="w-4 h-4 text-amber-600" /> : <Pause className="w-4 h-4" />}
+                  {isHold ? 'Tiếp tục' : 'Giữ máy'}
+                </button>
+
+                <button
+                  className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-[10px] font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all cursor-pointer"
+                  title="Âm lượng loa ngoài"
+                >
+                  <Volume2 className="w-4 h-4 text-slate-600" />
+                  Loa
+                </button>
+              </div>
+            )}
+
+            {/* Keypad Buttons */}
+            <div className="grid grid-cols-3 gap-2.5 w-full">
+              {[
+                { label: '1', sub: '' },
+                { label: '2', sub: 'ABC' },
+                { label: '3', sub: 'DEF' },
+                { label: '4', sub: 'GHI' },
+                { label: '5', sub: 'JKL' },
+                { label: '6', sub: 'MNO' },
+                { label: '7', sub: 'PQRS' },
+                { label: '8', sub: 'TUV' },
+                { label: '9', sub: 'WXYZ' },
+                { label: '*', sub: '' },
+                { label: '0', sub: '+' },
+                { label: '#', sub: '' },
+              ].map(k => (
+                <button
+                  key={k.label}
+                  disabled={callState === 'calling' || callState === 'ended'}
+                  onClick={() => setDialNumber(prev => prev + k.label)}
+                  className="h-12 rounded-xl bg-slate-50 hover:bg-slate-100 active:bg-slate-200 border border-slate-200/80 text-slate-800 flex flex-col items-center justify-center transition-all active:scale-95 shadow-2xs cursor-pointer disabled:opacity-50"
+                >
+                  <span className="text-base font-black leading-none">{k.label}</span>
+                  {k.sub && <span className="text-[8px] font-bold text-slate-400 leading-none mt-0.5">{k.sub}</span>}
+                </button>
+              ))}
+            </div>
+
+            {/* Main Action Call / Hangup Button */}
+            <div className="w-full pt-1 flex items-center justify-center gap-3">
+              {callState === 'idle' ? (
+                <button
+                  onClick={handleStartCall}
+                  className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm shadow-emerald-600/30 transition-all active:scale-98 cursor-pointer"
+                >
+                  <PhoneCall className="w-5 h-5" />
+                  Gọi Thoại WebRTC
+                </button>
+              ) : (
+                <button
+                  onClick={handleEndCall}
+                  className="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm shadow-rose-600/30 transition-all active:scale-98 cursor-pointer"
+                >
+                  <PhoneOff className="w-5 h-5" />
+                  Kết Thúc Cuộc Gọi
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* SIP Trunking Diagnostics Footprint */}
+        <div className="w-full mt-4 p-3.5 bg-white rounded-xl border border-slate-200 text-[11px] space-y-1.5 shadow-2xs">
+          <div className="flex justify-between text-slate-500">
+            <span>SIP Server:</span>
+            <span className="font-mono font-bold text-slate-800">sip.vcomm.vn:5061 (TLS)</span>
+          </div>
+          <div className="flex justify-between text-slate-500">
+            <span>Mã hóa:</span>
+            <span className="font-bold text-emerald-700">SRTP / DTLS Active</span>
+          </div>
+          <div className="flex justify-between text-slate-500">
+            <span>Đường truyền / Ping:</span>
+            <span className="font-mono font-bold text-slate-800">12ms • Jitter 1.1ms</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Call Logs & Recordings */}
+      <div className="flex-1 bg-white p-6 flex flex-col justify-between">
+        <div>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+            <div>
+              <h3 className="font-black text-slate-900 text-base flex items-center gap-2">
+                <History className="w-5 h-5 text-indigo-600" />
+                Lịch Sử Cuộc Gọi Tổng Đài (Call Detail Records)
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">Tự động đồng bộ file ghi âm cuộc gọi và phân tích sentiment từ OmiCall Cloud PBX.</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => alert("Đã đồng bộ CDR mới nhất từ OmiCall API!")}
+                className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <Zap className="w-3.5 h-3.5 text-amber-600" />
+                Đồng bộ OmiCall API
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden overflow-x-auto min-w-0">
+            <table className="w-full text-left border-collapse whitespace-nowrap">
+              <thead>
+                <tr className="bg-slate-50/80 border-b border-slate-200">
+                  <th className="px-5 py-3.5 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Khách hàng</th>
+                  <th className="px-5 py-3.5 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider text-center">Hướng gọi</th>
+                  <th className="px-5 py-3.5 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider text-center">Trạng thái</th>
+                  <th className="px-5 py-3.5 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider text-center">Thời lượng</th>
+                  <th className="px-5 py-3.5 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider text-center">Ghi âm</th>
+                  <th className="px-5 py-3.5 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider text-right">Thời gian</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {callLogs.map((log, i) => (
+                  <tr key={i} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-5 py-3.5">
+                      <p className="text-xs font-bold text-slate-900">{log.name}</p>
+                      <p className="text-[10px] text-slate-500 font-mono mt-0.5">{log.caller}</p>
+                    </td>
+                    <td className="px-5 py-3.5 text-center">
+                      <span className={cn(
+                        "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border",
+                        log.type === 'inbound' ? "border-indigo-200 text-indigo-700 bg-indigo-50" : "border-purple-200 text-purple-700 bg-purple-50"
+                      )}>
+                        {log.type === 'inbound' ? 'GỌI VÀO' : 'GỌI RA'}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5 text-center">
+                      <span className={cn(
+                        "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider",
+                        log.status === 'completed' ? "text-emerald-700 bg-emerald-50 border border-emerald-200" : "text-rose-700 bg-rose-50 border border-rose-200"
+                      )}>
+                        {log.status === 'completed' ? 'KẾT NỐI' : 'GỌI NHỠ'}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5 text-center text-xs font-mono text-slate-700 font-bold">
+                      {log.duration}
+                    </td>
+                    <td className="px-5 py-3.5 text-center">
+                      {log.hasAudio ? (
+                        <button
+                          onClick={() => alert(`Đang phát đoạn ghi âm cuộc gọi của ${log.name}...`)}
+                          className="inline-flex p-1.5 bg-slate-100 text-slate-700 rounded-lg items-center justify-center hover:bg-indigo-50 hover:text-indigo-600 transition-colors cursor-pointer"
+                          title="Nghe file ghi âm"
+                        >
+                          <Headphones className="w-3.5 h-3.5" />
+                        </button>
+                      ) : (
+                        <span className="text-slate-400 text-xs">-</span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3.5 text-right">
+                      <span className="text-xs text-slate-500 font-medium">{log.time}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Footnote */}
+        <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <span>Tổng số cuộc gọi ghi nhận: <strong>{callLogs.length} cuộc</strong></span>
+          <span className="text-[11px] text-slate-400">Tuân thủ Nghị định 13/2023/NĐ-CP về Bảo vệ dữ liệu cá nhân</span>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {activeTab === 'agents' && (
  <div className="p-6 bg-slate-50 min-h-[600px]">
  <div className="flex items-center justify-between mb-8">
  <div>

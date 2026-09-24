@@ -215,11 +215,11 @@ function GpsTrackerCanvas() {
 
     const draw = () => {
       // Clear canvas
-      ctx.fillStyle = '#0b0f19'; // Slate-950
+      ctx.fillStyle = '#f8fafc'; // Slate-50
       ctx.fillRect(0, 0, width, height);
 
       // Draw grid overlay
-      ctx.strokeStyle = '#1e293b'; // Slate-800
+      ctx.strokeStyle = '#e2e8f0'; // Slate-200
       ctx.lineWidth = 0.5;
       const gridSize = 16;
       for (let x = 0; x < width; x += gridSize) {
@@ -236,7 +236,7 @@ function GpsTrackerCanvas() {
       }
 
       // Draw HCMC Road Map Layout (background roads)
-      ctx.strokeStyle = '#1e293b';
+      ctx.strokeStyle = '#cbd5e1'; // Slate-300
       ctx.lineWidth = 4;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
@@ -261,8 +261,8 @@ function GpsTrackerCanvas() {
       ctx.stroke();
 
       // Draw tracking route (path connecting nodes)
-      ctx.strokeStyle = '#4f46e5'; // Indigo-600
-      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = '#3b82f6'; // Blue-500
+      ctx.lineWidth = 2;
       ctx.setLineDash([5, 3]);
       ctx.beginPath();
       ctx.moveTo(route[0].x, route[0].y);
@@ -274,12 +274,12 @@ function GpsTrackerCanvas() {
 
       // Draw route node points
       route.forEach((node) => {
-        ctx.fillStyle = '#312e81'; // Deep Indigo
+        ctx.fillStyle = '#eff6ff'; // Blue-50
         ctx.beginPath();
         ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = '#4f46e5';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
         ctx.stroke();
@@ -328,24 +328,21 @@ function GpsTrackerCanvas() {
       ctx.stroke();
 
       // Draw text label next to dot
-      ctx.fillStyle = '#f8fafc';
+      ctx.fillStyle = '#0f172a';
       ctx.font = 'bold 8px monospace';
-      ctx.shadowColor = 'black';
-      ctx.shadowBlur = 4;
       ctx.fillText(`TARGET: ${startNode.name}`, curX + 8, curY + 3);
-      ctx.shadowBlur = 0; // Reset shadow
 
       // Draw overlay stats
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.75)'; // Transparent black panel
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'; // Transparent white panel
       ctx.fillRect(8, 8, 95, 20);
-      ctx.strokeStyle = 'rgba(79, 70, 229, 0.4)';
+      ctx.strokeStyle = 'rgba(203, 213, 225, 0.8)';
       ctx.lineWidth = 1;
       ctx.strokeRect(8, 8, 95, 20);
 
-      ctx.fillStyle = '#10b981';
+      ctx.fillStyle = '#059669';
       ctx.font = 'bold 7px monospace';
       ctx.fillText(`● CELL PING ACTIVE`, 12, 16);
-      ctx.fillStyle = '#94a3b8';
+      ctx.fillStyle = '#64748b';
       ctx.fillText(`ACCURACY: ±4M`, 12, 24);
 
       // Update coordinates state (throttle state updates to avoid React render spam)
@@ -377,12 +374,12 @@ function GpsTrackerCanvas() {
 
   return (
     <div className="space-y-2 animate-in slide-in-from-bottom-2 duration-200">
-      <div className="relative h-28 rounded-lg overflow-hidden border border-slate-800">
+      <div className="relative h-28 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50">
         <canvas ref={canvasRef} className="w-full h-full block" />
       </div>
-      <div className="bg-slate-900 text-slate-300 p-2 rounded-lg font-mono text-[9px] space-y-0.5 leading-snug">
-        <p className="font-bold text-indigo-300">Toạ độ hiện tại: {currentPosInfo.lat}° N, {currentPosInfo.lng}° E</p>
-        <p className="text-slate-400">Vị trí ước tính: {currentPosInfo.address}</p>
+      <div className="bg-slate-50 text-slate-700 p-2.5 rounded-xl border border-slate-200/80 font-mono text-[10px] space-y-0.5 leading-snug">
+        <p className="font-bold text-blue-700">Toạ độ hiện tại: {currentPosInfo.lat}° N, {currentPosInfo.lng}° E</p>
+        <p className="text-slate-500">Vị trí ước tính: {currentPosInfo.address}</p>
       </div>
     </div>
   );
@@ -1114,23 +1111,22 @@ export function DeviceLeasing() {
   return (
     <div className="space-y-6">
       {/* Banner & header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-6 text-white shadow-sm relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/30 via-transparent to-transparent pointer-events-none"></div>
+      <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="bg-indigo-500/30 text-indigo-300 border border-indigo-400/40 text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full">PRO-SaaS FINTECH</span>
-            <span className="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5" /> Mượn Danh Cho Thuê
+            <span className="bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full">PRO-SaaS FINTECH</span>
+            <span className="bg-amber-50 text-amber-700 border border-amber-200 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full flex items-center gap-1">
+              <Sparkles className="w-2.5 h-2.5 text-amber-600" /> Mượn Danh Cho Thuê
             </span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-100">Trả Góp & Cho Thuê Thiết Bị</h2>
-          <p className="text-xs md:text-sm text-slate-400 max-w-2xl mt-1.5">
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Trả Góp & Cho Thuê Thiết Bị</h2>
+          <p className="text-xs text-slate-500 max-w-2xl mt-1">
             Module quản lý phê duyệt đơn mua trả góp iPhone, Samsung, iPad, Macbook... sử dụng hình thức pháp chế "Cho thuê tài sản thiết bị" bảo hộ rủi ro của VComm Toàn Cầu.
           </p>
         </div>
         <button 
           onClick={() => setShowApplyModal(true)}
-          className="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-sm font-bold px-5 py-3 rounded-xl transition duration-200 cursor-pointer flex items-center gap-2 shadow-sm shadow-indigo-600/20"
+          className="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition duration-200 cursor-pointer flex items-center gap-2 shadow-xs shrink-0"
         >
           <Plus className="w-4 h-4" /> Tạo Hồ Sơ Trả Góp/Thuê
         </button>
@@ -1624,11 +1620,11 @@ export function DeviceLeasing() {
                 {/* TAB 2: VComm Samsung Knox / MDM Remote lockers */}
                 {detailTab === 'mdm' && (
                   <div className="space-y-4 animate-in fade-in duration-200">
-                    <div className="p-3 bg-slate-900 text-slate-100 rounded-xl space-y-3">
-                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Trạng thái Knox MDM</span>
-                        <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-bold">
-                          <span className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-ping"></span>
+                    <div className="p-4 bg-white border border-slate-200/80 rounded-2xl shadow-xs space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Trạng thái Knox MDM</span>
+                        <span className="flex items-center gap-1 text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-bold">
+                          <span className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-ping"></span>
                           Đã liên kết
                         </span>
                       </div>
@@ -1636,24 +1632,24 @@ export function DeviceLeasing() {
                       <div className="grid grid-cols-2 gap-3 text-xs">
                         <div>
                           <p className="text-slate-400 text-[10px]">Cơ chế pháp lý</p>
-                          <p className="font-extrabold text-indigo-400">Cho thuê tài sản số</p>
+                          <p className="font-extrabold text-blue-600">Cho thuê tài sản số</p>
                         </div>
                         <div>
                           <p className="text-slate-400 text-[10px]">MDM Profile ID</p>
-                          <p className="font-mono font-bold text-slate-300">VCOMM_KNOX_E_992</p>
+                          <p className="font-mono font-bold text-slate-700">VCOMM_KNOX_E_992</p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 p-2 bg-slate-950 rounded-lg">
-                        <Lock className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                      <div className="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200/60 rounded-xl">
+                        <Lock className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                         <div className="text-[10px]">
-                          <span className="text-slate-400 font-semibold">Khóa an toàn Knox: </span>
+                          <span className="text-slate-500 font-medium">Khóa an toàn Knox: </span>
                           {selectedLease.knoxStatus === 'locked' ? (
-                            <span className="text-rose-400 font-black">Khóa máy khẩn cấp</span>
+                            <span className="text-rose-600 font-bold">Khóa máy khẩn cấp</span>
                           ) : selectedLease.knoxStatus === 'warning' ? (
-                            <span className="text-amber-400 font-black">Đang cảnh báo đè (Warning)</span>
+                            <span className="text-amber-600 font-bold">Đang cảnh báo đè (Warning)</span>
                           ) : (
-                            <span className="text-emerald-400 font-bold">Hoạt động bình thường</span>
+                            <span className="text-emerald-600 font-bold">Hoạt động bình thường</span>
                           )}
                         </div>
                       </div>
@@ -2031,7 +2027,7 @@ export function DeviceLeasing() {
           >
             <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
               <div>
-                <h3 className="font-serif font-black text-lg">Mở Đơn Xin Thuê/Trả Góp</h3>
+                <h3 className="font-sans font-black text-lg tracking-tight">Mở Đơn Xin Thuê/Trả Góp</h3>
                 <p className="text-[11.5px] text-slate-400">Chọn dòng máy, cấu hình hợp đồng thuê góp theo tháng.</p>
               </div>
               <button 
@@ -2315,7 +2311,7 @@ export function DeviceLeasing() {
           >
             <div className="bg-gradient-to-r from-blue-700 to-indigo-850 text-white p-5 flex items-center justify-between">
               <div>
-                <h3 className="font-serif font-black text-sm flex items-center gap-1.5">
+                <h3 className="font-sans font-black text-sm flex items-center gap-1.5 tracking-tight">
                   <CreditCard className="w-5 h-5 text-indigo-300" /> Thanh toán VietQR Fintech
                 </h3>
                 <p className="text-[9.5px] text-indigo-200 uppercase tracking-wider font-extrabold mt-0.5">Hệ thống đối soát sao kê tự động 24/7</p>

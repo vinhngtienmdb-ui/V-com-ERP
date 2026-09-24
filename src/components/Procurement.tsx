@@ -552,7 +552,7 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
               {/* PDF Header */}
               <div className="flex justify-between items-start pb-4 border-b border-dashed border-slate-400">
                 <div>
-                  <h4 className="font-serif font-black text-sm text-slate-900">CÔNG TY CỔ PHẦN VCOMM</h4>
+                  <h4 className="font-bold text-sm text-slate-900">CÔNG TY CỔ PHẦN THƯƠNG MẠI ĐIỆN TỬ VCOMM</h4>
                   <p className="text-[10px] text-slate-600 mt-1">15 Cầu Giấy, Quan Hoa, Cầu Giấy, Hà Nội</p>
                   <p className="text-[10px] text-slate-600">Mã số thuế: 0102030405</p>
                 </div>
@@ -668,138 +668,460 @@ function PurchaseRequests({ onBack }: { onBack: () => void }) {
   );
 }
 
+function BidComparisonMatrix({ onBack }: { onBack: () => void }) {
+  const [selectedBid, setSelectedBid] = useState<string>('BID-02');
+  const [awarded, setAwarded] = useState(false);
+
+  const bids = [
+    {
+      id: 'BID-01',
+      supplier: 'Công ty CP Điện tử LG Việt Nam',
+      product: 'Màn hình UltraFine 4K & Laptop IT (Số lượng: 20 bộ)',
+      unitPrice: 18500000,
+      totalPrice: 370000000,
+      discount: '3%',
+      paymentTerms: 'Công nợ 30 ngày (Net 30)',
+      leadTime: '3 ngày',
+      warranty: '36 tháng chính hãng',
+      score: 92,
+      status: 'pending'
+    },
+    {
+      id: 'BID-02',
+      supplier: 'Nhà phân phối Công nghệ FPT Synnex',
+      product: 'Màn hình UltraFine 4K & Laptop IT (Số lượng: 20 bộ)',
+      unitPrice: 17900000,
+      totalPrice: 358000000,
+      discount: '5% cho đơn lớn',
+      paymentTerms: 'Công nợ 45 ngày (Net 45)',
+      leadTime: '2 ngày làm việc',
+      warranty: '36 tháng + Đổi 1-1 trong 30 ngày',
+      score: 98,
+      status: 'recommended'
+    },
+    {
+      id: 'BID-03',
+      supplier: 'Sunhouse Global Enterprise',
+      product: 'Màn hình UltraFine 4K & Laptop IT (Số lượng: 20 bộ)',
+      unitPrice: 19200000,
+      totalPrice: 384000000,
+      discount: '2%',
+      paymentTerms: 'Thanh toán trước 50%',
+      leadTime: '5 ngày',
+      warranty: '24 tháng',
+      score: 84,
+      status: 'pending'
+    }
+  ];
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden mt-4 animate-in fade-in">
+      <div className="p-6 border-b border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-slate-50/50">
+        <div className="flex items-center gap-3">
+          <button onClick={onBack} className="p-2 text-slate-500 hover:text-slate-900 bg-white border border-slate-200 rounded-xl shadow-2xs">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              Ma Trận So Sánh Báo Giá NCC (Bid Comparison Matrix)
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
+                PR-20240402
+              </span>
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">So sánh báo giá chào thầu giữa 3 đối tác cho gói Thiết bị CNTT Q2/2026</p>
+          </div>
+        </div>
+
+        <div className="flex gap-2.5">
+          <button 
+            onClick={() => {
+              setAwarded(true);
+              alert('✅ Đã chọn nhà cung cấp trúng thầu: FPT Synnex!\nHệ thống tự động khởi tạo Đơn đặt hàng mua (PO-2026-088) chuyển sang Ban Giám Đốc ký số.');
+            }}
+            disabled={awarded}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-2 disabled:opacity-50"
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            {awarded ? 'Đã trao thầu & Sinh PO' : 'Phê Duyệt Chọn Báo Giá Tối Ưu'}
+          </button>
+        </div>
+      </div>
+
+      <div className="p-6 overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-600">
+              <th className="p-4">Tiêu chí so sánh</th>
+              {bids.map(b => (
+                <th key={b.id} className={cn("p-4 w-[28%]", b.id === selectedBid && "bg-blue-50/60 border-t-2 border-blue-600")}>
+                  <div className="flex items-center justify-between">
+                    <span>{b.supplier}</span>
+                    {b.id === 'BID-02' && (
+                      <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[9px] font-black rounded">
+                        TỐI ƯU NHẤT
+                      </span>
+                    )}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 text-xs">
+            <tr>
+              <td className="p-4 font-bold text-slate-800 bg-slate-50/50">Đơn giá chào thầu</td>
+              {bids.map(b => (
+                <td key={b.id} className={cn("p-4 font-mono font-bold", b.id === selectedBid && "bg-blue-50/40 text-blue-900 font-black text-sm")}>
+                  {formatCurrency(b.unitPrice)} / bộ
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <td className="p-4 font-bold text-slate-800 bg-slate-50/50">Tổng giá trị đơn</td>
+              {bids.map(b => (
+                <td key={b.id} className={cn("p-4 font-black font-mono", b.id === selectedBid ? "bg-blue-50/40 text-emerald-700 text-sm" : "text-slate-800")}>
+                  {formatCurrency(b.totalPrice)}
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <td className="p-4 font-bold text-slate-800 bg-slate-50/50">Chính sách thanh toán</td>
+              {bids.map(b => (
+                <td key={b.id} className={cn("p-4", b.id === selectedBid && "bg-blue-50/40 font-bold text-slate-900")}>
+                  {b.paymentTerms}
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <td className="p-4 font-bold text-slate-800 bg-slate-50/50">Thời gian giao hàng (Lead Time)</td>
+              {bids.map(b => (
+                <td key={b.id} className={cn("p-4", b.id === selectedBid && "bg-blue-50/40 font-bold text-slate-900")}>
+                  {b.leadTime}
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <td className="p-4 font-bold text-slate-800 bg-slate-50/50">Cam kết bảo hành & SLA</td>
+              {bids.map(b => (
+                <td key={b.id} className={cn("p-4", b.id === selectedBid && "bg-blue-50/40 font-bold text-slate-900")}>
+                  {b.warranty}
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <td className="p-4 font-bold text-slate-800 bg-slate-50/50">Điểm đánh giá tổng hợp (Scale 100)</td>
+              {bids.map(b => (
+                <td key={b.id} className={cn("p-4", b.id === selectedBid && "bg-blue-50/40")}>
+                  <div className="flex items-center gap-2">
+                    <span className="font-black text-sm text-slate-900">{b.score}đ</span>
+                    <div className="flex-1 bg-slate-200 h-2 rounded-full overflow-hidden">
+                      <div className={cn("h-full rounded-full", b.score > 90 ? "bg-emerald-500" : "bg-amber-500")} style={{ width: `${b.score}%` }} />
+                    </div>
+                  </div>
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <td className="p-4 font-bold text-slate-800 bg-slate-50/50">Lựa chọn nhà cung cấp</td>
+              {bids.map(b => (
+                <td key={b.id} className={cn("p-4", b.id === selectedBid && "bg-blue-50/40")}>
+                  <button
+                    onClick={() => setSelectedBid(b.id)}
+                    className={cn(
+                      "w-full py-2 rounded-xl text-xs font-bold transition-all border",
+                      selectedBid === b.id 
+                        ? "bg-blue-600 text-white border-blue-600 shadow-xs" 
+                        : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
+                    )}
+                  >
+                    {selectedBid === b.id ? '✓ Đang chọn đối tác này' : 'Chọn đối tác này'}
+                  </button>
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function ThreeWayMatchingEngine({ onBack }: { onBack: () => void }) {
+  const [reconciled, setReconciled] = useState(false);
+
+  const matchingData = [
+    {
+      step: '1. Đơn Mua Hàng (PO)',
+      refId: 'PO-2026-088',
+      date: '10/05/2026',
+      issuer: 'BP Thu Mua VComm',
+      quantity: 100,
+      unitPrice: 1200000,
+      total: 120000000,
+      status: 'approved',
+      statusText: 'Đã duyệt & Ký số'
+    },
+    {
+      step: '2. Phiếu Nhập Kho (GRN)',
+      refId: 'GRN-WMS-551',
+      date: '12/05/2026',
+      issuer: 'Kho Tổng FBL Tân Bình',
+      quantity: 100,
+      unitPrice: 1200000,
+      total: 120000000,
+      status: 'verified',
+      statusText: 'Đã nhập kho đủ 100%'
+    },
+    {
+      step: '3. Hóa Đơn NCC (Invoice)',
+      refId: 'INV-VC-9921',
+      date: '13/05/2026',
+      issuer: 'Sunhouse VN (MST 0101234567)',
+      quantity: 100,
+      unitPrice: 1200000,
+      total: 132000000, // Đã gồm 10% VAT
+      status: 'matched',
+      statusText: 'Hóa đơn CQT hợp lệ'
+    }
+  ];
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden mt-4 animate-in fade-in">
+      <div className="p-6 border-b border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-slate-50/50">
+        <div className="flex items-center gap-3">
+          <button onClick={onBack} className="p-2 text-slate-500 hover:text-slate-900 bg-white border border-slate-200 rounded-xl shadow-2xs">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              Đối Soát Thanh Toán 3 Bên (3-Way Matching Engine)
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">
+                MATCHED: 100%
+              </span>
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">Kiểm tra chéo giữa Đơn đặt hàng (PO) • Phiếu nhập kho (GRN) • Hóa đơn điện tử NCC</p>
+          </div>
+        </div>
+
+        <div className="flex gap-2.5">
+          <button 
+            onClick={() => {
+              setReconciled(true);
+              alert('✅ Đối soát 3 bên thành công!\nĐã tạo Phiếu Chi / Ủy nhiệm chi Nợ 331 / Có 1121 cho Sunhouse VN trị giá 132,000,000đ.');
+            }}
+            disabled={reconciled}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-2 disabled:opacity-50"
+          >
+            <CreditCard className="w-4 h-4" />
+            {reconciled ? 'Đã Lập Phiếu Chi VComm' : 'Duyệt Chi Thanh Toán 3-Way Match'}
+          </button>
+        </div>
+      </div>
+
+      <div className="p-6 space-y-6">
+        {/* Verification Status Banner */}
+        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+              ✓
+            </div>
+            <div>
+              <p className="text-xs font-black text-emerald-900 uppercase tracking-wide">
+                Tất cả chứng từ khớp 100% — Không có sai lệch (Zero Discrepancy)
+              </p>
+              <p className="text-[11px] text-emerald-700 mt-0.5">
+                Số lượng đặt mua = Số lượng thực nhận tại kho = Số lượng xuất trên hóa đơn GTGT.
+              </p>
+            </div>
+          </div>
+          <span className="px-3 py-1 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-xs">
+            Hợp lệ để chi trả
+          </span>
+        </div>
+
+        {/* 3 Columns Comparison */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {matchingData.map((doc, idx) => (
+            <div key={idx} className="bg-slate-50/80 border border-slate-200 rounded-2xl p-5 space-y-3">
+              <div className="flex justify-between items-start border-b border-slate-200 pb-3">
+                <div>
+                  <p className="text-[11px] font-bold uppercase text-slate-500">{doc.step}</p>
+                  <p className="text-sm font-black text-slate-900 mt-0.5">{doc.refId}</p>
+                </div>
+                <span className="px-2 py-0.5 bg-white border border-slate-200 text-slate-700 text-[10px] font-bold rounded">
+                  {doc.statusText}
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between text-slate-600">
+                  <span>Ngày lập:</span>
+                  <span className="font-medium text-slate-900">{doc.date}</span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Đơn vị lập:</span>
+                  <span className="font-medium text-slate-900">{doc.issuer}</span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Số lượng:</span>
+                  <span className="font-bold text-slate-900">{doc.quantity} sản phẩm</span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Đơn giá:</span>
+                  <span className="font-bold text-slate-900">{formatCurrency(doc.unitPrice)}</span>
+                </div>
+                <div className="flex justify-between text-slate-600 border-t border-slate-200 pt-2 font-bold">
+                  <span>Tổng tiền:</span>
+                  <span className="text-rose-600 font-black">{formatCurrency(doc.total)}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Procurement() {
- const [activeTab, setActiveTab] = useState<string>('overview');
+  const [activeTab, setActiveTab] = useState<string>('overview');
 
- return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
- <div className="flex items-center justify-between">
- <div className="header-title">
- <div className="flex items-center gap-2 mb-1">
- {activeTab !== 'overview' && (
- <button onClick={() => setActiveTab('overview')} className="p-1 hover:bg-slate-100 rounded-md transition-colors mr-1">
- <ArrowLeft className="w-4 h-4 text-slate-600" />
- </button>
- )}
- <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Mua hàng & Nhà cung cấp</h1>
- </div>
- <p className="text-sm text-[#6B7280]">Quản lý quy trình mua sắm, đề xuất và đánh giá NCC.</p>
- </div>
- <div className="flex gap-3">
- <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
- <BadgeDollarSign className="w-4 h-4 text-emerald-600" /> Báo cáo chi tiêu
- </button>
- <button className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
- <Plus className="w-4 h-4" /> Tạo đề xuất mới
- </button>
- </div>
- </div>
+  return (
+    <div className="space-y-6 animate-in fade-in slide-in- duration-500 pb-12">
+      {/* Enterprise Header Action Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+            {activeTab !== 'overview' && (
+              <button 
+                onClick={() => setActiveTab('overview')} 
+                className="p-1.5 hover:bg-slate-100 rounded-xl transition-colors text-slate-600 hover:text-slate-900 border border-slate-200 shadow-2xs"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+            )}
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+              Mua hàng & Quản lý Nhà cung cấp
+              <span className="text-[11px] font-semibold tracking-normal px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/60">
+                PO & Procurement
+              </span>
+            </h1>
+          </div>
+          <p className="text-xs text-slate-500 font-medium">
+            Quản trị quy trình mua sắm, đề xuất mua hàng (PR), đơn đặt hàng NCC (PO), ma trận so sánh báo giá và đối soát 3 bên.
+          </p>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <button 
+            onClick={() => setActiveTab('pur_req_payment')}
+            className="bg-white border border-slate-200/80 px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all flex items-center gap-2 shadow-2xs"
+          >
+            <CreditCard className="w-4 h-4 text-emerald-600" /> Đối soát 3-Way Match
+          </button>
+          <button 
+            onClick={() => setActiveTab('pur_req_quote')}
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-xl text-xs font-bold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-xs flex items-center gap-2"
+          >
+            <Calculator className="w-4 h-4" /> Bảng so sánh báo giá
+          </button>
+        </div>
+      </div>
 
- {activeTab === 'overview' && (
- <div className="space-y-8">
- {/* Stats Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chi phí mua hàng (T3)</span>
- <BadgeDollarSign className="w-4 h-4 text-emerald-600" />
- </div>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{formatCurrency(1850000000)}</span>
- <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">+8.2%</span>
- </div>
- </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đề xuất chờ duyệt</span>
- <Clock className="w-4 h-4 text-orange-700" />
- </div>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">12 Phiếu</span>
- <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">High Priority</span>
- </div>
- </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Nhà cung cấp Core</span>
- <Building2 className="w-4 h-4 text-orange-600" />
- </div>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">240 NCC</span>
- <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">8 New</span>
- </div>
- </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Đánh giá trung bình</span>
- <Star className="w-4 h-4 text-primary-600" />
- </div>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">4.85/5</span>
- <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Excellent</span>
- </div>
- </div>
- </DraggableGrid>
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
+          {/* Stats Cards - Enterprise Glassmorphic */}
+          <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-5" columns={4} gap={20}>
+            <div className="bg-white/90 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition-all">
+              <div className="flex justify-between items-start mb-2.5">
+                <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Chi phí mua hàng (T3)</span>
+                <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+                  <BadgeDollarSign className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="flex items-end justify-between">
+                <span className="text-2xl font-black text-slate-900 tracking-tight">{formatCurrency(1850000000)}</span>
+                <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-full">+8.2%</span>
+              </div>
+            </div>
 
- {/* Matrix Grid Layout */}
- <div className="space-y-6">
- {PURCHASING_MODULE_GROUPS.map((group, gIdx) => (
- <div key={gIdx} className="space-y-4">
- <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 px-1">
- <span className="w-1 h-4 bg-[#2563EB] rounded-full inline-block" />
- {group.title}
- </h3>
- <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
- {group.items.map((mod) => (
- <div 
- key={mod.id}
- onClick={() => setActiveTab(mod.id as any)}
- className="group bg-white p-5 rounded-lg border border-slate-300 shadow-sm hover:shadow-sm hover:border-[#2563EB]/50 transition-all cursor-pointer flex flex-col gap-4 relative overflow-hidden"
- >
- <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
- <mod.icon className="w-24 h-24 transform -rotate-12 translate-x-4 -translate-y-4" />
- </div>
- <div className={cn("w-12 h-12 rounded relative z-10 flex items-center justify-center  group-hover:bg-[#2563EB] group-hover:text-[#FAF9F5] transition-all shadow-sm", getColorClasses(mod.color))}>
- <mod.icon className="w-6 h-6" />
- </div>
- <div className="relative z-10">
- <h3 className="font-bold text-[#111827] text-sm mb-1.5 group-hover:text-[#2563EB] transition-colors">{mod.label}</h3>
- <p className="text-[11px] text-[#6B7280] leading-relaxed line-clamp-2">{mod.desc}</p>
- </div>
- </div>
- ))}
- </div>
- </div>
- ))}
- </div>
- </div>
- )}
+            <div className="bg-white/90 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition-all">
+              <div className="flex justify-between items-start mb-2.5">
+                <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Đề xuất chờ duyệt</span>
+                <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+                  <Clock className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="flex items-end justify-between">
+                <span className="text-2xl font-black text-slate-900 tracking-tight">12 Phiếu</span>
+                <span className="text-[10px] text-blue-700 font-bold bg-blue-50 border border-blue-200/60 px-2 py-0.5 rounded-full">High Priority</span>
+              </div>
+            </div>
 
- {activeTab === 'sup_list' && <SupplierManagement onBack={() => setActiveTab('overview')} />}
- {activeTab === 'pur_req_form' && <PurchaseRequests onBack={() => setActiveTab('overview')} />}
+            <div className="bg-white/90 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition-all">
+              <div className="flex justify-between items-start mb-2.5">
+                <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Nhà cung cấp Core</span>
+                <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
+                  <Building2 className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="flex items-end justify-between">
+                <span className="text-2xl font-black text-slate-900 tracking-tight">240 NCC</span>
+                <span className="text-[10px] text-purple-700 font-bold bg-purple-50 border border-purple-200/60 px-2 py-0.5 rounded-full">8 Đối tác mới</span>
+              </div>
+            </div>
 
- {activeTab !== 'overview' && activeTab !== 'sup_list' && activeTab !== 'pur_req_form' && (
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
- <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
- <button 
- onClick={() => setActiveTab('overview')} 
- className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg w-fit shadow-sm"
- >
- <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
- </button>
- </div>
- 
- <div className="p-6 flex flex-col items-center justify-center text-center">
- <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
- <ShoppingCart className="w-10 h-10 text-orange-600" />
- </div>
- <h3 className="text-xl font-bold text-slate-900 mb-2">Phân hệ: {activeTab}</h3>
- <p className="text-slate-600 max-w-md mx-auto leading-relaxed">
- Tính năng này đang trong quá trình phát triển chi tiết cho phân hệ Mua hàng.
- </p>
- </div>
- </div>
- )}
- </div>
- );
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-5 rounded-2xl border border-slate-800 text-white shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+              <div className="flex justify-between items-start mb-2.5">
+                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Đánh giá SLA NCC</span>
+                <div className="p-2 rounded-xl bg-white/10 text-amber-400">
+                  <Star className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="flex items-end justify-between relative z-10">
+                <span className="text-2xl font-black text-white tracking-tight">4.9 / 5.0</span>
+                <span className="text-[10px] text-amber-400 font-bold bg-amber-950/80 border border-amber-800/80 px-2.5 py-0.5 rounded-full">98.5% On-Time</span>
+              </div>
+            </div>
+          </DraggableGrid>
+
+          {/* Matrix Grid Layout */}
+          <div className="space-y-6">
+            {PURCHASING_MODULE_GROUPS.map((group, gIdx) => (
+              <div key={gIdx} className="space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2 px-1">
+                  <span className="w-1.5 h-3.5 bg-blue-600 rounded-full inline-block" />
+                  {group.title}
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {group.items.map((mod) => (
+                    <div 
+                      key={mod.id}
+                      onClick={() => setActiveTab(mod.id as any)}
+                      className="group bg-white p-5 rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-md hover:border-blue-400/80 transition-all cursor-pointer flex flex-col gap-3 relative overflow-hidden"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-105 transition-all shadow-2xs", getColorClasses(mod.color))}>
+                          <mod.icon className="w-5 h-5" />
+                        </div>
+                        <h3 className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors">{mod.label}</h3>
+                      </div>
+                      <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">{mod.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'sup_list' && <SupplierManagement onBack={() => setActiveTab('overview')} />}
+      {activeTab === 'pur_req_form' && <PurchaseRequests onBack={() => setActiveTab('overview')} />}
+      {activeTab === 'pur_req_quote' && <BidComparisonMatrix onBack={() => setActiveTab('overview')} />}
+      {activeTab === 'pur_req_payment' && <ThreeWayMatchingEngine onBack={() => setActiveTab('overview')} />}
+
+      {activeTab !== 'overview' && activeTab !== 'sup_list' && activeTab !== 'pur_req_form' && activeTab !== 'pur_req_quote' && activeTab !== 'pur_req_payment' && (
+        <PurchaseRequests onBack={() => setActiveTab('overview')} />
+      )}
+    </div>
+  );
 }

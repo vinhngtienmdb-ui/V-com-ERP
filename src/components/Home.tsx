@@ -1,848 +1,672 @@
-import { safeLocalStorage } from '../lib/storage';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  ArrowRight, 
-  Search, 
-  Star, 
-  History,
-  LayoutGrid,
-  FileText,
-  Users,
-  Gauge,
-  ShoppingBag,
-  Megaphone,
-  Wallet,
-  ShoppingCart,
-  Factory,
-  Package,
-  Activity,
-  Layers,
-  Sparkles,
-  Shield,
+  Search,
+  ArrowRight,
+  ArrowLeft,
+  Settings,
   X,
-  ChevronRight,
-  Info,
-  Calendar,
-  Layers3,
-  Flame,
-  UserCheck,
-  Building,
-  HelpCircle,
-  Warehouse,
-  Settings
+  Image as ImageIcon,
+  Sparkles,
+  Check,
+  Palette,
+  Layers,
+  Star
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
-import { navGroups } from '../constants';
+import { useAuth } from '../context/AuthContext';
+import { MISA_APPS, MisaAppItem, CATEGORY_GROUPS } from '../data/misaApps';
+import { useStarredApps } from '../hooks/useStarredApps';
+import { safeLocalStorage } from '../lib/storage';
 
-// Define the 13 parent functional areas matching the required layout in the user's screenshot
-interface FunctionalGroup {
-  id: string;
-  title: string;
-  desc: string;
-  icon: any;
-  color: string;
-  modulePaths: string[];
-}
+const APPS_PER_PAGE = 15; // 5 columns x 3 rows
 
-const FUNCTIONAL_GROUPS: FunctionalGroup[] = [
+// Iconic Vietnamese wallpapers
+export const VIETNAM_WALLPAPERS = [
+  { 
+    id: 'dongson_scarlet', 
+    name: 'Trống Đồng & Chim Hạc', 
+    subtitle: 'Hào khí Đông Sơn - Đỏ tươi hoàng gia', 
+    path: '/wallpapers/vietnam-dongson-scarlet.svg',
+    tag: 'Đặc sắc',
+    tagColor: 'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black'
+  },
+  { 
+    id: 'halong', 
+    name: 'Vịnh Hạ Long', 
+    subtitle: 'Kỳ quan thiên nhiên thế giới', 
+    path: '/wallpapers/vietnam-halong.jpg',
+    tag: 'Di sản',
+    tagColor: 'bg-emerald-500 text-white font-bold'
+  },
+  { 
+    id: 'landscape', 
+    name: 'Mù Cang Chải (Sa Pa)', 
+    subtitle: 'Sóng vàng ruộng bậc thang Tây Bắc', 
+    path: '/wallpapers/vietnam-landscape.jpg',
+    tag: 'Tây Bắc',
+    tagColor: 'bg-amber-500 text-white font-bold'
+  },
+  { 
+    id: 'hoian', 
+    name: 'Phố Cổ Hội An', 
+    subtitle: 'Đêm hoa đăng & đèn lồng lung linh', 
+    path: '/wallpapers/vietnam-hoian-night.svg',
+    tag: 'Phố cổ',
+    tagColor: 'bg-rose-500 text-white font-bold'
+  },
+  { 
+    id: 'lotus', 
+    name: 'Sen Hồng Đồng Tháp', 
+    subtitle: 'Quốc hoa thuần khiết thanh tao', 
+    path: '/wallpapers/vietnam-lotus-pink.svg',
+    tag: 'Quốc hoa',
+    tagColor: 'bg-pink-500 text-white font-bold'
+  },
+];
+
+export const BACKGROUND_COLORS = [
   {
-    id: 'he_thong_chinh',
-    title: 'Hệ thống chính',
-    desc: 'Tổng quan và bảng điều khiển trung tâm.',
-    icon: LayoutGrid,
-    color: 'blue',
-    modulePaths: ['/', '/dashboard']
+    id: 'royal_scarlet',
+    name: 'Đỏ Cờ Hoàng Gia',
+    subtitle: 'Khí sắc thịnh vượng & may mắn',
+    gradient: 'linear-gradient(135deg, #450a0a 0%, #991b1b 50%, #dc2626 100%)',
+    preview: '#dc2626'
   },
   {
-    id: 'dieu_hanh_he_thong',
-    title: 'Điều hành & Hệ thống',
-    desc: 'Công cụ phân tích BI, trí tuệ nhân tạo và workflow.',
-    icon: Activity,
-    color: 'emerald',
-    modulePaths: ['/bi', '/ai-ops', '/workflow']
+    id: 'dongson_gold',
+    name: 'Vàng Kim Lạc Hồng',
+    subtitle: 'Sang trọng, uy nghi tài lộc',
+    gradient: 'linear-gradient(135deg, #451a03 0%, #92400e 50%, #d97706 100%)',
+    preview: '#d97706'
   },
   {
-    id: 'hanh_chinh_phap_ly',
-    title: 'Hành chính & Ký số',
-    desc: 'Đề xuất, hợp đồng, văn bản và chữ ký số.',
-    icon: FileText,
-    color: 'orange',
-    modulePaths: ['/requests', '/contracts', '/documents', '/signature']
+    id: 'imperial_emerald',
+    name: 'Xanh Ngọc Tràng An',
+    subtitle: 'Non nước thanh bình, thư thái',
+    gradient: 'linear-gradient(135deg, #022c22 0%, #065f46 50%, #059669 100%)',
+    preview: '#059669'
   },
   {
-    id: 'kinh_doanh_da_kenh',
-    title: 'Kinh doanh Đa kênh',
-    desc: 'Đơn hàng, livestream và mạng xã hội.',
-    icon: ShoppingBag,
-    color: 'indigo',
-    modulePaths: ['/orders', '/live', '/social']
+    id: 'ocean_navy',
+    name: 'Xanh Biển Đông',
+    subtitle: 'Hiện đại, công nghệ, bao la',
+    gradient: 'linear-gradient(135deg, #020617 0%, #0f172a 50%, #0284c7 100%)',
+    preview: '#0284c7'
   },
   {
-    id: 'san_pham_marketing',
-    title: 'Sản phẩm & Marketing',
-    desc: 'Quản lý PIM, khuyến mãi, chiến dịch và tiếp thị.',
-    icon: Megaphone,
-    color: 'rose',
-    modulePaths: ['/pim', '/marketing', '/flash-sale', '/affiliate', '/loyalty', '/ads']
+    id: 'slate_minimal',
+    name: 'Xám Đá Slate Minimalist',
+    subtitle: 'Tối giản macOS, tập trung cao độ',
+    gradient: 'linear-gradient(135deg, #090d16 0%, #1e293b 60%, #334155 100%)',
+    preview: '#334155'
   },
   {
-    id: 'chuoi_cung_ung',
-    title: 'Chuỗi cung ứng & Kho',
-    desc: 'Quản lý kho vận, tiêu chuẩn tuân thủ và đối tác Mua hàng.',
-    icon: Warehouse,
-    color: 'amber',
-    modulePaths: ['/warehouse', '/scm', '/compliance']
-  },
-  {
-    id: 'tai_chinh_thanh_toan',
-    title: 'Tài chính & Thanh toán',
-    desc: 'Kế toán, định mức, đối soát giao dịch và ví.',
-    icon: Wallet,
-    color: 'teal',
-    modulePaths: ['/finance', '/settlement', '/wallet', '/seller-finance']
-  },
-  {
-    id: 'doi_tac_khach_hang',
-    title: 'Đối tác & Khách hàng',
-    desc: 'CRM, CSKH, quản lý đại lý và kinh doanh.',
-    icon: Users,
-    color: 'sky',
-    modulePaths: ['/sellers', '/customers', '/cskh', '/sales']
-  },
-  {
-    id: 'nhan_su_to_chuc',
-    title: 'Nhân sự & Tổ chức',
-    desc: 'Tuyển dụng, đánh giá năng lực, sơ đồ và workspace.',
-    icon: Layers,
-    color: 'violet',
-    modulePaths: ['/hr', '/org', '/performance', '/workspace']
-  },
-  {
-    id: 'cau_hinh',
-    title: 'Cấu hình',
-    desc: 'Thiết lập tham số và phân quyền hệ thống.',
-    icon: Settings,
-    color: 'slate',
-    modulePaths: ['/settings']
+    id: 'deep_purple',
+    name: 'Tím Cung Đình Huế',
+    subtitle: 'Trầm lắng quý phái kinh kỳ',
+    gradient: 'linear-gradient(135deg, #1e1b4b 0%, #4c1d95 50%, #7c3aed 100%)',
+    preview: '#7c3aed'
   }
 ];
 
-// Flat list of all core modules defined in navGroups for faster lookup/search/bookmarking
-const ALL_SUB_MODULES = navGroups.flatMap(group => group.items);
-
-const COLOR_MAP: Record<string, string> = {
-  orange: 'bg-orange-500 text-white shadow-sm shadow-orange-100',
-  emerald: 'bg-emerald-500 text-white shadow-sm shadow-emerald-100',
-  blue: 'bg-blue-500 text-white shadow-sm shadow-blue-100',
-  indigo: 'bg-indigo-500 text-white shadow-sm shadow-indigo-100',
-  rose: 'bg-rose-500 text-white shadow-sm shadow-rose-100',
-  violet: 'bg-violet-500 text-white shadow-sm shadow-violet-100',
-  amber: 'bg-amber-500 text-white shadow-sm shadow-amber-100',
-  lime: 'bg-lime-600 text-white shadow-sm shadow-lime-100',
-  cyan: 'bg-cyan-500 text-white shadow-sm shadow-cyan-100',
-  teal: 'bg-teal-500 text-white shadow-sm shadow-teal-100',
-  slate: 'bg-slate-700 text-white shadow-sm shadow-slate-100',
-  purple: 'bg-purple-500 text-white shadow-sm shadow-purple-100',
-  sky: 'bg-sky-500 text-white shadow-sm shadow-sky-100',
-};
-
-const getModuleVisuals = (path: string) => {
-  const group = FUNCTIONAL_GROUPS.find(g => g.modulePaths.includes(path));
-  return {
-    color: group ? group.color : 'blue'
-  };
-};
-
 export function Home() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'chuc_nang' | 'danh_dau' | 'tat_ca'>('chuc_nang');
-  const [searchQuery, setSearchQuery] = useState('');
+  const { staffInfo, signOut } = useAuth();
   
-  // Bookmarks local storage handling
-  const [bookmarkedPaths, setBookmarkedPaths] = useState<string[]>(() => {
-    const saved = safeLocalStorage.getItem('bookmarked_modules');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { return ['/dashboard', '/requests', '/orders', '/hr', '/settings']; }
-    }
-    // Default bookmarks if empty to present a stunning dashboard first-look
-    return ['/dashboard', '/requests', '/orders', '/hr', '/settings'];
+  // Active Tab Filter
+  const [activeTab, setActiveTab] = useState<string>('my_apps');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isSlideAnimating, setIsSlideAnimating] = useState(false);
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+  const [showWallpaperMenu, setShowWallpaperMenu] = useState(false);
+  const [customizerTab, setCustomizerTab] = useState<'wallpapers' | 'colors'>('wallpapers');
+
+  // Background display type: 'wallpaper' | 'color'
+  const [bgType, setBgType] = useState<'wallpaper' | 'color'>(() => {
+    return (safeLocalStorage.getItem('vcomm_portal_bg_type') as 'wallpaper' | 'color') || 'wallpaper';
   });
 
+  // Selected wallpaper state
+  const [activeWallpaper, setActiveWallpaper] = useState<string>(() => {
+    return safeLocalStorage.getItem('vcomm_portal_wallpaper') || '/wallpapers/vietnam-dongson-scarlet.svg';
+  });
+
+  // Selected background color state
+  const [activeBgColor, setActiveBgColor] = useState<string>(() => {
+    return safeLocalStorage.getItem('vcomm_portal_bg_color') || 'linear-gradient(135deg, #450a0a 0%, #991b1b 50%, #dc2626 100%)';
+  });
+
+  const handleSelectWallpaper = (path: string) => {
+    setBgType('wallpaper');
+    setActiveWallpaper(path);
+    safeLocalStorage.setItem('vcomm_portal_bg_type', 'wallpaper');
+    safeLocalStorage.setItem('vcomm_portal_wallpaper', path);
+  };
+
+  const handleSelectBgColor = (gradient: string) => {
+    setBgType('color');
+    setActiveBgColor(gradient);
+    safeLocalStorage.setItem('vcomm_portal_bg_type', 'color');
+    safeLocalStorage.setItem('vcomm_portal_bg_color', gradient);
+  };
+
+  // Starred / Favorite Apps management
+  const { starredIds, isStarred, toggleStar } = useStarredApps();
+
+  // Filter apps based on search and active tab
+  const filteredApps = useMemo(() => {
+    let list = MISA_APPS;
+
+    // Search query filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      return list.filter(app => 
+        app.name.toLowerCase().includes(q) || 
+        app.description.toLowerCase().includes(q)
+      );
+    }
+
+    // Category filter
+    if (activeTab === 'my_apps') {
+      return list.filter(app => starredIds.includes(app.id));
+    } else if (activeTab === 'all') {
+      return list;
+    } else {
+      return list.filter(app => app.category === activeTab);
+    }
+  }, [activeTab, searchQuery, starredIds]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredApps.length / APPS_PER_PAGE));
+
+  // Reset page to 0 when filter changes
   useEffect(() => {
-    safeLocalStorage.setItem('bookmarked_modules', JSON.stringify(bookmarkedPaths));
-  }, [bookmarkedPaths]);
+    setCurrentPage(0);
+  }, [activeTab, searchQuery]);
 
-  const toggleBookmark = (path: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (bookmarkedPaths.includes(path)) {
-      setBookmarkedPaths(prev => prev.filter(p => p !== path));
-    } else {
-      setBookmarkedPaths(prev => [...prev, path]);
+  // Adjust page if out of bounds
+  useEffect(() => {
+    if (currentPage >= totalPages) {
+      setCurrentPage(Math.max(0, totalPages - 1));
+    }
+  }, [totalPages, currentPage]);
+
+  const changePage = (newPage: number) => {
+    if (newPage >= 0 && newPage < totalPages && newPage !== currentPage) {
+      setIsSlideAnimating(true);
+      setCurrentPage(newPage);
+      setTimeout(() => setIsSlideAnimating(false), 250);
     }
   };
 
-  // Click group handler
-  const [selectedGroup, setSelectedGroup] = useState<FunctionalGroup | null>(null);
-  const [showCopyright, setShowCopyright] = useState(false);
-  const [showProduction, setShowProduction] = useState(false);
+  // Keyboard navigation for left/right arrows
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === 'ArrowRight') {
+        changePage(currentPage + 1);
+      } else if (e.key === 'ArrowLeft') {
+        changePage(currentPage - 1);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentPage, totalPages]);
 
-  const handleGroupClick = (group: FunctionalGroup) => {
-    if (group.id === 'ban_quyen') {
-      setShowCopyright(true);
-    } else if (group.id === 'san_xuat') {
-      setShowProduction(true);
-    } else {
-      setSelectedGroup(group);
+  // Get current 15 apps
+  const visibleApps = useMemo(() => {
+    const start = currentPage * APPS_PER_PAGE;
+    return filteredApps.slice(start, start + APPS_PER_PAGE);
+  }, [filteredApps, currentPage]);
+
+  // User initial avatar
+  const userInitials = useMemo(() => {
+    if (staffInfo?.name) {
+      const parts = staffInfo.name.trim().split(' ');
+      if (parts.length >= 2) return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+      return parts[0].substring(0, 2).toUpperCase();
     }
-  };
-
-  // Filter modules based on search query
-  const filteredSubModules = ALL_SUB_MODULES.filter(item => {
-    return item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           item.description?.toLowerCase().includes(searchQuery.toLowerCase());
-  });
-
-  const filteredGroups = navGroups.map(group => ({
-    ...group,
-    items: group.items.filter(item => 
-      item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  })).filter(group => group.items.length > 0);
+    return 'NV';
+  }, [staffInfo]);
 
   return (
-    <div className="flex flex-col h-full gap-6 animate-in fade-in duration-300 pb-20 pt-2 bg-slate-50/50 min-h-screen px-2 md:px-0">
-      
-      {/* Dynamic Header with Navigation & Search */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mt-1">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-extrabold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full uppercase tracking-wider">Enterprise OS</span>
-            <span className="text-[10px] font-medium text-slate-400">Ver 2.50</span>
-          </div>
-          <h2 className="font-serif text-xl md:text-2xl font-black text-slate-900 tracking-tight">
-            VComm ERP <span className="text-blue-600 font-sans font-bold">Intelligence</span>
-          </h2>
-        </div>
+    <div 
+      className="relative w-full h-screen overflow-hidden bg-cover bg-center bg-no-repeat select-none flex flex-col justify-between transition-all duration-500"
+      style={
+        bgType === 'color'
+          ? { 
+              background: activeBgColor,
+              backgroundAttachment: 'fixed'
+            }
+          : { 
+              backgroundImage: `url('${activeWallpaper}'), radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 100%)`,
+              backgroundBlendMode: 'normal'
+            }
+      }
+    >
+      {/* Background Soft Cinematic Ambient Layer */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/10 to-black/45 pointer-events-none" />
 
-        {/* Dynamic Search Box */}
-        <div className="relative w-full md:w-80 group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-          <input 
-            type="text"
-            placeholder="Tìm kiếm nhanh module..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-medium"
-          />
-        </div>
-      </div>
-
-      {/* Primary Pill-style Tabs Control */}
-      <div className="flex flex-wrap gap-2 items-center justify-between">
-        <div className="flex gap-2 bg-white/80 p-1 rounded-xl border border-slate-200 shadow-xs backdrop-blur-md">
-          <button
-            onClick={() => { setActiveTab('chuc_nang'); setSelectedGroup(null); }}
-            className={cn(
-              "px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
-              activeTab === 'chuc_nang'
-                ? "bg-blue-50 text-blue-600 border border-blue-200 shadow-xs font-extrabold"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 border border-transparent"
-            )}
-          >
-            <LayoutGrid className="w-3.5 h-3.5" />
-            <span>Chức năng</span>
-          </button>
-
-          <button
-            onClick={() => { setActiveTab('danh_dau'); setSelectedGroup(null); }}
-            className={cn(
-              "px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
-              activeTab === 'danh_dau'
-                ? "bg-blue-50 text-blue-600 border border-blue-200 shadow-xs font-extrabold"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 border border-transparent"
-            )}
-          >
-            <Star className="w-3.5 h-3.5" />
-            <span>Đánh dấu</span>
-          </button>
-
-          <button
-            onClick={() => { setActiveTab('tat_ca'); setSelectedGroup(null); }}
-            className={cn(
-              "px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
-              activeTab === 'tat_ca'
-                ? "bg-blue-50 text-blue-600 border border-blue-200 shadow-xs font-extrabold"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 border border-transparent"
-            )}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Tất cả</span>
-          </button>
-        </div>
-
-        {/* Recently Visited Modules (Quick access) */}
-        <div className="hidden lg:flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-xs text-xs font-medium text-slate-500">
-          <History className="w-3.5 h-3.5 text-slate-400" />
-          <span className="font-bold text-slate-700">Mở gần đây:</span>
-          {['/dashboard', '/requests', '/orders'].map(path => {
-            const mod = ALL_SUB_MODULES.find(m => m.path === path);
-            if (!mod) return null;
-            return (
-              <button 
-                key={path}
-                onClick={() => navigate(path)}
-                className="hover:text-blue-600 hover:bg-blue-50/50 px-2 py-0.5 rounded-md transition-all font-bold flex items-center gap-1"
-              >
-                <mod.icon className="w-3 h-3 text-slate-500" />
-                {mod.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Main Reactive Dynamic Sections */}
-      <div className="min-h-[400px]">
+      {/* ================= MACOS-STYLE TOP HEADERBAR (All menus on the Top-Left) ================= */}
+      <header className="relative z-30 h-11 px-4 sm:px-6 flex items-center justify-between text-white backdrop-blur-xl bg-black/40 border-b border-white/10 shadow-sm">
         
-        {/* TAB 1: CHỨC NĂNG (The 13 corporate parent cards matching your screenshot) */}
-        {activeTab === 'chuc_nang' && (
-          <div className="space-y-6">
-            
-            {/* SEARCHING STATE IN TABS */}
-            {searchQuery && (
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Kết quả tìm kiếm phân hệ liên quan:</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-                  {filteredSubModules.map(item => {
-                    const visuals = getModuleVisuals(item.path);
-                    const IconComponent = item.icon;
-                    return (
-                      <div 
-                        key={item.path}
-                        onClick={() => navigate(item.path)}
-                        className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-sm hover:border-slate-300 transition-all duration-300 transform .5 relative overflow-hidden group min-h-[190px] cursor-pointer"
-                      >
-                        {/* Star icon badge absolute right-4 top-4 */}
-                        <button 
-                          onClick={(e) => toggleBookmark(item.path, e)}
-                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-400 hover:text-amber-500  transition-transform z-10"
-                        >
-                          <Star className={cn("w-3.5 h-3.5", bookmarkedPaths.includes(item.path) ? "fill-amber-400 text-amber-500" : "")} />
-                        </button>
+        {/* TOP-LEFT: Brand "VComm ERP" + macOS Menu Tabs */}
+        <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+          
+          {/* Brand Logo & Name */}
+          <div 
+            onClick={() => { setActiveTab('my_apps'); setCurrentPage(0); setSearchQuery(''); }}
+            className="flex items-center gap-2 cursor-pointer hover:opacity-90 transition-opacity pr-2 shrink-0"
+          >
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-rose-500 to-orange-500 flex items-center justify-center shadow-md">
+              <span className="text-white font-black text-xs">V</span>
+            </div>
+            <span className="font-bold text-sm tracking-tight text-white drop-shadow-sm">
+              VComm ERP
+            </span>
+          </div>
 
-                        {/* Large circle squircle around icon */}
-                        <div className={cn(
-                          "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ",
-                          COLOR_MAP[visuals.color] || COLOR_MAP.blue
-                        )}>
-                          <IconComponent className="w-6 h-6" />
-                        </div>
+          {/* Thin macOS Divider */}
+          <div className="h-4 w-[1px] bg-white/20 shrink-0 mx-1 hidden sm:block" />
 
-                        {/* Title */}
-                        <h4 className="font-bold text-slate-900 text-sm mb-2 group-hover:text-blue-600 transition-colors tracking-tight">
-                          {item.label}
-                        </h4>
-
-                        {/* Subtitle / Description */}
-                        <p className="text-[11px] text-slate-500 font-medium leading-relaxed max-w-[180px] line-clamp-3">
-                          {item.description || 'Phân hệ nghiệp vụ chất lượng cao.'}
-                        </p>
-
-                        {/* Fancy indicator bar */}
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-blue-600/10 transition-colors" />
-                      </div>
-                    );
-                  })}
-                  {filteredSubModules.length === 0 && (
-                    <div className="col-span-full py-6 text-center text-xs text-slate-400">Không tìm thấy module nào khớp với "{searchQuery}"</div>
+          {/* MacOS-style Top Navigation Menus */}
+          <nav className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto no-scrollbar">
+            {CATEGORY_GROUPS.map((group) => {
+              const isStarredTab = group.id === 'my_apps';
+              const label = isStarredTab
+                ? `⭐ Ứng dụng của tôi (${starredIds.length})`
+                : group.title;
+              return (
+                <button
+                  key={group.id}
+                  onClick={() => { setActiveTab(group.id); setCurrentPage(0); }}
+                  className={cn(
+                    "px-2.5 py-1 rounded-md text-xs transition-all cursor-pointer shrink-0 font-medium whitespace-nowrap",
+                    activeTab === group.id
+                      ? "bg-white/25 text-white font-bold shadow-xs"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
                   )}
-                </div>
-              </div>
-            )}
-
-            {/* The standard Grid of 13 cards styled exactly as requested in your image */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-              {FUNCTIONAL_GROUPS.map((group) => {
-                const IconComponent = group.icon;
-                const isSelected = selectedGroup?.id === group.id;
-
-                return (
-                  <button
-                    key={group.id}
-                    id={`card-${group.id}`}
-                    onClick={() => handleGroupClick(group)}
-                    className={cn(
-                      "bg-white border rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-sm hover:border-slate-300 transition-all duration-300 transform .5 relative overflow-hidden group min-h-[190px]",
-                      isSelected ? "border-blue-500 ring-2 ring-blue-100" : "border-slate-200"
-                    )}
-                  >
-                    {group.id === 'hanh_chinh_phap_ly' && (
-                      <div 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate('/settings');
-                        }}
-                        className="absolute top-4 right-4 p-2 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer z-10"
-                        title="Thiết lập quy trình trình ký"
-                      >
-                        <Settings className="w-4 h-4" />
-                      </div>
-                    )}
-                    {/* Circle squircle around icon */}
-                    <div className={cn(
-                      "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ",
-                      COLOR_MAP[group.color] || COLOR_MAP.blue
-                    )}>
-                      <IconComponent className="w-6 h-6" />
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="font-bold text-slate-900 text-base mb-2 tracking-tight group-hover:text-blue-600 transition-colors">
-                      {group.title}
-                    </h3>
-
-                    {/* Subtitle / Description */}
-                    <p className="text-xs text-slate-500 font-medium leading-relaxed max-w-[180px] line-clamp-3">
-                      {group.desc}
-                    </p>
-
-                    {/* Fancy indicator bar */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-blue-600/10 transition-colors" />
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* TAB 2: ĐÁNH DẤU (Persisted Bookmarked modules drawer) */}
-        {activeTab === 'danh_dau' && (
-          <div className="animate-in fade-in duration-300 space-y-4">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
-                <div>
-                  <h3 className="font-bold text-slate-900 flex items-center gap-2">
-                    <Star className="w-4 h-4 text-amber-500 fill-amber-500 animate-pulse" /> Danh mục Đánh dấu ưa thích
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Nhấp vào hình ngôi sao trên bất cứ danh mục module nào để đưa vào trang chủ của bạn.</p>
-                </div>
-                <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full uppercase">
-                  {bookmarkedPaths.length} Modules
-                </span>
-              </div>
-
-              {bookmarkedPaths.length === 0 ? (
-                <div className="py-6 text-center text-slate-400 flex flex-col items-center justify-center gap-3">
-                  <Star className="w-10 h-10 text-slate-300" />
-                  <p className="text-sm font-semibold text-slate-500">Chưa có ứng dụng nào được đánh dấu</p>
-                  <button 
-                    onClick={() => setActiveTab('chuc_nang')} 
-                    className="text-xs font-bold text-blue-600 hover:underline hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100"
-                  >
-                    Duyệt các chức năng chính ngay
-                  </button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-                  {ALL_SUB_MODULES.filter(m => bookmarkedPaths.includes(m.path)).map((item) => {
-                    const visuals = getModuleVisuals(item.path);
-                    const IconComponent = item.icon;
-                    return (
-                      <div
-                        key={item.path}
-                        onClick={() => navigate(item.path)}
-                        className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-sm hover:border-slate-300 transition-all duration-300 transform .5 relative overflow-hidden group min-h-[190px] cursor-pointer"
-                      >
-                        {/* Star icon badge absolute right-4 top-4 */}
-                        <button
-                          onClick={(e) => toggleBookmark(item.path, e)}
-                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-amber-500  transition-transform z-10"
-                          title="Bỏ đánh dấu"
-                        >
-                          <Star className="w-3.5 h-3.5 fill-amber-500" />
-                        </button>
-
-                        {/* Large circle squircle around icon */}
-                        <div className={cn(
-                          "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ",
-                          COLOR_MAP[visuals.color] || COLOR_MAP.blue
-                        )}>
-                          <IconComponent className="w-6 h-6" />
-                        </div>
-
-                        {/* Title */}
-                        <h4 className="font-bold text-slate-900 text-sm mb-2 group-hover:text-blue-600 transition-colors tracking-tight">
-                          {item.label}
-                        </h4>
-
-                        {/* Subtitle / Description */}
-                        <p className="text-[11px] text-slate-500 font-medium leading-relaxed max-w-[180px] line-clamp-3">
-                          {item.description || 'Module quản lý nghiệp vụ chất lượng cao.'}
-                        </p>
-
-                        {/* Fancy indicator bar */}
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-blue-600/10 transition-colors" />
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* TAB 3: TẤT CẢ (Original group structures retained so no feature is lost!) */}
-        {activeTab === 'tat_ca' && (
-          <div className="animate-in fade-in duration-300 space-y-10 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-            {filteredGroups.map((group, groupIdx) => (
-              <div key={groupIdx} className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-[0.2em]">
-                    {group.title}
-                  </h3>
-                  <div className="flex-1 h-px bg-slate-200" />
-                  <span className="text-[10px] font-bold text-slate-400 px-2 py-0.5 bg-slate-100 rounded-full">{group.items.length} modules</span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-                  {group.items.map((item) => {
-                    const visuals = getModuleVisuals(item.path);
-                    const IconComponent = item.icon;
-                    return (
-                      <div
-                        key={item.path}
-                        onClick={() => navigate(item.path)}
-                        className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col items-center text-center hover:shadow-sm hover:border-slate-300 transition-all duration-300 transform .5 relative overflow-hidden group min-h-[190px] cursor-pointer"
-                      >
-                        {/* Star icon badge absolute right-4 top-4 */}
-                        <button
-                          onClick={(e) => toggleBookmark(item.path, e)}
-                          className="absolute right-4 top-4 p-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-400 hover:text-amber-500  transition-transform z-10"
-                          title="Đánh dấu"
-                        >
-                          <Star className={cn("w-3.5 h-3.5", bookmarkedPaths.includes(item.path) ? "fill-amber-400 text-amber-500" : "")} />
-                        </button>
-
-                        {/* Large circle squircle around icon */}
-                        <div className={cn(
-                          "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ",
-                          COLOR_MAP[visuals.color] || COLOR_MAP.blue
-                        )}>
-                          <IconComponent className="w-6 h-6" />
-                        </div>
-
-                        {/* Title */}
-                        <h4 className="font-bold text-slate-900 text-sm mb-2 group-hover:text-blue-600 transition-colors tracking-tight">
-                          {item.label}
-                        </h4>
-
-                        {/* Subtitle / Description */}
-                        <p className="text-[11px] text-slate-500 font-medium leading-relaxed max-w-[180px] line-clamp-3">
-                          {item.description || 'Module quản lý nghiệp vụ chất lượng cao.'}
-                        </p>
-
-                        {/* Fancy indicator bar */}
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-transparent group-hover:bg-blue-600/10 transition-colors" />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-
-            {filteredGroups.length === 0 && (
-              <div className="py-6 text-center text-slate-400 text-sm font-medium">Không tìm thấy module nào phù hợp với yêu cầu tìm kiếm.</div>
-            )}
-          </div>
-        )}
-
-      </div>
-
-      {/* FOOTER & TECHNICAL DISCLOSURES */}
-      <footer className="mt-6 pt-12 border-t border-slate-200">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-6">
-            <div className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Hỗ trợ kỹ thuật: 1900 8888</div>
-            <div className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Doanh nghiệp: Enterprise Edition</div>
-          </div>
-          <div className="flex gap-4">
-            <button onClick={() => setShowCopyright(true)} className="text-xs font-bold text-blue-600 hover:bg-slate-100/50 px-4 py-2 rounded-lg transition-colors flex items-center gap-1">
-              <Shield className="w-3.5 h-3.5" /> Bản quyền hệ thống
-            </button>
-            <button onClick={() => alert('Đang tải cẩm nang hướng dẫn sử dụng VComm ERP...')} className="text-xs font-bold text-slate-600 hover:bg-slate-100/50 px-4 py-2 rounded-lg transition-colors flex items-center gap-1">
-              <HelpCircle className="w-3.5 h-3.5" /> Cẩm nang HDSD
-            </button>
-          </div>
-        </div>
-      </footer>
-
-      {/* MODAL 1: Sub-modules Selector Drawer for Chức Năng (Slide-over / popup) */}
-      <AnimatePresence>
-        {selectedGroup && (
-          <div className="fixed inset-0 z-50 overflow-hidden flex justify-end">
-            {/* Backdrop */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedGroup(null)}
-              className="absolute inset-0 bg-slate-900 bg-opacity-70 backdrop-blur-xs"
-            />
-
-            {/* Slide-over Content */}
-            <motion.div 
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="relative w-full max-w-md bg-white h-full shadow-sm flex flex-col z-10 border-l border-slate-200"
-            >
-              {/* Drawer Header */}
-              <div className="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", COLOR_MAP[selectedGroup.color] || COLOR_MAP.blue)}>
-                    {React.createElement(selectedGroup.icon, { className: "w-5 h-5" })}
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-base">{selectedGroup.title}</h3>
-                    <p className="text-[10px] text-slate-400 font-medium">Danh mục các phân hệ vận hành</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => setSelectedGroup(null)}
-                  className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-200/50 rounded-lg transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  {label}
                 </button>
-              </div>
+              );
+            })}
+          </nav>
+        </div>
 
-              {/* Drawer body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
-                <p className="text-xs text-slate-500 leading-relaxed font-medium bg-blue-50/50 text-blue-700 p-3 rounded-xl border border-blue-100/50">
-                  {selectedGroup.desc} Chọn một phân hệ nghiệp vụ ERP dưới đây để chuyển hướng điều hướng xử lý thông tin:
-                </p>
+        {/* TOP-RIGHT: Search + Wallpaper Switcher + Settings + Avatar */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          
+          {/* Quick Search */}
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 text-white/60 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input 
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Tìm kiếm app..."
+              className="pl-8 pr-7 py-1 bg-white/15 hover:bg-white/20 focus:bg-white/25 backdrop-blur-md border border-white/15 rounded-lg text-white placeholder-white/60 text-xs w-32 sm:w-44 focus:w-56 transition-all outline-none"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-white/60 hover:text-white"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
+          </div>
 
-                <div className="space-y-3">
-                  {selectedGroup.modulePaths.map(path => {
-                    const mod = ALL_SUB_MODULES.find(m => m.path === path);
-                    if (!mod) return null;
+          {/* Wallpaper & Theme Customizer Switcher */}
+          <div className="relative">
+            <button
+              onClick={() => setShowWallpaperMenu(!showWallpaperMenu)}
+              className={cn(
+                "w-7 h-7 rounded-lg backdrop-blur-md text-white border flex items-center justify-center transition-all cursor-pointer shadow-sm",
+                showWallpaperMenu 
+                  ? "bg-rose-600 border-rose-400 text-white shadow-rose-900/40" 
+                  : "bg-white/15 hover:bg-white/25 border-white/15"
+              )}
+              title="Tùy biến hình nền & màu sắc Launcher"
+            >
+              <Palette className="w-3.5 h-3.5 text-white" />
+            </button>
 
-                    return (
-                      <div
-                        key={path}
-                        onClick={() => {
-                          setSelectedGroup(null);
-                          navigate(path);
-                        }}
-                        className="group flex items-center justify-between p-4 bg-white hover:bg-slate-50 border border-slate-200 hover:border-blue-500 rounded-2xl transition-all duration-200 cursor-pointer"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 group-hover:bg-blue-50 group-hover:border-blue-100 group-hover:text-blue-600 flex items-center justify-center transition-colors shadow-xs">
-                            <mod.icon className="w-4 h-4" />
+            {showWallpaperMenu && (
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-slate-900/95 backdrop-blur-2xl border border-white/15 rounded-2xl shadow-2xl p-3 z-50 text-xs text-white animate-in fade-in zoom-in-95 duration-150">
+                {/* Header */}
+                <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-white/10">
+                  <div className="flex items-center gap-2">
+                    <Palette className="w-4 h-4 text-amber-400" />
+                    <div>
+                      <h4 className="font-bold text-slate-100 text-xs leading-none">Tùy biến Giao diện Launcher</h4>
+                      <p className="text-[10px] text-slate-400 mt-0.5">Bản sắc văn hóa Việt Nam & Màu nền</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setShowWallpaperMenu(false)}
+                    className="w-5 h-5 rounded-md hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {/* Segmented Switcher: Wallpapers vs Colors */}
+                <div className="grid grid-cols-2 gap-1 p-1 bg-black/40 rounded-xl mb-3 border border-white/10">
+                  <button
+                    onClick={() => setCustomizerTab('wallpapers')}
+                    className={cn(
+                      "py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer",
+                      customizerTab === 'wallpapers'
+                        ? "bg-white/20 text-white shadow-xs border border-white/20"
+                        : "text-slate-400 hover:text-white"
+                    )}
+                  >
+                    <ImageIcon className="w-3.5 h-3.5 text-rose-400" />
+                    <span>Bản sắc VN ({VIETNAM_WALLPAPERS.length})</span>
+                  </button>
+                  <button
+                    onClick={() => setCustomizerTab('colors')}
+                    className={cn(
+                      "py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer",
+                      customizerTab === 'colors'
+                        ? "bg-white/20 text-white shadow-xs border border-white/20"
+                        : "text-slate-400 hover:text-white"
+                    )}
+                  >
+                    <Layers className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Màu nền ({BACKGROUND_COLORS.length})</span>
+                  </button>
+                </div>
+
+                {/* Tab 1: Iconic Vietnamese Wallpapers */}
+                {customizerTab === 'wallpapers' && (
+                  <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1 custom-scrollbar">
+                    {VIETNAM_WALLPAPERS.map((wp) => {
+                      const isSelected = bgType === 'wallpaper' && activeWallpaper === wp.path;
+                      return (
+                        <button
+                          key={wp.id}
+                          onClick={() => handleSelectWallpaper(wp.path)}
+                          className={cn(
+                            "w-full text-left p-2 rounded-xl flex items-center gap-2.5 transition-all cursor-pointer border group",
+                            isSelected 
+                              ? "bg-rose-500/20 border-rose-500/50 shadow-sm" 
+                              : "hover:bg-white/5 border-transparent hover:border-white/10"
+                          )}
+                        >
+                          {/* Mini Thumbnail Preview */}
+                          <div 
+                            className="w-12 h-10 rounded-lg overflow-hidden shrink-0 border border-white/20 bg-cover bg-center shadow-xs group-hover:scale-105 transition-transform"
+                            style={{ backgroundImage: `url('${wp.path}')` }}
+                          />
+
+                          {/* Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <span className={cn(
+                                "font-bold text-xs truncate",
+                                isSelected ? "text-rose-200" : "text-white"
+                              )}>
+                                {wp.name}
+                              </span>
+                              {wp.tag && (
+                                <span className={cn(
+                                  "px-1.5 py-0.2 rounded text-[9px] uppercase tracking-wider shrink-0",
+                                  wp.tagColor || "bg-white/20 text-white"
+                                )}>
+                                  {wp.tag}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[10px] text-slate-400 truncate mt-0.5">
+                              {wp.subtitle}
+                            </p>
+                          </div>
+
+                          {/* Selected Checkmark */}
+                          {isSelected && (
+                            <div className="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                              <Check className="w-3 h-3" strokeWidth={3} />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Tab 2: Solid & Mesh Gradient Colors */}
+                {customizerTab === 'colors' && (
+                  <div className="grid grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1 custom-scrollbar">
+                    {BACKGROUND_COLORS.map((col) => {
+                      const isSelected = bgType === 'color' && activeBgColor === col.gradient;
+                      return (
+                        <button
+                          key={col.id}
+                          onClick={() => handleSelectBgColor(col.gradient)}
+                          className={cn(
+                            "text-left p-2 rounded-xl border transition-all cursor-pointer flex flex-col justify-between group",
+                            isSelected 
+                              ? "bg-white/15 border-amber-400 shadow-md ring-1 ring-amber-400/50" 
+                              : "bg-white/5 border-white/10 hover:border-white/25 hover:bg-white/10"
+                          )}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div 
+                              className="w-7 h-7 rounded-lg border border-white/30 shadow-sm group-hover:scale-110 transition-transform"
+                              style={{ background: col.gradient }}
+                            />
+                            {isSelected && (
+                              <div className="w-4 h-4 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center font-bold">
+                                <Check className="w-2.5 h-2.5" strokeWidth={3} />
+                              </div>
+                            )}
                           </div>
                           <div>
-                            <p className="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition-colors">{mod.label}</p>
-                            <p className="text-[10px] text-slate-500 line-clamp-1 leading-normal max-w-[200px]">{mod.description}</p>
+                            <span className="font-bold text-[11px] text-white block truncate">
+                              {col.name}
+                            </span>
+                            <span className="text-[9px] text-slate-400 block truncate">
+                              {col.subtitle}
+                            </span>
                           </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <button 
-                            onClick={(e) => toggleBookmark(path, e)}
-                            className="p-1.5 hover:bg-slate-100 text-slate-300 hover:text-amber-500 rounded-lg transition-colors"
-                            title="Thêm vào Đánh dấu"
-                          >
-                            <Star className={cn("w-3.5 h-3.5", bookmarkedPaths.includes(path) ? "fill-amber-400 text-amber-500" : "")} />
-                          </button>
-                          <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
-                        </div>
-                      </div>
-                    );
-                  })}
-
-                  {selectedGroup.modulePaths.length === 0 && (
-                    <div className="py-6 text-center text-slate-400 flex flex-col items-center justify-center gap-2">
-                      <Layers3 className="w-8 h-8 text-slate-300" />
-                      <p className="text-xs font-bold">Không tìm thấy phân hệ phụ</p>
-                      <p className="text-[10px] text-slate-500">Phân hệ này đang hoạt động cơ chế ngầm định.</p>
-                    </div>
-                  )}
-                </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-              <div className="p-4 border-t border-slate-100 bg-slate-50 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                VCOMM ENTERPRISE WORK ENGINE
-              </div>
-            </motion.div>
+            )}
           </div>
-        )}
-      </AnimatePresence>
 
-      {/* MODAL 2: Copyright & License Information Modal (Highly polished Corporate styling) */}
-      <AnimatePresence>
-        {showCopyright && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.6 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowCopyright(false)}
-              className="absolute inset-0 bg-slate-900"
-            />
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-lg bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-200 z-10 flex flex-col"
+          {/* Settings Icon */}
+          <div className="relative">
+            <button
+              onClick={() => setShowSettingsMenu(!showSettingsMenu)}
+              className="w-7 h-7 rounded-lg bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15 flex items-center justify-center transition-all cursor-pointer"
+              title="Cài đặt hệ thống"
             >
-              <div className="bg-gradient-to-br from-slate-900 to-blue-980 p-6 text-white text-center sm:text-left relative overflow-hidden">
-                <div className="absolute top-0 right-0 opacity-[0.05] p-6 pointer-events-none">
-                  <Shield className="w-48 h-48 rotate-12" />
-                </div>
-                <h3 className="font-serif text-lg font-black flex items-center justify-center sm:justify-start gap-2 text-white">
-                  <Shield className="w-5 h-5 text-blue-400" /> VComm ERP Enterprise License Key
-                </h3>
-                <p className="text-slate-400 text-xs mt-1">Hệ thống thông báo thông tin đăng ký bản quyền sản phẩm</p>
+              <Settings className="w-3.5 h-3.5" />
+            </button>
+
+            {showSettingsMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-slate-900/95 backdrop-blur-2xl border border-white/15 rounded-xl shadow-2xl p-1.5 z-50 text-xs text-white animate-in fade-in duration-150">
+                <button
+                  onClick={() => { navigate('/settings'); setShowSettingsMenu(false); }}
+                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-white/15 flex items-center gap-2 font-medium"
+                >
+                  <Settings className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Quản trị hệ thống</span>
+                </button>
+                <button
+                  onClick={() => { signOut(); setShowSettingsMenu(false); }}
+                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-rose-500/20 text-rose-300 flex items-center gap-2 font-medium"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  <span>Đăng xuất</span>
+                </button>
               </div>
+            )}
+          </div>
 
-              <div className="p-6 space-y-6">
-                <div className="border border-slate-200 rounded-2xl p-5 bg-slate-50 space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Chủ sở hữu bản quyền</span>
-                    <span className="text-xs font-extrabold text-slate-800 font-mono">vinh.ngtienmdb@gmail.com</span>
+          {/* User Initial Circle */}
+          <div 
+            onClick={() => navigate('/settings')}
+            className="w-7 h-7 rounded-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs flex items-center justify-center shadow-sm cursor-pointer border border-white/30 transition-transform active:scale-95"
+            title={staffInfo?.name || 'Tài khoản người dùng'}
+          >
+            {userInitials}
+          </div>
+        </div>
+      </header>
+
+      {/* ================= MAIN APP GRID AREA (SPACIOUS, AIRY, FULL APP NAMES) ================= */}
+      <main className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-12 md:px-20 lg:px-28">
+        
+        {/* Left Horizontal Navigation Arrow Button */}
+        {currentPage > 0 && (
+          <button
+            onClick={() => changePage(currentPage - 1)}
+            className="absolute left-3 sm:left-6 md:left-10 top-1/2 -translate-y-1/2 w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/30 hover:bg-black/50 active:scale-95 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-xl cursor-pointer transition-all hover:scale-110 z-30"
+            title="Màn hình trước (Phím Mũi tên Trái)"
+          >
+            <ArrowLeft className="w-5 h-5 text-white" strokeWidth={2.2} />
+          </button>
+        )}
+
+        {/* Right Horizontal Navigation Arrow Button */}
+        {currentPage < totalPages - 1 && (
+          <button
+            onClick={() => changePage(currentPage + 1)}
+            className="absolute right-3 sm:right-6 md:right-10 top-1/2 -translate-y-1/2 w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/30 hover:bg-black/50 active:scale-95 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-xl cursor-pointer transition-all hover:scale-110 z-30"
+            title="Màn hình tiếp theo (Phím Mũi tên Phải)"
+          >
+            <ArrowRight className="w-5 h-5 text-white" strokeWidth={2.2} />
+          </button>
+        )}
+
+        {/* When filteredApps is empty (e.g. no starred apps or no search results) */}
+        {visibleApps.length === 0 ? (
+          <div className="flex flex-col items-center justify-center text-center p-8 bg-black/40 backdrop-blur-xl rounded-2xl border border-white/15 max-w-md mx-auto text-white shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 mb-4 shadow-lg shadow-amber-500/10">
+              <Star className="w-8 h-8 fill-current" />
+            </div>
+            <h3 className="text-base font-bold mb-1.5">
+              {activeTab === 'my_apps' ? 'Chưa có ứng dụng được đánh dấu sao' : 'Không tìm thấy ứng dụng phù hợp'}
+            </h3>
+            <p className="text-xs text-white/70 mb-5 leading-relaxed">
+              {activeTab === 'my_apps' 
+                ? 'Bạn có thể đánh dấu sao (⭐) cho bất kỳ ứng dụng nào trong danh sách Tất cả để ghim vào mục Ứng dụng của tôi truy cập nhanh.'
+                : 'Thử tìm kiếm với từ khóa khác hoặc chuyển sang danh mục ứng dụng khác.'}
+            </p>
+            <button
+              onClick={() => { setActiveTab('all'); setSearchQuery(''); setCurrentPage(0); }}
+              className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-semibold rounded-xl shadow-lg transition-all cursor-pointer hover:scale-105"
+            >
+              Xem tất cả ứng dụng
+            </button>
+          </div>
+        ) : (
+          /* 5 Columns x 3 Rows Grid: Airy, Refined Corner Radius, Full Names */
+          <div 
+            className={cn(
+              "w-full max-w-5xl mx-auto grid grid-cols-5 grid-rows-3 gap-y-7 sm:gap-y-9 md:gap-y-11 gap-x-4 sm:gap-x-8 md:gap-x-12 place-items-center transition-all duration-300",
+              isSlideAnimating && "opacity-50 scale-98"
+            )}
+          >
+            {visibleApps.map((app) => {
+              const Icon = app.icon;
+              const starred = isStarred(app.id);
+
+              return (
+                <div
+                  key={app.id}
+                  onClick={() => navigate(app.path)}
+                  className="group flex flex-col items-center cursor-pointer transition-transform hover:-translate-y-1.5 active:scale-95 w-24 sm:w-28 md:w-32"
+                  title={`${app.name}: ${app.description}`}
+                >
+                  {/* Modern Icon Box: Refined Rounded-2xl (not overly rounded), Sleek Border & Inner Glow */}
+                  <div 
+                    className={cn(
+                      "w-15 h-15 sm:w-17 sm:h-17 md:w-[72px] md:h-[72px] rounded-2xl bg-gradient-to-br shadow-lg flex items-center justify-center text-white border border-white/20 transition-all duration-200 group-hover:scale-105 group-hover:shadow-2xl relative",
+                      app.color
+                    )}
+                  >
+                    {/* Star / Favorite toggle button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleStar(app.id);
+                      }}
+                      className={cn(
+                        "absolute -top-1.5 -left-1.5 p-1 rounded-full z-20 transition-all cursor-pointer shadow-md",
+                        starred
+                          ? "bg-amber-400 text-slate-950 scale-100 hover:scale-110 hover:bg-amber-300 shadow-amber-400/30"
+                          : "bg-black/60 text-white/50 opacity-0 group-hover:opacity-100 hover:text-amber-300 hover:bg-black/90 hover:scale-110"
+                      )}
+                      title={starred ? "Bỏ đánh dấu sao khỏi Ứng dụng của tôi" : "Đánh dấu sao vào Ứng dụng của tôi"}
+                    >
+                      <Star className={cn("w-3 h-3", starred ? "fill-current text-slate-950" : "text-white/80")} />
+                    </button>
+
+                    <Icon className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 text-white drop-shadow-sm" strokeWidth={1.8} />
+
+                    {/* Primary eCommerce Core badge */}
+                    {app.isPrimary && (
+                      <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-rose-600 text-[9px] font-black text-white rounded-md shadow-md border border-white/30 tracking-tight animate-pulse">
+                        CORE
+                      </span>
+                    )}
+
+                    {/* Beta badge */}
+                    {app.isBeta && (
+                      <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-emerald-600 text-[9px] font-black text-white rounded-md shadow-md border border-white/30 tracking-tight">
+                        BETA
+                      </span>
+                    )}
                   </div>
 
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Mã phần mềm (VComm Product ID)</span>
-                    <span className="text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md font-mono">VCOMM-ERP-ENT-2026</span>
-                  </div>
-
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Nhà phát triển phân phối</span>
-                    <span className="text-xs font-bold text-slate-700">Công ty Cổ phần VComm Intelligence Corp</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Trạng thái xác thực</span>
-                    <span className="text-xs font-extrabold text-emerald-600 flex items-center gap-1 bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-full">
-                      <UserCheck className="w-3 h-3" /> ĐÃ KÍCH HOẠT (ACTIVE)
+                  {/* Full App Name (No aggressive truncation - fully readable across 1 or 2 lines) */}
+                  <div className="mt-2 text-center w-full min-h-[34px] flex items-center justify-center px-1">
+                    <span className="text-white font-medium text-xs sm:text-[13px] leading-snug line-clamp-2 break-words drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
+                      {app.name}
                     </span>
                   </div>
                 </div>
+              );
+            })}
 
-                <div className="text-xs text-slate-500 leading-relaxed font-medium">
-                  Sản phẩm được bảo hộ bởi luật sở hữu trí tuệ của Nước Cộng Hòa Xã Hội Chủ Nghĩa Việt Nam. Nghiêm cấm mọi hành vi sao chép thiết lập mã nguồn, can thiệp vào các API SePay & Gemini SDK trái phép hoặc bẻ khóa giấy phép Enterprise.
-                </div>
-              </div>
-
-              <div className="p-4 bg-slate-100 flex justify-end gap-2 border-t border-slate-200">
-                <button 
-                  onClick={() => setShowCopyright(false)} 
-                  className="px-5 py-2 bg-slate-800 text-white hover:bg-slate-900 rounded-xl text-xs font-extrabold transition-all shadow-sm active:scale-95"
-                >
-                  Đóng chứng chỉ
-                </button>
-              </div>
-            </motion.div>
+            {/* Empty slot placeholders to keep 5-column grid perfectly aligned */}
+            {Array.from({ length: Math.max(0, APPS_PER_PAGE - visibleApps.length) }).map((_, i) => (
+              <div key={`empty-${i}`} className="w-24 sm:w-28 md:w-32 h-24 sm:h-28 md:h-32 invisible pointer-events-none" />
+            ))}
           </div>
         )}
-      </AnimatePresence>
+      </main>
 
-      {/* MODAL 3: Manufacturer Operations Showcase Dashboard (No static fake page, actual layout!) */}
-      <AnimatePresence>
-        {showProduction && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.6 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowProduction(false)}
-              className="absolute inset-0 bg-slate-900"
-            />
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-4xl bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-200 z-10 flex flex-col"
-            >
-              <div className="bg-slate-900 p-6 text-white flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-lime-500 text-white flex items-center justify-center shadow-sm">
-                    <Factory className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-serif text-lg font-black text-white">Phân hệ Quản trị Sản xuất & Chế biến</h3>
-                    <p className="text-slate-400 text-xs">Mô hình sản xuất khép kín MRP & ERP Warehouse Logistics</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => setShowProduction(false)}
-                  className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="p-6 space-y-6 overflow-y-auto max-h-[500px]">
-                {/* Visual Pipeline components */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Item 1 */}
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
-                    <p className="text-[10px] font-bold text-orange-600 bg-orange-50 border border-orange-100 px-2 py-0.5 rounded-full w-fit uppercase">Giai đoạn 1: Lập kế hoạch (MRP)</p>
-                    <h4 className="font-bold text-slate-800 text-sm">Nhu cầu nguyên vật liệu</h4>
-                    <p className="text-xs text-slate-500 italic font-medium leading-relaxed">Hệ thống phân tích báo cáo đơn hàng và cấu trúc sản phẩm BOM để xuất phiếu mua vật tư.</p>
-                    <div className="p-3 bg-white border border-slate-100 rounded-xl text-[11px] text-slate-600 font-mono space-y-1">
-                      <div className="flex justify-between"><span>Phiếu kế hoạch:</span><span className="font-bold">MRP-2026-091</span></div>
-                      <div className="flex justify-between"><span>Nguyên liệu:</span><span className="font-bold text-blue-600">Thép mạ kẽm</span></div>
-                    </div>
-                  </div>
-
-                  {/* Item 2 */}
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
-                    <p className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full w-fit uppercase">Giai đoạn 2: Lệnh sản xuất</p>
-                    <h4 className="font-bold text-slate-800 text-sm">Chế tạo & Lắp ráp phân xưởng</h4>
-                    <p className="text-xs text-slate-500 italic font-medium leading-relaxed">Phân bổ chỉ tiêu sản lượng theo dây chuyền lắp ráp công nghệ chính xác cao IoT.</p>
-                    <div className="p-3 bg-white border border-slate-100 rounded-xl text-[11px] text-slate-600 font-mono space-y-1">
-                      <div className="flex justify-between"><span>Lệnh chế tạo:</span><span className="font-bold">WO-9948271</span></div>
-                      <div className="flex justify-between"><span>Nhà xưởng:</span><span className="font-bold text-green-600">Line A - Khu CNC</span></div>
-                    </div>
-                  </div>
-
-                  {/* Item 3 */}
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
-                    <p className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full w-fit uppercase">Giai đoạn 3: Kiểm định & Đóng gói</p>
-                    <h4 className="font-bold text-slate-800 text-sm">Quản lý chất lượng (IQC/OQC)</h4>
-                    <p className="text-xs text-slate-500 italic font-medium leading-relaxed">Chứng thư kiểm tra chất lượng từ các kỹ sư đầu ngành, sấy dán mã vạch kho vận bốc xếp.</p>
-                    <div className="p-3 bg-white border border-slate-100 rounded-xl text-[11px] text-slate-600 font-mono space-y-1">
-                      <div className="flex justify-between"><span>Tỷ lệ đạt chuẩn:</span><span className="font-bold text-emerald-600">99.85%</span></div>
-                      <div className="flex justify-between"><span>Nhãn dán QR code:</span><span className="font-bold text-slate-600">QR-BATCH-204</span></div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-2xl flex gap-3 text-xs font-medium">
-                  <Info className="w-5 h-5 flex-shrink-0 text-yellow-600" />
-                  <div>
-                    <span className="font-bold">Lưu ý nghiệp vụ:</span> Phân hệ quản lý dây chuyền sản xuất đang được cấu hình đồng bộ trực tiếp với hệ sinh thái ERP phần cứng tại nhà máy. Liên hệ quản lý IT Enterprise của VComm để tích hợp PLC/Scada.
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 bg-slate-100 flex justify-end gap-2 border-t border-slate-200">
-                <button 
-                  onClick={() => setShowProduction(false)} 
-                  className="px-5 py-2 bg-slate-800 text-white hover:bg-slate-900 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
-                >
-                  Xác nhận cấu hình
-                </button>
-              </div>
-            </motion.div>
+      {/* ================= BOTTOM PAGINATION PILL ================= */}
+      <footer className="relative z-20 pb-4 sm:pb-6 flex justify-center items-center">
+        {totalPages > 1 && (
+          <div className="bg-black/35 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 border border-white/15 shadow-lg">
+            {Array.from({ length: totalPages }).map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => changePage(idx)}
+                className={cn(
+                  "transition-all duration-300 cursor-pointer",
+                  idx === currentPage
+                    ? "w-6 h-1.5 rounded-full bg-white shadow-xs"
+                    : "w-1.5 h-1.5 rounded-full bg-white/40 hover:bg-white/80"
+                )}
+                title={`Trang ${idx + 1}`}
+              />
+            ))}
           </div>
         )}
-      </AnimatePresence>
-
+      </footer>
     </div>
   );
 }

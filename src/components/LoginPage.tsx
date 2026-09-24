@@ -47,9 +47,9 @@ export function LoginPage() {
  ) : (
    <>
      <div className="w-6 h-6 bg-[#2563EB] rounded-sm transform rotate-45 shadow-sm shadow-slate-900/5"></div>
-     <h1 className="font-serif tracking-tight text-2xl font-black text-[#FAF9F5] tracking-tight">
-     VComm <span className="text-orange-500">ERP</span>
-     </h1>
+      <h1 className="font-sans tracking-tight text-2xl font-black text-white">
+        VComm <span className="text-blue-500">ERP</span>
+      </h1>
    </>
  )}
  </div>
@@ -143,7 +143,7 @@ export function LoginPage() {
  <button 
  type="submit"
  disabled={isSubmitting}
- className="w-full py-4 bg-[#2563EB] text-[#FAF9F5] rounded-lg font-bold text-sm shadow-sm shadow-slate-900/5 hover:bg-slate-800 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+ className="w-full py-4 bg-[#2563EB] text-[#FAF9F5] rounded-lg font-bold text-sm shadow-sm shadow-slate-900/5 hover:bg-slate-800 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50 cursor-pointer"
  >
  {isSubmitting ? (
  <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -154,6 +154,55 @@ export function LoginPage() {
  </>
  )}
  </button>
+
+ {/* Quick Login Helper */}
+ <div className="space-y-2 pt-2">
+ <div className="relative flex py-1 items-center">
+ <div className="flex-grow border-t border-slate-200"></div>
+ <span className="flex-shrink mx-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Đăng nhập nhanh</span>
+ <div className="flex-grow border-t border-slate-200"></div>
+ </div>
+ <div className="grid grid-cols-2 gap-2">
+ <button
+ type="button"
+ onClick={async () => {
+ setUsername('admin');
+ setPassword('admin@1234');
+ setIsSubmitting(true);
+ try {
+ await login('admin', 'admin@1234');
+ } catch (e: any) {
+ setError(e.message);
+ } finally {
+ setIsSubmitting(false);
+ }
+ }}
+ className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-bold transition-all border border-slate-300 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs"
+ >
+ <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+ <span>Vào quyền Admin</span>
+ </button>
+ <button
+ type="button"
+ onClick={async () => {
+ setUsername('superadmin');
+ setPassword('superadmin@1234');
+ setIsSubmitting(true);
+ try {
+ await login('superadmin', 'superadmin@1234');
+ } catch (e: any) {
+ setError(e.message);
+ } finally {
+ setIsSubmitting(false);
+ }
+ }}
+ className="py-2.5 px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition-all border border-indigo-200 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs"
+ >
+ <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
+ <span>Super Admin</span>
+ </button>
+ </div>
+ </div>
  </form>
 
  <div className="pt-6 border-t border-[#F3F4F6]">

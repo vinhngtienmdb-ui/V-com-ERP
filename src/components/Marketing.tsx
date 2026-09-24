@@ -1,4 +1,6 @@
 import { DraggableGrid } from './ui/DraggableGrid';
+import { CompactPageHeader } from './common/CompactPageHeader';
+import { CompactStatsRibbon, MetricRibbonItem } from './common/CompactStatsRibbon';
 import React, { useState } from 'react';
 import { 
  Megaphone, 
@@ -57,7 +59,7 @@ const MOCK_CAMPAIGNS: Campaign[] = [
 
 const SOCIAL_ACCOUNTS = [
  { id: 'fb', platform: 'Facebook', name: 'VComm Official', status: 'connected', followers: '150k', color: 'bg-slate-900', icon: Facebook },
- { id: 'tt', platform: 'TikTok', name: '@vcomm_shop_vn', status: 'connected', followers: '850k', color: 'bg-stone-950', icon: Music2 },
+ { id: 'tt', platform: 'TikTok', name: '@vcomm_official_vn', status: 'connected', followers: '850k', color: 'bg-stone-950', icon: Music2 },
  { id: 'ig', platform: 'Instagram', name: 'vcomm.lifestyle', status: 'connected', followers: '45k', color: 'bg-pink-600', icon: Instagram },
  { id: 'x', platform: 'Twitter/X', name: 'vcomm_global', status: 'disconnected', followers: '0', color: 'bg-slate-800', icon: Twitter },
 ];
@@ -97,79 +99,82 @@ export function Marketing() {
  const [isModalOpen, setIsModalOpen] = useState(false);
  const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'omnichannel' | 'ads' | 'vouchers' | string>('overview');
 
- return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500">
- <div className="flex items-center justify-between">
- <div className="header-title">
- <div className="flex items-center gap-2 mb-1">
- {activeTab !== 'overview' && (
- <button onClick={() => setActiveTab('overview')} className="p-1 hover:bg-slate-100 rounded-md transition-colors mr-1">
- <ArrowUpRight className="w-4 h-4 rotate-225" />
- </button>
- )}
- <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">Marketing & Omnichannel</h1>
- </div>
- <p className="text-sm text-[#6B7280]">Kết nối đa kênh (FB, TT, IG), Quản lý chiến dịch & Tự động hóa tiếp thị.</p>
- </div>
- <div className="flex gap-3">
- <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
- <Cpu className="w-4 h-4 text-purple-500" />
- AI Content Maker
- </button>
- <button 
- onClick={() => setIsModalOpen(true)}
- className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
- >
- <Plus className="w-4 h-4" /> Tạo chiến dịch mới
- </button>
- </div>
- </div>
+  const marketingRibbonItems: MetricRibbonItem[] = [
+    {
+      id: 'gmv',
+      icon: <BarChart2 className="w-3.5 h-3.5" />,
+      label: 'GMV Marketing',
+      value: formatCurrency(900000000),
+      subText: 'ROI đạt 10.5x',
+      colorVariant: 'emerald'
+    },
+    {
+      id: 'followers',
+      icon: <Smartphone className="w-3.5 h-3.5" />,
+      label: 'Follower Đa Kênh',
+      value: '1.2M lượt',
+      subText: '+15k/ngày',
+      colorVariant: 'blue'
+    },
+    {
+      id: 'spent',
+      icon: <TrendingUp className="w-3.5 h-3.5" />,
+      label: 'Đã Giải Ngân',
+      value: formatCurrency(85000000),
+      subText: '42% ngân sách',
+      colorVariant: 'amber'
+    },
+    {
+      id: 'campaigns',
+      icon: <Megaphone className="w-3.5 h-3.5" />,
+      label: 'Chiến Dịch Đang Chạy',
+      value: '08 chiến dịch',
+      subText: 'Mega Sale 2026',
+      colorVariant: 'purple',
+      onClick: () => setActiveTab('campaigns')
+    }
+  ];
 
- {activeTab === 'overview' && (
- <div className="space-y-8">
- {/* Stats Cards */}
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">GMV từ Marketing</span>
- <BarChart2 className="w-4 h-4 text-emerald-600" />
- </div>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{formatCurrency(900000000)}</span>
- <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">ROI 10.5</span>
- </div>
- </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Tổng Follower (Multi)</span>
- <Smartphone className="w-4 h-4 text-orange-700" />
- </div>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">1.2M</span>
- <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">+15k/day</span>
- </div>
- </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chi phí đã tiêu</span>
- <TrendingUp className="w-4 h-4 text-orange-600" />
- </div>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">{formatCurrency(85000000)}</span>
- <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">42% Budget</span>
- </div>
- </div>
- <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Campaign Active</span>
- <Megaphone className="w-4 h-4 text-primary-600" />
- </div>
- <div className="flex items-end justify-between">
- <span className="text-2xl font-black text-[#111827]">08</span>
- <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">Hot Sale</span>
- </div>
- </div>
- </DraggableGrid>
+  return (
+    <div className="space-y-3 animate-in fade-in slide-in- duration-500 font-sans">
+      {/* Compact Standardized Header */}
+      <CompactPageHeader
+        icon={
+          activeTab !== 'overview' ? (
+            <button onClick={() => setActiveTab('overview')} className="p-1 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer">
+              <ArrowUpRight className="w-4 h-4 rotate-225 text-slate-600" />
+            </button>
+          ) : (
+            <Megaphone className="w-4 h-4 text-purple-600" />
+          )
+        }
+        title="Marketing Đa Kênh & Tăng Trưởng Sàn"
+        badge={{ text: "Omnichannel Growth", variant: "purple" }}
+        description="Tích hợp tài khoản quảng cáo đa kênh (FB, TikTok, Google), quản lý chiến dịch Mega Sale và tự động hóa chuỗi phễu khách hàng."
+        actions={
+          <div className="flex items-center gap-2">
+            <button className="bg-white border border-slate-200 hover:bg-slate-50 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer">
+              <Cpu className="w-3.5 h-3.5 text-purple-600" />
+              <span>AI Content Maker</span>
+            </button>
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" /> 
+              <span>Tạo Chiến Dịch</span>
+            </button>
+          </div>
+        }
+      />
+
+      {activeTab === 'overview' && (
+        <div className="space-y-3">
+          {/* Compact Stats Ribbon */}
+          <CompactStatsRibbon
+            items={marketingRibbonItems}
+            storageKey="marketing_stats_ribbon"
+          />
 
  {/* Matrix Grid Layout */}
  <div className="space-y-6">
@@ -490,7 +495,7 @@ export function Marketing() {
  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Kênh mục tiêu</label>
  <select className="w-full border border-slate-400 rounded-lg p-2.5 text-sm bg-white outline-none">
  <option value="fb">Facebook Fanpage</option>
- <option value="tt">TikTok Shop</option>
+ <option value="vcomm_live">VComm Live & Story</option>
  <option value="ig">Instagram</option>
  <option value="multi">Tất cả kênh (Omni)</option>
  </select>

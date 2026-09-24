@@ -25,7 +25,11 @@ import {
  Flame,
  LayoutGrid,
  Settings2,
- Smartphone
+ Smartphone,
+ Mail,
+ Send,
+ Plus,
+ BarChart2
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { LoyaltyProgram } from '../types/erp';
@@ -67,8 +71,60 @@ const REWARDS = [
  { id: 'R3', title: 'Thẻ Starbucks 100k', points: 1500, type: 'giftcard', stock: 88 },
 ];
 
+const MOCK_LOYALTY_CAMPAIGNS = [
+  { 
+    id: 'CMP-01', 
+    name: 'Chúc mừng Sinh nhật Hội viên Tháng 4', 
+    type: 'zns', 
+    target: 'Khách hàng có sinh nhật trong tháng (Diamond & Gold)', 
+    sent: 1250, 
+    openRate: 88, 
+    clickRate: 42, 
+    budget: 1500000,
+    status: 'active',
+    reward: 'Voucher 500.000đ + x2 Điểm V-Coin'
+  },
+  { 
+    id: 'CMP-02', 
+    name: 'Nhắc nhở sử dụng Voucher VIP sắp hết hạn', 
+    type: 'zns', 
+    target: 'Hội viên có voucher hạn sử dụng còn dưới 3 ngày', 
+    sent: 840, 
+    openRate: 94, 
+    clickRate: 58, 
+    budget: 950000,
+    status: 'active',
+    reward: 'Thông báo nhắc hạn tự động Zalo'
+  },
+  { 
+    id: 'CMP-03', 
+    name: 'Tri ân Thăng hạng Kim Cương Prestige 2026', 
+    type: 'sms', 
+    target: 'Hội viên nâng hạng Diamond Club trong quý', 
+    sent: 320, 
+    openRate: 98, 
+    clickRate: 76, 
+    budget: 2400000,
+    status: 'active',
+    reward: 'Thẻ quà tặng 1.000.000đ & Đặc quyền VIP Lounge'
+  },
+  { 
+    id: 'CMP-04', 
+    name: 'Tái kích hoạt Hội viên ngủ đông (Winback)', 
+    type: 'zns', 
+    target: 'Khách hàng không phát sinh giao dịch trong 45 ngày', 
+    sent: 2100, 
+    openRate: 72, 
+    clickRate: 28, 
+    budget: 1800000,
+    status: 'completed',
+    reward: 'Voucher Freeship 0Đ + Giảm 15%'
+  }
+];
+
 export function LoyaltyManagement() {
- const [activeTab, setActiveTab] = useState<'tiers' | 'missions' | 'rewards' | 'gamification'>('tiers');
+ const [activeTab, setActiveTab] = useState<'tiers' | 'missions' | 'rewards' | 'gamification' | 'campaigns'>('tiers');
+ const [campaigns, setCampaigns] = useState(MOCK_LOYALTY_CAMPAIGNS);
  const [vipMembers, setVipMembers] = useState([
   { id: 'M-001', name: 'Nguyễn Bích Phương', phone: '0987654321', tier: 'Bạc', points: 2400, birthday: '03/06' },
   { id: 'M-002', name: 'Phạm Minh Chính', phone: '0912345678', tier: 'Vàng', points: 8200, birthday: '12/10' },
@@ -117,64 +173,78 @@ export function LoyaltyManagement() {
  };
 
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
- <div className="flex items-center justify-between">
- <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Loyalty & Club Prestige</h1>
- <p className="text-sm text-[#6B7280] mt-1">Hệ thống thành viên, Phần thưởng và Gamification tăng trưởng tỷ lệ quay lại.</p>
- </div>
- <div className="flex gap-3">
- <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
- <Settings2 className="w-4 h-4 text-slate-500" />
- Cấu hình Điểm
- </button>
- <button className="bg-[#111827] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
- <Trophy className="w-4 h-4 text-yellow-400" /> Chiến dịch Thưởng Điểm
- </button>
- </div>
- </div>
+  <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
+      {/* Top Header Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200/60 flex items-center gap-1">
+              <Crown className="w-3.5 h-3.5 text-amber-600" />
+              Club Prestige Loyalty
+            </span>
+            <span className="text-xs text-slate-500 font-medium">Khách Hàng Thân Thiết & Gamification</span>
+          </div>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Hội Viên Thân Thiết & Quà Tặng (Loyalty)</h1>
+          <p className="text-xs text-slate-600 mt-0.5">
+            Quản trị các hạng thành viên VComm Prestige, cơ chế tích - đổi điểm xu V-Coin và chuỗi sự kiện Gamification tương tác.
+          </p>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <button className="bg-white border border-slate-200 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 transition-all flex items-center gap-2 shadow-2xs cursor-pointer">
+            <Settings2 className="w-4 h-4 text-slate-500" />
+            Cấu Hình Tích Điểm
+          </button>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-500/20 flex items-center gap-2 cursor-pointer">
+            <Trophy className="w-4 h-4 text-amber-300" />
+            Chiến Dịch Nhân Đôi Điểm
+          </button>
+        </div>
+      </div>
 
- {/* Hero Stats */}
- <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
- {[
- { label: 'Thành viên Diamond', value: '1,245', sub: '+42 tuần này', icon: Crown, color: 'text-orange-700', bg: 'bg-slate-100' },
- { label: 'Points lưu hành', value: '15.4M', sub: '~ 1.5 tỷ VNĐ', icon: Coins, color: 'text-amber-600', bg: 'bg-amber-50' },
- { label: 'Redemption Rate', value: '24.5%', sub: '+5% tháng trước', icon: RotateCcw, color: 'text-emerald-600', bg: 'bg-emerald-50' },
- { label: 'Retention Boost', value: '8,450', sub: 'Daily active users', icon: Zap, color: 'text-purple-600', bg: 'bg-purple-50' },
- ].map((stat, i) => (
- <div key={i} className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm flex items-start gap-4">
- <div className={cn("p-3 rounded-lg", stat.bg)}>
- <stat.icon className={cn("w-5 h-5", stat.color)} />
- </div>
- <div>
- <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{stat.label}</p>
- <h3 className="text-xl font-bold text-slate-900 mt-0.5">{stat.value}</h3>
- <p className={cn("text-[10px] font-bold mt-1", stat.sub.includes('+') ? "text-emerald-600" : "text-slate-500")}>{stat.sub}</p>
- </div>
- </div>
- ))}
- </div>
+      {/* Hero Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Thành viên Diamond', value: '1,245 VIP', sub: '+42 thành viên tuần này', icon: Crown, color: 'text-amber-600', bg: 'bg-amber-50' },
+          { label: 'Xu V-Coin lưu hành', value: '15.4M xu', sub: '~ 1.54 tỷ VNĐ quy đổi', icon: Coins, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'Tỷ Lệ Đổi Quà', value: '24.5%', sub: '+5% so với tháng trước', icon: RotateCcw, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+          { label: 'Tương Tác Hàng Ngày', value: '8,450 DAU', sub: 'Tăng trưởng giữ chân khách', icon: Zap, color: 'text-purple-600', bg: 'bg-purple-50' },
+        ].map((stat, i) => (
+          <div key={i} className="p-5 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-md shadow-xs hover:shadow-md transition-all">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{stat.label}</span>
+              <div className={cn("p-2 rounded-xl", stat.bg)}>
+                <stat.icon className={cn("w-4 h-4", stat.color)} />
+              </div>
+            </div>
+            <div className="text-2xl font-black text-slate-900 tracking-tight">{stat.value}</div>
+            <div className="mt-2 text-xs font-semibold text-emerald-600">{stat.sub}</div>
+          </div>
+        ))}
+      </div>
 
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[500px]">
- <div className="flex border-b border-slate-200 bg-slate-50/50 p-1">
- {[
- { id: 'tiers', label: 'Hạng thành viên', icon: Crown },
- { id: 'missions', label: 'Nhiệm vụ hàng ngày', icon: Zap },
- { id: 'rewards', label: 'Đổi quà (Shop)', icon: Gift },
- { id: 'gamification', label: 'Vòng quay & Games', icon: RotateCcw }
- ].map((tab) => (
- <button 
- key={tab.id}
- onClick={() => setActiveTab(tab.id as any)}
- className={cn(
- "flex-1 px-4 py-3 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2",
- activeTab === tab.id ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800"
- )}
- >
- <tab.icon className="w-4 h-4" /> {tab.label}
- </button>
- ))}
- </div>
+      <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden min-h-[500px]">
+        <div className="p-3 bg-slate-50/70 border-b border-slate-200/80 flex flex-wrap gap-2">
+          {[
+            { id: 'tiers', label: 'Hạng Thành Viên & Đặc Quyền', icon: Crown },
+            { id: 'campaigns', label: 'Chiến Dịch Chăm Sóc (SMS/ZNS)', icon: Mail },
+            { id: 'missions', label: 'Nhiệm Vụ Tích Điểm Ngày', icon: Zap },
+            { id: 'rewards', label: 'Kho Quà & Voucher Đổi Điểm', icon: Gift },
+            { id: 'gamification', label: 'Vòng Quay May Mắn & Minigames', icon: RotateCcw }
+          ].map((tab) => (
+            <button 
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={cn(
+                "px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-2",
+                activeTab === tab.id
+                  ? "bg-blue-600 text-white shadow-sm shadow-blue-500/25"
+                  : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200/80 hover:bg-slate-100/50"
+              )}
+            >
+              <tab.icon className="w-3.5 h-3.5" /> {tab.label}
+            </button>
+          ))}
+        </div>
 
  <div className="p-6">
  <AnimatePresence mode="wait">
@@ -460,6 +530,81 @@ export function LoyaltyManagement() {
  </div>
  </motion.div>
  )}
+
+ {activeTab === 'campaigns' && (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-6"
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+        <div>
+          <h3 className="font-black text-slate-900 text-sm sm:text-base">Chiến Dịch Chăm Sóc Hội Viên (Loyalty Campaigns)</h3>
+          <p className="text-xs text-slate-500 mt-0.5">Tự động gửi thông điệp chúc mừng sinh nhật, ưu đãi kích hoạt và nhắc nhở hạn voucher VIP qua Zalo ZNS / SMS</p>
+        </div>
+        <button 
+          onClick={() => alert('Mở trình tạo chiến dịch chăm sóc Loyalty mới')}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all self-start sm:self-auto"
+        >
+          <Plus className="w-4 h-4" /> Tạo Chiến Dịch Mới
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {campaigns.map(c => (
+          <div key={c.id} className="p-5 rounded-2xl border border-slate-200 bg-white shadow-2xs hover:shadow-md transition-all space-y-3">
+            <div className="flex items-start justify-between">
+              <div>
+                <span className={cn(
+                  "px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                  c.status === 'active' ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-600"
+                )}>
+                  {c.status === 'active' ? 'Đang Chạy Tự Động' : 'Đã Hoàn Tất'}
+                </span>
+                <h4 className="font-bold text-slate-900 text-sm mt-1.5">{c.name}</h4>
+                <p className="text-xs text-slate-500 mt-0.5">Đối tượng: {c.target}</p>
+              </div>
+              <span className="text-xs font-mono font-bold text-blue-600 uppercase bg-blue-50 px-2 py-1 rounded-lg border border-blue-100">
+                {c.type.toUpperCase()}
+              </span>
+            </div>
+
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
+              <span className="font-bold text-slate-700">Phần thưởng / Nội dung:</span> {c.reward}
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 text-center pt-2 border-t border-slate-100">
+              <div className="p-2 bg-slate-50/70 rounded-xl">
+                <span className="text-[10px] text-slate-400 font-bold block uppercase">Đã gửi</span>
+                <span className="text-sm font-black text-slate-800">{c.sent.toLocaleString()}</span>
+              </div>
+              <div className="p-2 bg-emerald-50/50 rounded-xl">
+                <span className="text-[10px] text-emerald-600 font-bold block uppercase">Tỷ lệ mở</span>
+                <span className="text-sm font-black text-emerald-700">{c.openRate}%</span>
+              </div>
+              <div className="p-2 bg-blue-50/50 rounded-xl">
+                <span className="text-[10px] text-blue-600 font-bold block uppercase">Tỷ lệ đổi</span>
+                <span className="text-sm font-black text-blue-700">{c.clickRate}%</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+              <span className="text-xs text-slate-500 font-medium">Ngân sách: <b className="text-slate-800">{formatCurrency(c.budget)}</b></span>
+              <button 
+                onClick={() => {
+                  alert(`Đã kích hoạt gửi thử nghiệm chiến dịch "${c.name}" qua cổng Zalo ZNS!`);
+                }}
+                className="px-3 py-1.5 bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-bold text-xs rounded-lg transition-colors flex items-center gap-1"
+              >
+                <Send className="w-3.5 h-3.5" /> Gửi Thử Ngay
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  )}
  </AnimatePresence>
  </div>
  </div>

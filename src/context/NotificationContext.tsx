@@ -21,7 +21,7 @@ interface NotificationContextType {
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 const MOCK_NOTIFICATIONS: AppNotification[] = [
- { id: '1', title: 'Đơn hàng mới', message: 'Bạn có 12 đơn hàng mới chờ xử lý từ Shopee.', isRead: false, timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString() },
+ { id: '1', title: 'Đơn hàng mới', message: 'Bạn có 12 đơn hàng mới chờ xử lý từ sàn TMĐT VComm.', isRead: false, timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString() },
  { id: '2', title: 'Cảnh báo tồn kho', message: 'Sản phẩm "iPhone 15 Pro Max" sắp hết hàng.', isRead: false, timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString() },
  { id: '3', title: 'Cập nhật hệ thống', message: 'Sàn thương mại điện tử đã cập nhật mức phí mới.', isRead: true, timestamp: new Date(Date.now() - 1000 * 3600 * 2).toISOString() },
 ];

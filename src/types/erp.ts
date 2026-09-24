@@ -93,9 +93,21 @@ export interface Order {
  customerName: string;
  date: string;
  total: number;
- status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'returning';
+ status: 
+   | 'new'
+   | 'pending_confirmation'
+   | 'confirmed'
+   | 'pending_processing'
+   | 'processed'
+   | 'pending_pickup'
+   | 'picked_up'
+   | 'delivering'
+   | 'delivered'
+   | 'returned'
+   | 'cancelled'
+   | string;
  items: OrderItem[];
- paymentMethod: 'cod' | 'bank_transfer' | 'e_wallet';
+ paymentMethod: 'cod' | 'bank_transfer' | 'e_wallet' | string;
 }
 
 export interface OrderItem {
@@ -467,7 +479,7 @@ export interface WalletTransaction {
  userId: string;
  type: 'deposit' | 'withdraw' | 'payment' | 'refund' | 'payout';
  amount: number;
- gateway: 'napas' | 'momo' | 'zalopay' | 'internal';
+ gateway: 'apipay' | 'vietqr' | 'napas' | 'momo' | 'zalopay' | 'internal';
  status: 'pending' | 'success' | 'failed';
  timestamp: string;
 }
@@ -638,7 +650,7 @@ export interface MeetingEvent {
 }
 
 // --- OMNICHANNEL CHAT ---
-export type ChatChannel = 'zalo' | 'facebook' | 'web' | 'hotline';
+export type ChatChannel = 'zalo' | 'facebook' | 'web' | 'hotline' | 'call';
 
 export interface ChatMessage {
  id: string;

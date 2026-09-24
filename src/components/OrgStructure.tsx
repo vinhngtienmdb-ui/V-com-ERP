@@ -185,7 +185,7 @@ export function OrgStructure() {
     <div className="space-y-6 animate-in fade-in slide-in- duration-500 pb-12">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
-          <h1 className="font-serif tracking-tight text-2xl font-bold text-slate-900">Cơ cấu Tổ chức</h1>
+          <h1 className="font-sans tracking-tight text-2xl font-black text-slate-900">Cơ cấu Tổ chức</h1>
           <p className="text-sm text-slate-600">Quản lý sơ đồ bộ máy phòng ban, chức danh và cấp bậc trong hệ thống.</p>
         </div>
         {activeTab !== 'org_chart' && (

@@ -57,31 +57,36 @@ const MOCK_CHART_DATA = [
 ];
 
 const MOCK_BANK_ACCOUNTS: BankAccount[] = [
- { id: 'BANK-01', bankName: 'Vietcombank', accountNumber: '2191 0201 229', accountName: 'VCOMM ERP CORP', type: 'checking', balance: 5400000000, isDefault: true },
- { id: 'BANK-02', bankName: 'Techcombank', accountNumber: '1122 0033 445', accountName: 'VCOMM ERP TECHNOLOGY', type: 'savings', balance: 1200000000, isDefault: false },
+  { id: 'BANK-01', bankName: 'MB Bank (Quân Đội)', accountNumber: '0318914439', accountName: 'CONG TY CP THUONG MAI DIEN TU VCOMM', type: 'checking', balance: 18450000000, isDefault: true },
+  { id: 'BANK-02', bankName: 'Vietcombank', accountNumber: '2191 0201 229', accountName: 'CONG TY CP THUONG MAI DIEN TU VCOMM', type: 'checking', balance: 5400000000, isDefault: false },
+  { id: 'BANK-03', bankName: 'Techcombank', accountNumber: '1122 0033 445', accountName: 'CONG TY CP THUONG MAI DIEN TU VCOMM', type: 'savings', balance: 1200000000, isDefault: false },
 ];
 
 const MOCK_TRANSACTIONS: WalletTransaction[] = [
- { id: 'TXN-101', userId: 'USR-882', type: 'deposit', amount: 5000000, gateway: 'momo', status: 'success', timestamp: '16/03/2024 14:20' },
- { id: 'TXN-102', userId: 'SEL-001', type: 'payout', amount: 15400000, gateway: 'internal', status: 'success', timestamp: '16/03/2024 11:00' },
- { id: 'TXN-103', userId: 'USR-441', type: 'payment', amount: 1200000, gateway: 'zalopay', status: 'pending', timestamp: '16/03/2024 16:45' },
+  { id: 'APIPAY-TXN-8812', userId: 'ORD-VC-8899', type: 'payment', amount: 450000, gateway: 'apipay', status: 'success', timestamp: '14/09/2026 12:45' },
+  { id: 'APIPAY-PAY-019', userId: 'SELLER-SHOP-01', type: 'payout', amount: 8250000, gateway: 'apipay', status: 'success', timestamp: '14/09/2026 11:30' },
+  { id: 'TXN-101', userId: 'USR-882', type: 'deposit', amount: 5000000, gateway: 'momo', status: 'success', timestamp: '14/09/2026 10:20' },
+  { id: 'TXN-102', userId: 'SEL-001', type: 'payout', amount: 15400000, gateway: 'internal', status: 'success', timestamp: '14/09/2026 09:00' },
+  { id: 'TXN-103', userId: 'USR-441', type: 'payment', amount: 1200000, gateway: 'zalopay', status: 'pending', timestamp: '14/09/2026 08:45' },
 ];
 
 const MOCK_ESCROWS: EscrowAccount[] = [
- { orderId: 'ORD-9901', amount: 2500000, sellerId: 'SEL-001', buyerId: 'USR-882', releaseStatus: 'locked', autoReleaseAt: '20/03/2024' },
- { orderId: 'ORD-9902', amount: 890000, sellerId: 'SEL-005', buyerId: 'USR-129', releaseStatus: 'released', autoReleaseAt: '14/03/2024' },
+  { orderId: 'ORD-VC-8899', amount: 450000, sellerId: 'SEL-001', buyerId: 'USR-882', releaseStatus: 'locked', autoReleaseAt: '21/09/2026' },
+  { orderId: 'ORD-9901', amount: 2500000, sellerId: 'SEL-001', buyerId: 'USR-882', releaseStatus: 'locked', autoReleaseAt: '20/09/2026' },
+  { orderId: 'ORD-9902', amount: 890000, sellerId: 'SEL-005', buyerId: 'USR-129', releaseStatus: 'released', autoReleaseAt: '14/09/2026' },
 ];
 
 const MOCK_GATEWAYS: PaymentGateway[] = [
- { id: 'GW-001', name: 'VNPay QR & ATM', provider: 'vnpay', status: 'active', transactionFee: 0.8, isPreferred: true },
- { id: 'GW-002', name: 'MoMo E-Wallet', provider: 'momo', status: 'active', transactionFee: 1.0, isPreferred: false },
- { id: 'GW-003', name: 'ZaloPay Wallet', provider: 'zalopay', status: 'maintenance', transactionFee: 1.2, isPreferred: false },
- { id: 'GW-004', name: 'Napas Portal', provider: 'napas', status: 'active', transactionFee: 0.5, isPreferred: false },
- { id: 'GW-005', name: 'Thẻ Quốc tế (Visa/Master)', provider: 'credit_card', status: 'inactive', transactionFee: 2.5, isPreferred: false },
+  { id: 'GW-APIPAY', name: 'Cổng thanh toán APIPay (Official)', provider: 'apipay' as any, status: 'active', transactionFee: 0.5, isPreferred: true },
+  { id: 'GW-001', name: 'VietQR Napas247 Dynamic', provider: 'vnpay', status: 'active', transactionFee: 0.0, isPreferred: true },
+  { id: 'GW-002', name: 'MoMo E-Wallet', provider: 'momo', status: 'active', transactionFee: 1.0, isPreferred: false },
+  { id: 'GW-003', name: 'ZaloPay Wallet', provider: 'zalopay', status: 'active', transactionFee: 1.2, isPreferred: false },
+  { id: 'GW-004', name: 'Napas Portal', provider: 'napas', status: 'active', transactionFee: 0.5, isPreferred: false },
+  { id: 'GW-005', name: 'Thẻ Quốc tế (Visa/Master)', provider: 'credit_card', status: 'inactive', transactionFee: 2.2, isPreferred: false },
 ];
 
 export function WalletHub() {
- const [activeTab, setActiveTab] = useState<'history' | 'escrow' | 'gateway' | 'banking' | 'crm_wallet'>('history');
+  const [activeTab, setActiveTab] = useState<'apipay' | 'history' | 'escrow' | 'gateway' | 'banking' | 'crm_wallet'>('apipay');
  const [sepayTransactions, setSepayTransactions] = useState<SePayTransaction[]>([]);
  const [isSyncing, setIsSyncing] = useState(false);
  const [showActionModal, setShowActionModal] = useState<'deposit' | 'withdraw' | null>(null);
@@ -230,137 +235,422 @@ export function WalletHub() {
  )}
  </AnimatePresence>
 
- <div className="flex items-center justify-between">
- <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Ví Tài chính & Ký quỹ (Kho lưu trữ Số)</h1>
- <p className="text-sm text-[#6B7280] mt-1">Hệ thống thanh toán tập trung, Quản lý dòng tiền và Bảo mật giao dịch Ký quỹ.</p>
- </div>
- <div className="flex gap-3">
- <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
- <RefreshCcw className="w-4 h-4" />
- Đối soát tự động
- </button>
- <button className="bg-[#111827] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
- <Fingerprint className="w-4 h-4 text-orange-500" /> Cài đặt Bảo mật
- </button>
- </div>
- </div>
+  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs mb-6">
+    <div className="flex items-center gap-3.5">
+      <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 shrink-0">
+        <Wallet className="w-6 h-6" />
+      </div>
+      <div>
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-black text-slate-900 tracking-tight">
+            Cổng Thanh Toán & Quản Lý Dòng Tiền (Payment Hub)
+          </h1>
+          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+            APIPay & VietQR 24/7
+          </span>
+        </div>
+        <p className="text-xs text-slate-500 mt-0.5">
+          Tích hợp Cổng thanh toán APIPay (Thu hộ QR/VA dưới 1s, Chi hộ Payout 24/7), VietQR Napas247 &amp; Ký quỹ Escrow T+7
+        </p>
+      </div>
+    </div>
 
- <DraggableGrid className="grid grid-cols-1 lg:grid-cols-3 gap-6" columns={3} gap={24}>
- {/* Main Wallet Card */}
- <div className="lg:col-span-2 relative h-[240px] rounded-lg bg-slate-900 p-6 text-[#FAF9F5] shadow-sm shadow-slate-900/5 overflow-hidden group">
- <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
- <QrCode className="w-64 h-64 rotate-12" />
- </div>
- 
- <div className="relative z-10 flex flex-col h-full justify-between">
- <div className="flex justify-between items-start">
- <div>
- <div className="flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full w-fit">
- <ShieldCheck className="w-3.5 h-3.5 text-blue-100" />
- <span className="text-[10px] font-bold uppercase tracking-widest text-blue-50">Verified Business Wallet</span>
- </div>
- <p className="text-xs font-medium text-blue-100 mt-4 uppercase tracking-tighter opacity-60">Tổng số dư khả dụng</p>
- <h2 className="text-4xl font-black mt-1 tracking-tight italic">{formatCurrency(24500000000)}</h2>
- </div>
- <div className="text-right">
- <p className="text-[10px] font-bold text-blue-200/60 uppercase">Tiền Ký quỹ</p>
- <p className="text-lg font-bold text-[#FAF9F5]">{formatCurrency(8500000000)}</p>
- </div>
- </div>
+    <div className="flex items-center gap-2.5 shrink-0">
+      <button 
+        onClick={() => {
+          setIsSyncing(true);
+          setTimeout(() => setIsSyncing(false), 1200);
+        }}
+        className="px-3.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-2xs"
+      >
+        <RefreshCcw className={cn("w-3.5 h-3.5 text-blue-600", isSyncing && "animate-spin")} />
+        <span>{isSyncing ? "Đang đối soát..." : "Đối soát APIPay & VietQR"}</span>
+      </button>
+      <button 
+        onClick={() => setShowActionModal('deposit')}
+        className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm active:scale-95"
+      >
+        <Plus className="w-3.5 h-3.5 text-emerald-400" />
+        <span>Nạp / Rút ví</span>
+      </button>
+    </div>
+  </div>
 
- <div className="flex justify-between items-end border-t border-white/10 pt-6">
- <div className="flex gap-6">
- <div>
- <p className="text-[10px] font-bold text-blue-200/60 uppercase">Dòng tiền Thu</p>
- <p className="font-bold">+125.4M</p>
- </div>
- <div>
- <p className="text-[10px] font-bold text-blue-200/60 uppercase">Dòng tiền Chi</p>
- <p className="font-bold">-42.8M</p>
- </div>
- </div>
- <div className="flex gap-2">
- <button 
- onClick={() => setShowActionModal('deposit')}
- className="bg-white text-orange-700 px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm shadow-blue-900/10 hover:bg-slate-100 transition-all"
- >
- Nạp ví
- </button>
- <button 
- onClick={() => setShowActionModal('withdraw')}
- className="bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md px-6 py-2.5 rounded-lg font-bold text-sm transition-all"
- >
- Rút tiền
- </button>
- </div>
- </div>
- </div>
- </div>
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
+    {/* Main Wallet Card */}
+    <div className="lg:col-span-2 relative h-[230px] rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-6 text-white shadow-md border border-slate-800 overflow-hidden flex flex-col justify-between">
+      <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
+        <QrCode className="w-56 h-56 rotate-12" />
+      </div>
+      
+      <div className="relative z-10 flex justify-between items-start">
+        <div>
+          <div className="flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full w-fit border border-white/15">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-200">Ví Doanh Nghiệp Xác Thực • MB Bank 0318914439</span>
+          </div>
+          <p className="text-xs font-medium text-slate-400 mt-3 uppercase tracking-wider">Tổng số dư khả dụng</p>
+          <h2 className="text-3xl sm:text-4xl font-black mt-1 tracking-tight text-white">{formatCurrency(24500000000)}</h2>
+        </div>
+        <div className="text-right bg-white/5 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Quỹ Ký Quỹ Escrow T+7</p>
+          <p className="text-base font-black text-amber-300">{formatCurrency(8500000000)}</p>
+        </div>
+      </div>
 
- {/* Phân tích Dòng tiền */}
- <div className="lg:col-span-1 bg-white p-6 rounded-lg border border-slate-200 shadow-sm flex flex-col justify-between">
- <div>
- <div className="flex items-center justify-between mb-4">
- <div className="flex items-center gap-3">
- <div className="p-2 bg-primary-50 rounded-lg">
- <Activity className="w-4 h-4 text-primary-600" />
- </div>
- <p className="text-xs font-black text-slate-900 uppercase tracking-widest">Cashflow Analytics</p>
- </div>
- <TrendingUp className="w-4 h-4 text-emerald-500" />
- </div>
- <div className="h-[120px] w-full">
- <ResponsiveContainer width="100%" height="100%">
- <AreaChart data={MOCK_CHART_DATA}>
- <defs>
- <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
- <stop offset="5%" stopColor="#2563eb" stopOpacity={0.1}/>
- <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
- </linearGradient>
- </defs>
- <Area type="monotone" dataKey="income" stroke="#2563eb" fillOpacity={1} fill="url(#colorIncome)" strokeWidth={3} />
- </AreaChart>
- </ResponsiveContainer>
- </div>
- </div>
- <div className="pt-4 border-t border-stone-50 flex justify-between items-center">
- <div>
- <p className="text-[10px] font-bold text-slate-500 uppercase">Dự báo tăng trưởng</p>
- <p className="text-lg font-black text-slate-900">+24.5%</p>
- </div>
- <button className="p-2 hover:bg-slate-50 rounded-lg transition-all text-orange-700">
- <ArrowRight className="w-5 h-5" />
- </button>
- </div>
- </div>
- </DraggableGrid>
+      <div className="relative z-10 flex justify-between items-end border-t border-white/10 pt-4">
+        <div className="flex gap-6">
+          <div>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Thu hộ APIPay hôm nay</p>
+            <p className="text-sm font-black text-emerald-400">+142.500.000₫</p>
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chi hộ Payout 24/7</p>
+            <p className="text-sm font-black text-rose-400">-38.200.000₫</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => setShowActionModal('deposit')}
+            className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 px-4 py-2 rounded-xl font-bold text-xs shadow-sm transition-all cursor-pointer"
+          >
+            Nạp ví
+          </button>
+          <button 
+            onClick={() => setShowActionModal('withdraw')}
+            className="bg-white/10 hover:bg-white/20 border border-white/15 backdrop-blur-md px-4 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer"
+          >
+            Rút tiền
+          </button>
+        </div>
+      </div>
+    </div>
 
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden p-2 min-h-[600px]">
- <div className="flex border-b border-slate-200 bg-slate-50/50 p-1.5 overflow-x-auto scrollbar-hide min-w-0">
- {[
- { id: 'history', label: 'Lịch sử giao dịch', icon: History },
- { id: 'banking', label: 'Tài khoản Ngân hàng', icon: Landmark },
- { id: 'escrow', label: 'Bảo mật Ký quỹ', icon: ShieldCheck },
- { id: 'gateway', label: 'Cổng thanh toán', icon: Smartphone },
- { id: 'crm_wallet', label: 'Tích điểm & Ví CSKH', icon: Users }
- ].map((tab) => (
- <button 
- key={tab.id}
- onClick={() => setActiveTab(tab.id as any)}
- className={cn(
- "flex-1 px-6 py-3.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 w-full",
- activeTab === tab.id ? "bg-white text-orange-700 shadow-sm" : "text-slate-600 hover:text-slate-800"
- )}
- >
- <tab.icon className="w-4 h-4" /> {tab.label}
- </button>
- ))}
- </div>
+    {/* Cashflow Analytics Card */}
+    <div className="lg:col-span-1 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
+              <Activity className="w-4 h-4" />
+            </div>
+            <p className="text-xs font-bold text-slate-900 uppercase tracking-wider">Biểu đồ dòng tiền</p>
+          </div>
+          <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full border border-emerald-200 flex items-center gap-1">
+            <TrendingUp className="w-3 h-3" /> +24.5%
+          </span>
+        </div>
+        <div className="h-[120px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={MOCK_CHART_DATA}>
+              <defs>
+                <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/>
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <Area type="monotone" dataKey="income" stroke="#10b981" fillOpacity={1} fill="url(#colorIncome)" strokeWidth={2.5} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      <div className="pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+        <div>
+          <span className="text-[10px] text-slate-400 font-bold uppercase">Cổng thanh toán chính</span>
+          <p className="font-bold text-slate-900">APIPay & VietQR Napas247</p>
+        </div>
+        <button 
+          onClick={() => setActiveTab('apipay')}
+          className="text-blue-600 hover:text-blue-800 font-bold text-xs flex items-center gap-1 cursor-pointer"
+        >
+          <span>Chi tiết</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    </div>
+  </div>
 
- <div className="p-6">
- <AnimatePresence mode="wait">
- {activeTab === 'history' && (
+  {/* Tabs Switcher and Content */}
+  <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden min-h-[600px]">
+    <div className="flex border-b border-slate-100 bg-slate-50/50 p-2 overflow-x-auto scrollbar-hide min-w-0 gap-1.5">
+      {[
+        { id: 'apipay', label: 'Cổng APIPay (Trọng tâm)', icon: Zap, highlight: true },
+        { id: 'history', label: 'Lịch sử giao dịch', icon: History },
+        { id: 'banking', label: 'Tài khoản Ngân hàng', icon: Landmark },
+        { id: 'escrow', label: 'Bảo mật Ký quỹ T+7', icon: ShieldCheck },
+        { id: 'gateway', label: 'Danh sách Cổng TT', icon: Smartphone },
+        { id: 'crm_wallet', label: 'Ví V-Xu & Hoàn tiền', icon: Users }
+      ].map((tab) => (
+        <button 
+          key={tab.id}
+          onClick={() => setActiveTab(tab.id as any)}
+          className={cn(
+            "px-4 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer",
+            activeTab === tab.id 
+              ? tab.highlight 
+                ? "bg-amber-500 text-slate-950 shadow-xs" 
+                : "bg-white text-slate-900 shadow-2xs border border-slate-200/80" 
+              : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+          )}
+        >
+          <tab.icon className={cn("w-3.5 h-3.5", tab.highlight && activeTab === tab.id ? "text-slate-950" : tab.highlight ? "text-amber-500" : "")} /> 
+          <span>{tab.label}</span>
+          {tab.highlight && (
+            <span className="px-1.5 py-0.2 bg-rose-600 text-white text-[9px] font-black rounded-md">HOT</span>
+          )}
+        </button>
+      ))}
+    </div>
+
+    <div className="p-5 sm:p-6">
+      <AnimatePresence mode="wait">
+        {activeTab === 'apipay' && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            {/* Top Gateway Status Card */}
+            <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 p-6 rounded-2xl text-white border border-slate-700 shadow-md">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-white/10">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-xl shadow-md">
+                    ⚡
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-black text-white tracking-tight">Cổng Thanh Toán Trực Tuyến APIPay (Official Gateway)</h3>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Sẵn sàng 24/7 (Production)
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300 mt-0.5">
+                      Thu hộ đơn hàng TMĐT qua QR động & Virtual Account &lt; 1s • Chi hộ Payout Napas247 hoàn tiền V-Xu và giải ngân Shop Escrow T+7
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-right">
+                    <span className="text-[10px] text-slate-400 block uppercase">Merchant ID</span>
+                    <span className="font-mono font-bold text-amber-300">VCOMM_ECOM_PROD</span>
+                  </div>
+                  <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-right">
+                    <span className="text-[10px] text-slate-400 block uppercase">Webhook IPN</span>
+                    <span className="font-mono font-bold text-emerald-400">HMAC-SHA256</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3 Metrics */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-5">
+                <div className="bg-white/5 rounded-xl p-3.5 border border-white/10">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tổng Thu Hộ Hôm Nay (QR & VA)</span>
+                  <div className="text-2xl font-black text-emerald-400 mt-1">142.500.000₫</div>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">28 giao dịch • Tỷ lệ thành công 100%</span>
+                </div>
+                <div className="bg-white/5 rounded-xl p-3.5 border border-white/10">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tổng Chi Hộ Payout 24/7</span>
+                  <div className="text-2xl font-black text-amber-300 mt-1">38.200.000₫</div>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Hoàn tiền V-Xu 100% & Quyết toán Seller</span>
+                </div>
+                <div className="bg-white/5 rounded-xl p-3.5 border border-white/10">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tốc Độ Gạch Nợ Tức Thời</span>
+                  <div className="text-2xl font-black text-cyan-300 mt-1">420 ms</div>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Tự động kích hoạt đơn hàng ➔ Điều phối 3PL</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Two Column Workspace: Tool 1: Create APIPay Charge | Tool 2: Webhook Simulator */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              {/* Box 1: Test Tạo Giao Dịch Thu Hộ APIPay */}
+              <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                  <QrCode className="w-4 h-4 text-emerald-600" />
+                  <h4 className="font-bold text-slate-900 text-sm">Tạo Link & QR Thanh Toán APIPay (Test Inward)</h4>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600 block mb-1">Mã đơn hàng liên kết</label>
+                    <input 
+                      type="text" 
+                      defaultValue="ORD-VC-2026-8899"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-mono font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600 block mb-1">Số tiền thanh toán (VND)</label>
+                    <input 
+                      type="number" 
+                      defaultValue={450000}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                    />
+                  </div>
+                  <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-100 flex items-center justify-between text-xs">
+                    <div>
+                      <p className="font-bold text-emerald-950">Tài khoản định danh (Virtual Account):</p>
+                      <p className="font-mono text-emerald-700 text-[11px] mt-0.5">MB Bank: 0318914439 - VCOMM</p>
+                    </div>
+                    <span className="px-2 py-1 bg-emerald-600 text-white font-bold text-[10px] rounded-md">Dynamic VietQR</span>
+                  </div>
+                  <button 
+                    onClick={() => alert('Đã sinh mã thanh toán APIPay thành công: Chuyển hướng tới Cổng APIPay hoặc quét mã VietQR!')}
+                    className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
+                  >
+                    Sinh mã thanh toán APIPay (Create Charge)
+                  </button>
+                </div>
+              </div>
+
+              {/* Box 2: Giả Lập Webhook IPN APIPay */}
+              <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                  <Zap className="w-4 h-4 text-amber-500" />
+                  <h4 className="font-bold text-slate-900 text-sm">Giả Lập Webhook IPN từ APIPay (Webhook Tester)</h4>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-xs text-slate-500">
+                    Khi khách hàng thanh toán tại ngân hàng bất kỳ, APIPay sẽ tự động bắn Webhook kèm chữ ký số HMAC-SHA256 về Core Gateway để gạch nợ đơn sang <span className="font-bold text-emerald-700">PAID</span> và đẩy đơn sang 3PL.
+                  </p>
+                  <div className="bg-slate-900 text-slate-200 p-3 rounded-xl font-mono text-[11px] space-y-1 overflow-x-auto">
+                    <p className="text-slate-400">// Sample Payload IPN POST /api/v1/payments/apipay-webhook</p>
+                    <p>{"{"}</p>
+                    <p>&nbsp;&nbsp;"transactionId": "APIPAY-TXN-998822",</p>
+                    <p>&nbsp;&nbsp;"orderId": "ORD-VC-2026-8899",</p>
+                    <p>&nbsp;&nbsp;"amount": 450000,</p>
+                    <p>&nbsp;&nbsp;"status": "SUCCESS",</p>
+                    <p>&nbsp;&nbsp;"signature": "e3b0c44298fc1c149afbf4c8996fb92427ae41e..."</p>
+                    <p>{"}"}</p>
+                  </div>
+                  <button 
+                    onClick={async () => {
+                      try {
+                        const res = await fetch('/api/v1/orders/sync-from-ecommerce', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            orderId: 'ORD-VC-' + Math.floor(1000 + Math.random() * 9000),
+                            total: 450000,
+                            paymentMethod: 'apipay',
+                            customerName: 'Nguyễn Văn A (APIPay Test)',
+                            customerPhone: '0988776655',
+                            shippingAddress: 'Tòa nhà Landmark 81, Bình Thạnh, TP.HCM',
+                            carrierId: 'ghn'
+                          })
+                        });
+                        if (res.ok) {
+                          alert('✅ Giả lập Webhook IPN APIPay thành công! Đơn hàng đã tự động chuyển sang PAID và kích hoạt lấy mã vận đơn 3PL!');
+                        } else {
+                          alert('Đã gửi Webhook IPN thử nghiệm tới Gateway.');
+                        }
+                      } catch (e: any) {
+                        alert('Đã gửi Webhook IPN thử nghiệm: ' + e.message);
+                      }
+                    }}
+                    className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <Zap className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Bắn Webhook IPN Giả Lập Gạch Nợ & Tạo 3PL</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Realtime APIPay Live Stream Transactions Table */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+              <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div className="flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-emerald-600" />
+                  <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider">Nhật Ký Giao Dịch APIPay & VietQR Thời Gian Thực</h4>
+                </div>
+                <span className="text-[11px] text-slate-500 font-medium">Cập nhật theo mili-giây (Realtime)</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    <tr>
+                      <th className="px-5 py-3">Mã GD APIPay</th>
+                      <th className="px-5 py-3">Mã Đơn / Đối tượng</th>
+                      <th className="px-5 py-3">Loại giao dịch</th>
+                      <th className="px-5 py-3 text-right">Số tiền (VND)</th>
+                      <th className="px-5 py-3 text-center">Chữ ký HMAC</th>
+                      <th className="px-5 py-3 text-center">Trạng thái gạch nợ</th>
+                      <th className="px-5 py-3 text-right">Thời gian</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium">
+                    <tr className="hover:bg-slate-50/80 transition-colors">
+                      <td className="px-5 py-3 font-mono font-bold text-indigo-700">APIPAY-TXN-8812</td>
+                      <td className="px-5 py-3 font-mono text-slate-900">#ORD-VC-8899</td>
+                      <td className="px-5 py-3">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          Thu hộ VietQR
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-right font-black text-emerald-600">+450.000₫</td>
+                      <td className="px-5 py-3 text-center">
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          HMAC-OK 🟢
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-center">
+                        <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                          Đã gạch nợ & GHN ⚡
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-right text-slate-500 text-[11px]">14/09/2026 12:45</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50/80 transition-colors">
+                      <td className="px-5 py-3 font-mono font-bold text-indigo-700">APIPAY-PAY-019</td>
+                      <td className="px-5 py-3 font-mono text-slate-900">SELLER-SHOP-01</td>
+                      <td className="px-5 py-3">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                          Chi hộ Payout Escrow
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-right font-black text-rose-600">-8.250.000₫</td>
+                      <td className="px-5 py-3 text-center">
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          HMAC-OK 🟢
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-center">
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          Napas247 Hoàn tất
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-right text-slate-500 text-[11px]">14/09/2026 11:30</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50/80 transition-colors">
+                      <td className="px-5 py-3 font-mono font-bold text-indigo-700">APIPAY-REFUND-004</td>
+                      <td className="px-5 py-3 font-mono text-slate-900">REFUND-VXU-441</td>
+                      <td className="px-5 py-3">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                          Hoàn tiền mặt V-Xu 100%
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-right font-black text-rose-600">-1.200.000₫</td>
+                      <td className="px-5 py-3 text-center">
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          HMAC-OK 🟢
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-center">
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          Đã chi trả TT99
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-right text-slate-500 text-[11px]">14/09/2026 10:15</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {activeTab === 'history' && (
  <motion.div 
  initial={{ opacity: 0, y: 10 }}
  animate={{ opacity: 1, y: 0 }}

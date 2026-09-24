@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import ReactFlow, { Background, Controls, applyEdgeChanges, applyNodeChanges, addEdge } from 'reactflow';
+import ReactFlow, { Background, Controls, applyEdgeChanges, applyNodeChanges, addEdge, Node, Edge } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { 
  Activity, 
@@ -31,12 +31,17 @@ import {
  Monitor,
  Lock,
  Cpu as CpuIcon,
- Calendar
+ Calendar,
+ Download,
+ Trash2,
+ Plus,
+ GitBranch,
+ Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { WorkflowTask } from '../types/erp';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
  linkGoogleCalendar,
@@ -46,11 +51,11 @@ import {
  createCalendarEvent
 } from '../services/googleCalendar';
 
-const initialNodes = [
+const initialNodes: Node[] = [
  { id: '1', data: { label: 'Đơn hàng mới' }, position: { x: 250, y: 5 } },
  { id: '2', data: { label: 'Kiểm tra tồn kho' }, position: { x: 250, y: 100 } },
 ];
-const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
+const initialEdges: Edge[] = [{ id: 'e1-2', source: '1', target: '2' }];
 
 const MOCK_TASKS: WorkflowTask[] = [
  { id: 'WF-101', module: 'Legal', title: 'Thẩm định tranh chấp hàng giả LV-002', priority: 'critical', status: 'pending', deadline: '2 giờ tới', link: '/compliance' },
@@ -63,11 +68,21 @@ const MOCK_TASKS: WorkflowTask[] = [
 
 export function WorkflowHub() {
  const navigate = useNavigate();
+ const [searchParams] = useSearchParams();
+ const tabParam = searchParams.get('tab');
  const { user } = useAuth();
  const [filter, setFilter] = useState<'all' | 'critical' | 'high'>('all');
- const [viewMode, setViewMode] = useState<'tasks' | 'builder'>('tasks');
- const [nodes, setNodes] = useState(initialNodes);
- const [edges, setEdges] = useState(initialEdges);
+ const [viewMode, setViewMode] = useState<'tasks' | 'builder'>(() => tabParam === 'builder' ? 'builder' : 'tasks');
+
+ React.useEffect(() => {
+   if (tabParam === 'builder') {
+     setViewMode('builder');
+   } else if (tabParam === 'tasks') {
+     setViewMode('tasks');
+   }
+ }, [tabParam]);
+ const [nodes, setNodes] = useState<Node[]>(initialNodes);
+ const [edges, setEdges] = useState<Edge[]>(initialEdges);
  const [tasks, setTasks] = useState(MOCK_TASKS);
  
  const [signingTaskId, setSigningTaskId] = useState<string | null>(null);
@@ -149,6 +164,97 @@ export function WorkflowHub() {
  []
  );
 
+  const addBpmnNode = (type: 'start' | 'task' | 'gateway' | 'sign' | 'end', label: string) => {
+    const id = `node_${Date.now()}`;
+    const x = 120 + (nodes.length * 35) % 360;
+    const y = 60 + (nodes.length * 55) % 320;
+
+    let style = {};
+    if (type === 'start') {
+      style = { background: '#ECFDF5', borderColor: '#10B981', borderWidth: 2, borderRadius: '9999px', fontWeight: 'bold', color: '#065F46' };
+    } else if (type === 'end') {
+      style = { background: '#FEF2F2', borderColor: '#EF4444', borderWidth: 3, borderRadius: '9999px', fontWeight: 'bold', color: '#991B1B' };
+    } else if (type === 'gateway') {
+      style = { background: '#FFFBEB', borderColor: '#F59E0B', borderWidth: 2, fontWeight: 'bold', color: '#92400E' };
+    } else if (type === 'sign') {
+      style = { background: '#EEF2FF', borderColor: '#6366F1', borderWidth: 2, borderRadius: '8px', fontWeight: 'bold', color: '#3730A3' };
+    } else {
+      style = { background: '#F8FAFC', borderColor: '#64748B', borderWidth: 1.5, borderRadius: '8px', fontWeight: '600', color: '#1E293B' };
+    }
+
+    const newNode = {
+      id,
+      data: { label },
+      position: { x, y },
+      style
+    };
+
+    setNodes((prev) => [...prev, newNode]);
+    if (nodes.length > 0) {
+      const lastNode = nodes[nodes.length - 1];
+      setEdges((prev) => [...prev, { id: `e_${lastNode.id}-${id}`, source: lastNode.id, target: id, animated: type === 'task' || type === 'sign' }]);
+    }
+  };
+
+  const loadBpmnTemplate = (templateName: string) => {
+    if (templateName === 'payment_hsm') {
+      setNodes([
+        { id: '1', data: { label: '🟢 Bắt đầu: Đề nghị Tạm ứng / Chi tiền' }, position: { x: 250, y: 20 }, style: { background: '#ECFDF5', borderColor: '#10B981', borderWidth: 2, borderRadius: '9999px', fontWeight: 'bold', color: '#065F46' } },
+        { id: '2', data: { label: '⚙️ Task: Thẩm tra Ngân sách & Hóa đơn VAT' }, position: { x: 250, y: 110 }, style: { background: '#F8FAFC', borderColor: '#64748B', borderWidth: 1.5, borderRadius: '8px', fontWeight: '600', color: '#1E293B' } },
+        { id: '3', data: { label: '🔶 Gateway: Số tiền > 50,000,000 VNĐ?' }, position: { x: 250, y: 200 }, style: { background: '#FFFBEB', borderColor: '#F59E0B', borderWidth: 2, fontWeight: 'bold', color: '#92400E' } },
+        { id: '4', data: { label: '🔏 Ký số Cloud HSM (Tổng Giám Đốc)' }, position: { x: 90, y: 300 }, style: { background: '#EEF2FF', borderColor: '#6366F1', borderWidth: 2, borderRadius: '8px', fontWeight: 'bold', color: '#3730A3' } },
+        { id: '5', data: { label: '🔏 Ký số Kế toán trưởng' }, position: { x: 410, y: 300 }, style: { background: '#EEF2FF', borderColor: '#6366F1', borderWidth: 2, borderRadius: '8px', fontWeight: 'bold', color: '#3730A3' } },
+        { id: '6', data: { label: '⚙️ Task: Chuyển tiền tự động Napas 24/7' }, position: { x: 250, y: 400 }, style: { background: '#F8FAFC', borderColor: '#64748B', borderWidth: 1.5, borderRadius: '8px', fontWeight: '600', color: '#1E293B' } },
+        { id: '7', data: { label: '🔴 Kết thúc: Đã ghi nhận Sổ cái & Merkle Hash' }, position: { x: 250, y: 500 }, style: { background: '#FEF2F2', borderColor: '#EF4444', borderWidth: 3, borderRadius: '9999px', fontWeight: 'bold', color: '#991B1B' } }
+      ]);
+      setEdges([
+        { id: 'e1-2', source: '1', target: '2', animated: true },
+        { id: 'e2-3', source: '2', target: '3' },
+        { id: 'e3-4', source: '3', target: '4', label: 'Có (>50Tr)' },
+        { id: 'e3-5', source: '3', target: '5', label: 'Không (<=50Tr)' },
+        { id: 'e4-6', source: '4', target: '6', animated: true },
+        { id: 'e5-6', source: '5', target: '6', animated: true },
+        { id: 'e6-7', source: '6', target: '7' }
+      ]);
+    } else if (templateName === 'fefo_routing') {
+      setNodes([
+        { id: '1', data: { label: '🟢 Bắt đầu: Đơn hàng Flash Sale mới' }, position: { x: 250, y: 20 }, style: { background: '#ECFDF5', borderColor: '#10B981', borderWidth: 2, borderRadius: '9999px', fontWeight: 'bold', color: '#065F46' } },
+        { id: '2', data: { label: '⚙️ Task: Thuật toán Haversine định vị Hub gần nhất' }, position: { x: 250, y: 110 }, style: { background: '#F8FAFC', borderColor: '#64748B', borderWidth: 1.5, borderRadius: '8px', fontWeight: '600', color: '#1E293B' } },
+        { id: '3', data: { label: '⚙️ Task: Phân bổ FEFO bốc Lô cận hạn trước' }, position: { x: 250, y: 200 }, style: { background: '#F8FAFC', borderColor: '#64748B', borderWidth: 1.5, borderRadius: '8px', fontWeight: '600', color: '#1E293B' } },
+        { id: '4', data: { label: '🔶 Gateway: Tồn kho Hub có đủ hàng?' }, position: { x: 250, y: 300 }, style: { background: '#FFFBEB', borderColor: '#F59E0B', borderWidth: 2, fontWeight: 'bold', color: '#92400E' } },
+        { id: '5', data: { label: '⚙️ Task: Tự động in Phiếu bốc Pick & Pack' }, position: { x: 100, y: 400 }, style: { background: '#F8FAFC', borderColor: '#64748B', borderWidth: 1.5, borderRadius: '8px', fontWeight: '600', color: '#1E293B' } },
+        { id: '6', data: { label: '⚙️ Task: Tự động điều chuyển Hub dự phòng' }, position: { x: 400, y: 400 }, style: { background: '#F8FAFC', borderColor: '#64748B', borderWidth: 1.5, borderRadius: '8px', fontWeight: '600', color: '#1E293B' } },
+        { id: '7', data: { label: '🔴 Kết thúc: Đơn hàng bàn giao ĐVVC' }, position: { x: 250, y: 500 }, style: { background: '#FEF2F2', borderColor: '#EF4444', borderWidth: 3, borderRadius: '9999px', fontWeight: 'bold', color: '#991B1B' } }
+      ]);
+      setEdges([
+        { id: 'e1-2', source: '1', target: '2', animated: true },
+        { id: 'e2-3', source: '2', target: '3', animated: true },
+        { id: 'e3-4', source: '3', target: '4' },
+        { id: 'e4-5', source: '4', target: '5', label: 'Đủ tồn' },
+        { id: 'e4-6', source: '4', target: '6', label: 'Thiếu kho' },
+        { id: 'e5-7', source: '5', target: '7', animated: true },
+        { id: 'e6-7', source: '6', target: '7' }
+      ]);
+    }
+  };
+
+  const exportBpmnJson = () => {
+    const data = {
+      version: '2.0',
+      type: 'BPMN_WORKFLOW_VCOMM',
+      exportedAt: new Date().toISOString(),
+      nodes,
+      edges
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `workflow-bpmn-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
  const handleApprove = (taskId: string) => {
  setTasks(tasks.filter(t => t.id !== taskId));
  alert(`Đã phê duyệt Task ${taskId} thành công!`);
@@ -174,79 +280,88 @@ export function WorkflowHub() {
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-700 pb-12">
- <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
- <div className="header-title">
- <div className="flex items-center gap-2 mb-2">
- <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-700 bg-slate-100 px-2 py-0.5 rounded">Mission Control Hub</span>
- <div className="w-1.5 h-1.5 bg-slate-800 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
- </div>
- <h1 className="font-serif tracking-tight text-3xl font-black text-slate-900 tracking-tight italic">Operations & <span className="text-orange-700 font-serif">Workflows</span></h1>
- <p className="text-sm text-slate-600 font-medium mt-1">Điều phối quy trình ký số, phê duyệt đa cấp và tự động hóa chuỗi cung ứng.</p>
- </div>
- <div className="flex flex-wrap gap-3">
- <button 
- onClick={() => setViewMode(viewMode === 'tasks' ? 'builder' : 'tasks')}
- className="bg-white border border-slate-300 px-5 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm border-b-2 active:translate-y-0.5"
- >
- {viewMode === 'tasks' ? <PanelTop className="w-4 h-4 text-orange-700" /> : <Activity className="w-4 h-4 text-emerald-600" />}
- {viewMode === 'tasks' ? 'Mở Trình tạo Luồng' : 'Xem danh sách Task'}
- </button>
- <button className="bg-slate-900 text-[#FAF9F5] px-5 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/10 flex items-center gap-2 hover:scale-[1.02] active:scale-95">
- <Cpu className="w-4 h-4 text-orange-500" />
- AI Automation Config
- </button>
- </div>
- </div>
+      {/* Top Header Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/60">
+              Operations & Workflow Automation
+            </span>
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+            <span className="text-xs text-slate-500 font-medium">Ký Số & Phê Duyệt Đa Cấp</span>
+          </div>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Quy Trình & Tự Động Hóa VComm</h1>
+          <p className="text-xs text-slate-600 mt-0.5">
+            Điều phối luồng công việc phê duyệt đa cấp, tích hợp ký số Cloud HSM và tự động hóa chuỗi cung ứng TMĐT.
+          </p>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <button 
+            onClick={() => setViewMode(viewMode === 'tasks' ? 'builder' : 'tasks')}
+            className="bg-white border border-slate-200 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 transition-all flex items-center gap-2 shadow-2xs cursor-pointer"
+          >
+            {viewMode === 'tasks' ? <PanelTop className="w-4 h-4 text-blue-600" /> : <Activity className="w-4 h-4 text-emerald-600" />}
+            {viewMode === 'tasks' ? 'Trình Tạo Luồng' : 'Hàng Đợi Nhiệm Vụ'}
+          </button>
+          <button className="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer">
+            <Cpu className="w-4 h-4 text-blue-400" />
+            Cấu Hình AI Automation
+          </button>
+        </div>
+      </div>
 
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
- {[
- { label: 'Cần Phê duyệt', value: 18, sub: '8 ưu tiên cao', icon: ShieldAlert, color: 'rose' },
- { label: 'Đang Vận hành', value: 45, sub: '24 quy trình tự động', icon: Boxes, color: 'blue' },
- { label: 'Workflow Hoàn tất', value: '92%', sub: '+12 so với tháng trước', icon: CheckCircle2, color: 'emerald' },
- { label: 'Nhân sự trực tuyến', value: '42/48', sub: 'Trên 6 bộ phận', icon: Users2, color: 'indigo' },
- ].map((stat) => (
- <div key={stat.label} className="bg-white p-7 rounded-none border border-slate-200 shadow-sm shadow-slate-200/50 flex items-center gap-6 group hover:shadow-slate-900/5 transition-all">
- <div className={cn(
- "p-4 rounded-none shadow-sm transition-transform  group-hover:rotate-6 duration-500",
- stat.color === 'rose' ? "bg-rose-50 text-rose-600 shadow-rose-100" :
- stat.color === 'blue' ? "bg-slate-100 text-orange-700 shadow-blue-100" :
- stat.color === 'emerald' ? "bg-emerald-50 text-emerald-600 shadow-emerald-100" :
- "bg-primary-50 text-primary-600 shadow-indigo-100"
- )}>
- <stat.icon className="w-6 h-6" />
- </div>
- <div>
- <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">{stat.label}</p>
- <div className="text-3xl font-black text-slate-900 tracking-tight">
- {stat.value}
- </div>
- <p className="text-[10px] text-slate-600 font-bold mt-0.5">{stat.sub}</p>
- </div>
- </div>
- ))}
- </div>
+      {/* Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Cần Phê duyệt', value: 18, sub: '8 yêu cầu khẩn cấp', icon: ShieldAlert, color: 'rose' },
+          { label: 'Đang Vận hành', value: 45, sub: '24 quy trình tự động', icon: Boxes, color: 'blue' },
+          { label: 'Tỷ Lệ Hoàn tất', value: '92%', sub: '+12 quy trình so với tháng trước', icon: CheckCircle2, color: 'emerald' },
+          { label: 'Nhân sự trực tuyến', value: '42/48', sub: 'Trải rộng 6 khối nghiệp vụ', icon: Users2, color: 'indigo' },
+        ].map((stat) => (
+          <div key={stat.label} className="p-5 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-md shadow-xs hover:shadow-md transition-all">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{stat.label}</span>
+              <div className={cn(
+                "p-2 rounded-xl",
+                stat.color === 'rose' ? "bg-rose-50 text-rose-600" :
+                stat.color === 'blue' ? "bg-blue-50 text-blue-600" :
+                stat.color === 'emerald' ? "bg-emerald-50 text-emerald-600" :
+                "bg-indigo-50 text-indigo-600"
+              )}>
+                <stat.icon className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-2xl font-black text-slate-900 tracking-tight">{stat.value}</div>
+            <div className="mt-2 text-xs font-medium text-slate-500">{stat.sub}</div>
+          </div>
+        ))}
+      </div>
 
- <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden min-h-[600px] flex flex-col">
- <div className="flex border-b border-slate-200 bg-slate-50/50 p-2">
- <button 
- onClick={() => setViewMode('tasks')}
- className={cn(
- "px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg flex items-center gap-2",
- viewMode === 'tasks' ? "bg-white text-orange-700 shadow-sm shadow-slate-900/5 border border-slate-300" : "text-slate-600 hover:text-slate-900"
- )}
- >
- <LayoutList className="w-4 h-4" /> Queue Navigator
- </button>
- <button 
- onClick={() => setViewMode('builder')}
- className={cn(
- "px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg flex items-center gap-2",
- viewMode === 'builder' ? "bg-white text-emerald-600 shadow-sm shadow-emerald-600/10 border border-emerald-100" : "text-slate-600 hover:text-slate-900"
- )}
- >
- <Network className="w-4 h-4" /> Neural Workflow Designer
- </button>
- </div>
+      <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden min-h-[600px] flex flex-col">
+        <div className="p-3 bg-slate-50/70 border-b border-slate-200/80 flex flex-wrap gap-2">
+          <button 
+            onClick={() => setViewMode('tasks')}
+            className={cn(
+              "px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-2",
+              viewMode === 'tasks'
+                ? "bg-blue-600 text-white shadow-sm shadow-blue-500/25"
+                : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200/80 hover:bg-slate-100/50"
+            )}
+          >
+            <LayoutList className="w-3.5 h-3.5" /> Hàng Đợi Nhiệm Vụ (Queue)
+          </button>
+          <button 
+            onClick={() => setViewMode('builder')}
+            className={cn(
+              "px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-2",
+              viewMode === 'builder'
+                ? "bg-blue-600 text-white shadow-sm shadow-blue-500/25"
+                : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200/80 hover:bg-slate-100/50"
+            )}
+          >
+            <Network className="w-3.5 h-3.5" /> Thiết Kế Quy Trình (Workflow Designer)
+          </button>
+        </div>
 
  <div className="p-6 flex-1 flex flex-col">
  {viewMode === 'tasks' ? (
@@ -424,33 +539,122 @@ export function WorkflowHub() {
  </div>
  </div>
  ) : (
- <div className="flex-1 bg-slate-50 border border-slate-300 border-dashed rounded-xl relative overflow-hidden flex flex-col p-2">
- <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#10B981 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
- <div className="flex-1 min-h-[500px]">
- <ReactFlow
- nodes={nodes}
- edges={edges}
- onNodesChange={onNodesChange}
- onEdgesChange={onEdgesChange}
- onConnect={onConnect}
- fitView
- >
- <Background color="#cbd5e1" gap={20} />
- <Controls className="!bg-white !border-slate-300 !shadow-sm" />
- </ReactFlow>
- </div>
- <div className="p-4 bg-white/80 backdrop-blur-md border-t border-slate-300 flex justify-between items-center rounded-b-[3rem]">
- <div className="flex items-center gap-4">
- <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
- <span className="text-[10px] font-black uppercase tracking-widest text-slate-600 italic">Neural Canvas Active | Beta v2.4</span>
- </div>
- <div className="flex gap-2">
- <button className="px-5 py-2.5 bg-slate-100 text-slate-900 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all">Save Draft</button>
- <button className="px-5 py-2.5 bg-emerald-600 text-[#FAF9F5] font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-emerald-700 shadow-sm shadow-emerald-600/20 transition-all">Publish Flow</button>
- </div>
- </div>
- </div>
- )}
+  <div className="flex-1 bg-white border border-slate-200 rounded-2xl relative overflow-hidden flex flex-col shadow-xs">
+    {/* BPMN 2.0 Toolbar & Node Palette */}
+    <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+      {/* Node creation buttons */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1">
+          <Sparkles className="w-3 h-3 text-indigo-500" /> BPMN Palette:
+        </span>
+        <button
+          onClick={() => addBpmnNode('start', '🟢 Sự kiện Bắt đầu')}
+          className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-500" /> Start Event
+        </button>
+        <button
+          onClick={() => addBpmnNode('task', '⚙️ Tác vụ Hệ thống')}
+          className="px-2.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+        >
+          <Cpu className="w-3.5 h-3.5 text-slate-500" /> Service Task
+        </button>
+        <button
+          onClick={() => addBpmnNode('gateway', '🔶 Điều kiện Rẽ nhánh?')}
+          className="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+        >
+          <GitBranch className="w-3.5 h-3.5 text-amber-600" /> Gateway
+        </button>
+        <button
+          onClick={() => addBpmnNode('sign', '🔏 Ký số Cloud HSM')}
+          className="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+        >
+          <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" /> Cloud HSM
+        </button>
+        <button
+          onClick={() => addBpmnNode('end', '🔴 Kết thúc Luồng')}
+          className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+        >
+          <span className="w-2 h-2 rounded-full bg-rose-500" /> End Event
+        </button>
+      </div>
+
+      {/* Preset templates & Export */}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => loadBpmnTemplate('payment_hsm')}
+          className="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+          title="Nạp quy trình Duyệt Chi & Ký số Cloud HSM"
+        >
+          <Zap className="w-3.5 h-3.5 text-amber-500" /> Mẫu: Duyệt Chi & HSM
+        </button>
+        <button
+          onClick={() => loadBpmnTemplate('fefo_routing')}
+          className="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+          title="Nạp quy trình Xử lý Đơn hàng & Định tuyến FEFO"
+        >
+          <Boxes className="w-3.5 h-3.5 text-indigo-500" /> Mẫu: Flash Sale & FEFO
+        </button>
+        <button
+          onClick={exportBpmnJson}
+          className="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+          title="Xuất định dạng JSON BPMN 2.0"
+        >
+          <Download className="w-3.5 h-3.5 text-slate-500" /> Xuất BPMN
+        </button>
+        <button
+          onClick={() => {
+            setNodes([]);
+            setEdges([]);
+          }}
+          className="p-1.5 bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-600 border border-slate-200 rounded-lg transition-all cursor-pointer shadow-2xs"
+          title="Xóa trống canvas"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+
+    {/* Canvas Area */}
+    <div className="flex-1 min-h-[520px] relative bg-slate-50/50">
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        fitView
+      >
+        <Background color="#cbd5e1" gap={24} size={1.5} />
+        <Controls className="!bg-white !border-slate-200 !shadow-sm !rounded-xl" />
+      </ReactFlow>
+    </div>
+
+    {/* Footer action bar */}
+    <div className="p-4 bg-white border-t border-slate-200 flex flex-wrap justify-between items-center gap-3">
+      <div className="flex items-center gap-3">
+        <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+        <span className="text-[11px] font-bold text-slate-600">
+          Neural Workflow Designer BPMN 2.0 • <strong className="text-slate-900">{nodes.length} Nodes</strong>, <strong className="text-slate-900">{edges.length} Transitions</strong>
+        </span>
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={() => alert("Đã lưu bản thảo quy trình BPMN thành công!")}
+          className="px-4 py-2 bg-slate-100 text-slate-800 font-bold rounded-xl text-xs hover:bg-slate-200 transition-all cursor-pointer"
+        >
+          Lưu Bản Thảo
+        </button>
+        <button
+          onClick={() => alert(`Đã kích hoạt và triển khai quy trình BPMN gồm ${nodes.length} bước vào hệ thống eOffice!`)}
+          className="px-5 py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 shadow-sm shadow-emerald-600/20 transition-all cursor-pointer"
+        >
+          Xuất Bản Quy Trình (Publish Flow)
+        </button>
+      </div>
+    </div>
+  </div>
+  )}
  </div>
  </div>
 

@@ -72,17 +72,6 @@ interface ShopifyHaravanConfig {
   isActive: boolean;
 }
 
-interface MarketplaceConfig {
-  platform: 'shopee' | 'tiktok';
-  shopId: string;
-  appKey: string;
-  appSecret: string;
-  accessToken: string;
-  refreshToken: string;
-  autoSyncStock: boolean;
-  autoSyncOrders: boolean;
-  isActive: boolean;
-}
 
 interface CustomWebhook {
   id: string;
@@ -585,20 +574,6 @@ export function SettingsPage() {
     };
   });
 
-  const [marketplaceConfig, setMarketplaceConfig] = useState<MarketplaceConfig>(() => {
-    const data = safeLocalStorage.getItem('api_marketplace_config');
-    return data ? JSON.parse(data) : {
-      platform: 'shopee',
-      shopId: 'shopee_shop_9999',
-      appKey: 'app_key_shopee_123',
-      appSecret: 'app_secret_shopee_456',
-      accessToken: 'shopee_access_token_def',
-      refreshToken: 'shopee_refresh_token_ghi',
-      autoSyncStock: true,
-      autoSyncOrders: true,
-      isActive: false
-    };
-  });
 
   const [customWebhooks, setCustomWebhooks] = useState<CustomWebhook[]>(() => {
     const data = safeLocalStorage.getItem('api_custom_webhooks');
@@ -628,10 +603,10 @@ export function SettingsPage() {
       {
         id: 'log-1',
         timestamp: '2026-06-11 10:15:00',
-        platform: 'MISA Accounting',
+        platform: 'VComm Accounting',
         event: 'Đồng bộ hóa đơn bán hàng #DH-2026-001',
         status: 'success',
-        details: 'Đã tạo chứng từ kế toán 1302/2026 trên MISA. Tài khoản Nợ: 1121, Tài khoản Có: 5111.'
+        details: 'Đã tạo chứng từ kế toán 1302/2026 trên Kế toán VComm. Tài khoản Nợ: 1121, Tài khoản Có: 5111.'
       },
       {
         id: 'log-2',
@@ -644,10 +619,10 @@ export function SettingsPage() {
       {
         id: 'log-3',
         timestamp: '2026-06-11 09:45:30',
-        platform: 'MISA Accounting',
+        platform: 'VComm Accounting',
         event: 'Đồng bộ hóa đơn bán hàng #DH-2026-002',
         status: 'failed',
-        details: 'Lỗi: Tài khoản kế toán 51111 không tồn tại trong hệ thống tài khoản MISA (Circular 99/2025/TT-BTC).'
+        details: 'Lỗi: Tài khoản kế toán 51111 không tồn tại trong hệ thống tài khoản Kế toán VComm (Circular 99/2025/TT-BTC).'
       },
       {
         id: 'log-4',
@@ -702,7 +677,7 @@ export function SettingsPage() {
   const saveMisaConfigLocal = (config: MisaConfig) => {
     setMisaConfig(config);
     saveMisaConfig(config);
-    addNotification('Cài đặt MISA', 'Đã lưu cấu hình MISA thành công.');
+    addNotification('Cài đặt Kế toán VComm', 'Đã lưu cấu hình Kế toán VComm thành công.');
   };
 
   const saveZnsConfigLocal = (config: ZnsConfig) => {
@@ -2773,7 +2748,7 @@ export function SettingsPage() {
                     <Building2 className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100">Kế toán MISA SME</h4>
+                    <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100">Kế toán VComm Finance</h4>
                     <p className="text-[9px] text-slate-500">Đồng bộ chứng từ & hóa đơn</p>
                   </div>
                 </div>
@@ -2788,16 +2763,16 @@ export function SettingsPage() {
                 </label>
               </div>
               <p className="text-[10px] text-slate-500 line-clamp-2">
-                Hạch toán tự động công nợ thu chi, doanh thu sàn TMĐT và chi phí vào hệ thống tài khoản MISA theo Thông tư 99/2025/TT-BTC.
+                Hạch toán tự động công nợ thu chi, doanh thu sàn TMĐT và chi phí vào hệ thống tài khoản Kế toán VComm theo Thông tư 99/2025/TT-BTC.
               </p>
             </div>
             <div className="flex gap-2 pt-3 border-t border-slate-100 dark:border-slate-700/50">
               <button 
-                onClick={() => handleTestConnection('MISA Accounting')}
-                disabled={testingConnection['MISA Accounting']}
+                onClick={() => handleTestConnection('VComm Accounting')}
+                disabled={testingConnection['VComm Accounting']}
                 className="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-[10px] font-bold transition-colors flex items-center justify-center gap-1"
               >
-                {testingConnection['MISA Accounting'] ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
+                {testingConnection['VComm Accounting'] ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
                 Kiểm tra
               </button>
               <button 
@@ -2952,50 +2927,6 @@ export function SettingsPage() {
             </div>
           </div>
 
-          {/* SHOPEE / TIKTOK SHOP MULTICHANNEL */}
-          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-orange-500/10 text-orange-600 rounded-xl">
-                    <Zap className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100">Shopee & TikTok Shop</h4>
-                    <p className="text-[9px] text-slate-500">Đồng bộ sàn Thương mại điện tử</p>
-                  </div>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    className="sr-only peer" 
-                    checked={marketplaceConfig.isActive}
-                    onChange={(e) => saveMarketplaceConfig({ ...marketplaceConfig, isActive: e.target.checked })}
-                  />
-                  <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
-                </label>
-              </div>
-              <p className="text-[10px] text-slate-500 line-clamp-2">
-                Hỗ trợ phân phối tồn kho tự động, cập nhật trạng thái đơn hàng đa sàn để giải quyết bài toán over-selling.
-              </p>
-            </div>
-            <div className="flex gap-2 pt-3 border-t border-slate-100 dark:border-slate-700/50">
-              <button 
-                onClick={() => handleTestConnection('Marketplace API')}
-                disabled={testingConnection['Marketplace API']}
-                className="flex-1 py-1.5 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-[10px] font-bold transition-colors flex items-center justify-center gap-1"
-              >
-                {testingConnection['Marketplace API'] ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
-                Kiểm tra
-              </button>
-              <button 
-                onClick={() => setActiveConfigModal('marketplace')}
-                className="flex-1 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold transition-colors"
-              >
-                Cấu hình
-              </button>
-            </div>
-          </div>
 
           {/* CUSTOM WEBHOOKS */}
           <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between h-[180px] hover:shadow-md transition-shadow">
@@ -3186,7 +3117,7 @@ export function SettingsPage() {
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
               <div className="flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-emerald-600" />
-                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Kế toán Doanh nghiệp MISA</h4>
+                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Kế toán Doanh nghiệp VComm</h4>
               </div>
               <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
                 <X className="w-4 h-4 text-slate-500" />
@@ -3203,7 +3134,7 @@ export function SettingsPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">MISA App ID</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">VComm Accounting App ID</label>
                   <input 
                     type="text" 
                     className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 font-mono"
@@ -3292,7 +3223,7 @@ export function SettingsPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300">Tách giao dịch sàn TMĐT</h5>
-                    <p className="text-[9px] text-slate-500">Tự động hạch toán riêng phí hoa hồng Shopee/TikTok vào TK 641.</p>
+                    <p className="text-[9px] text-slate-500">Tự động hạch toán riêng phí chiết khấu & hoa hồng sàn VComm vào TK 641.</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input 
@@ -3337,7 +3268,7 @@ export function SettingsPage() {
                 }}
                 className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors"
               >
-                Lưu cấu hình MISA
+                Lưu cấu hình Kế toán VComm
               </button>
             </div>
           </div>
@@ -3653,129 +3584,7 @@ export function SettingsPage() {
         </div>
       )}
 
-      {/* --- SHOPEE / TIKTOK SHOP CONFIGURATION MODAL --- */}
-      {activeConfigModal === 'marketplace' && (
-        <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 w-full max-w-md shadow-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
-              <div className="flex items-center gap-2">
-                <Zap className="w-5 h-5 text-orange-500" />
-                <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">Cấu hình Shopee / TikTok Shop Integration</h4>
-              </div>
-              <button onClick={() => setActiveConfigModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
-                <X className="w-4 h-4 text-slate-500" />
-              </button>
-            </div>
 
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Sàn Thương mại</label>
-                  <select 
-                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
-                    value={marketplaceConfig.platform}
-                    onChange={e => setMarketplaceConfig(prev => ({ ...prev, platform: e.target.value as 'shopee' | 'tiktok' }))}
-                  >
-                    <option value="shopee">Shopee Mall / Live</option>
-                    <option value="tiktok">TikTok Shop VN</option>
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Gian hàng Shop ID</label>
-                  <input 
-                    type="text" 
-                    placeholder="shop_id_12345"
-                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
-                    value={marketplaceConfig.shopId}
-                    onChange={e => setMarketplaceConfig(prev => ({ ...prev, shopId: e.target.value }))}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">App Key (API Partner)</label>
-                  <input 
-                    type="text" 
-                    placeholder="app_key"
-                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
-                    value={marketplaceConfig.appKey}
-                    onChange={e => setMarketplaceConfig(prev => ({ ...prev, appKey: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">App Secret Key</label>
-                  <input 
-                    type="password" 
-                    placeholder="app_secret"
-                    className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100"
-                    value={marketplaceConfig.appSecret}
-                    onChange={e => setMarketplaceConfig(prev => ({ ...prev, appSecret: e.target.value }))}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Access Token hiện tại</label>
-                <input 
-                  type="password" 
-                  className="w-full text-xs p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 dark:text-slate-100 font-mono"
-                  value={marketplaceConfig.accessToken}
-                  onChange={e => setMarketplaceConfig(prev => ({ ...prev, accessToken: e.target.value }))}
-                />
-              </div>
-
-              <div className="space-y-3 border-t border-slate-100 dark:border-slate-700 pt-3">
-                <h5 className="font-bold text-xs text-slate-700 dark:text-slate-300">Tùy chọn đồng bộ</h5>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-slate-600 dark:text-slate-400">Đồng bộ tồn kho tự động</span>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="sr-only peer" 
-                      checked={marketplaceConfig.autoSyncStock}
-                      onChange={e => setMarketplaceConfig(prev => ({ ...prev, autoSyncStock: e.target.checked }))}
-                    />
-                    <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
-                  </label>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-slate-600 dark:text-slate-400">Kéo đơn hàng về để tạo phiếu đóng gói</span>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="sr-only peer" 
-                      checked={marketplaceConfig.autoSyncOrders}
-                      onChange={e => setMarketplaceConfig(prev => ({ ...prev, autoSyncOrders: e.target.checked }))}
-                    />
-                    <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:height-3.5 after:width-3.5 after:transition-all dark:border-slate-600 peer-checked:bg-orange-500"></div>
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
-              <button 
-                onClick={() => setActiveConfigModal(null)}
-                className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
-              >
-                Hủy bỏ
-              </button>
-              <button 
-                onClick={() => {
-                  saveMarketplaceConfig(marketplaceConfig);
-                  setActiveConfigModal(null);
-                }}
-                className="flex-1 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold transition-colors"
-              >
-                Lưu cấu hình
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* --- CUSTOM WEBHOOKS / OPENAPI NEW KEY CONFIG MODAL --- */}
       {activeConfigModal === 'webhook' && (

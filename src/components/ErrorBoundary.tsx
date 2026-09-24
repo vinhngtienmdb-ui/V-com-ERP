@@ -24,18 +24,33 @@ export class ErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) return this.props.fallback;
+      const isDynamicImportError = 
+        this.state.error?.message?.includes('dynamically imported module') ||
+        this.state.error?.message?.includes('Failed to fetch') ||
+        this.state.error?.message?.includes('Importing a module script failed');
+
       return (
         <div className="flex flex-col items-center justify-center h-full p-6 text-center">
           <div className="text-4xl mb-4">⚠️</div>
-          <h2 className="text-lg font-semibold text-slate-800 mb-2">Đã xảy ra lỗi</h2>
+          <h2 className="text-lg font-semibold text-slate-800 mb-2">
+            {isDynamicImportError ? 'Phiên bản giao diện đã được cập nhật' : 'Đã xảy ra lỗi'}
+          </h2>
           <p className="text-sm text-slate-500 mb-4 max-w-md">
-            {this.state.error?.message || 'Lỗi không xác định'}
+            {isDynamicImportError 
+              ? 'Hệ thống vừa có cập nhật mã nguồn trên server. Vui lòng tải lại trang để tải phiên bản mới nhất.'
+              : (this.state.error?.message || 'Lỗi không xác định')}
           </p>
           <button
-            onClick={() => this.setState({ hasError: false, error: null })}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700"
+            onClick={() => {
+              if (isDynamicImportError) {
+                window.location.reload();
+              } else {
+                this.setState({ hasError: false, error: null });
+              }
+            }}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 font-bold shadow-md cursor-pointer transition-all"
           >
-            Thử lại
+            {isDynamicImportError ? 'Tải lại trang (F5)' : 'Thử lại'}
           </button>
         </div>
       );

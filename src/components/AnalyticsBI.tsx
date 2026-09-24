@@ -59,29 +59,29 @@ const ANALYTICS_TRENDS = [
 ];
 
 const CHANNEL_DATA_7_DAYS = [
-  { epoch: '27/05', 'iPOS (Tại quầy)': 45000000, 'Shopee': 38000000, 'Lazada': 18000000, 'TikTok Shop': 28000000, 'Delivery (App)': 12000000, 'eCommerce (Website)': 25000000, 'NextHub (B2B)': 15000000 },
-  { epoch: '28/05', 'iPOS (Tại quầy)': 48000000, 'Shopee': 42000000, 'Lazada': 19000000, 'TikTok Shop': 32000000, 'Delivery (App)': 14000000, 'eCommerce (Website)': 28000000, 'NextHub (B2B)': 18000000 },
-  { epoch: '29/05', 'iPOS (Tại quầy)': 52000000, 'Shopee': 40000000, 'Lazada': 15000000, 'TikTok Shop': 35000000, 'Delivery (App)': 15000000, 'eCommerce (Website)': 31000000, 'NextHub (B2B)': 19000000 },
-  { epoch: '30/05', 'iPOS (Tại quầy)': 68000000, 'Shopee': 54000000, 'Lazada': 24000000, 'TikTok Shop': 52000000, 'Delivery (App)': 28000000, 'eCommerce (Website)': 45000000, 'NextHub (B2B)': 28000000 },
-  { epoch: '31/05', 'iPOS (Tại quầy)': 85000000, 'Shopee': 68000000, 'Lazada': 31000000, 'TikTok Shop': 65000000, 'Delivery (App)': 35000000, 'eCommerce (Website)': 59000000, 'NextHub (B2B)': 36000000 },
-  { epoch: '01/06', 'iPOS (Tại quầy)': 95000000, 'Shopee': 72000000, 'Lazada': 28000000, 'TikTok Shop': 70000000, 'Delivery (App)': 38000000, 'eCommerce (Website)': 64000000, 'NextHub (B2B)': 42000000 },
-  { epoch: '02/06', 'iPOS (Tại quầy)': 50000000, 'Shopee': 45000000, 'Lazada': 22000000, 'TikTok Shop': 31000000, 'Delivery (App)': 16500000, 'eCommerce (Website)': 33000000, 'NextHub (B2B)': 22000000 },
+  { epoch: '27/05', 'iPOS (Tại quầy)': 45000000, 'VComm Mall': 38000000, 'VComm Supermarket': 18000000, 'VComm FlashSale': 28000000, 'VComm LiveStream': 12000000, 'eCommerce (Website)': 25000000, 'NextHub (B2B)': 15000000 },
+  { epoch: '28/05', 'iPOS (Tại quầy)': 48000000, 'VComm Mall': 42000000, 'VComm Supermarket': 19000000, 'VComm FlashSale': 32000000, 'VComm LiveStream': 14000000, 'eCommerce (Website)': 28000000, 'NextHub (B2B)': 18000000 },
+  { epoch: '29/05', 'iPOS (Tại quầy)': 52000000, 'VComm Mall': 40000000, 'VComm Supermarket': 15000000, 'VComm FlashSale': 35000000, 'VComm LiveStream': 15000000, 'eCommerce (Website)': 31000000, 'NextHub (B2B)': 19000000 },
+  { epoch: '30/05', 'iPOS (Tại quầy)': 68000000, 'VComm Mall': 54000000, 'VComm Supermarket': 24000000, 'VComm FlashSale': 52000000, 'VComm LiveStream': 28000000, 'eCommerce (Website)': 45000000, 'NextHub (B2B)': 28000000 },
+  { epoch: '31/05', 'iPOS (Tại quầy)': 85000000, 'VComm Mall': 68000000, 'VComm Supermarket': 31000000, 'VComm FlashSale': 65000000, 'VComm LiveStream': 35000000, 'eCommerce (Website)': 59000000, 'NextHub (B2B)': 36000000 },
+  { epoch: '01/06', 'iPOS (Tại quầy)': 95000000, 'VComm Mall': 72000000, 'VComm Supermarket': 28000000, 'VComm FlashSale': 70000000, 'VComm LiveStream': 38000000, 'eCommerce (Website)': 64000000, 'NextHub (B2B)': 42000000 },
+  { epoch: '02/06', 'iPOS (Tại quầy)': 50000000, 'VComm Mall': 45000000, 'VComm Supermarket': 22000000, 'VComm FlashSale': 31000000, 'VComm LiveStream': 16500000, 'eCommerce (Website)': 33000000, 'NextHub (B2B)': 22000000 },
 ];
 
 const CHANNEL_DATA_30_DAYS = [
-  { epoch: 'Tuần 1', 'iPOS (Tại quầy)': 312000000, 'Shopee': 288000000, 'Lazada': 124000000, 'TikTok Shop': 195000000, 'Delivery (App)': 88000000, 'eCommerce (Website)': 175000000, 'NextHub (B2B)': 112000000 },
-  { epoch: 'Tuần 2', 'iPOS (Tại quầy)': 345000000, 'Shopee': 310000000, 'Lazada': 118000000, 'TikTok Shop': 240000000, 'Delivery (App)': 92000000, 'eCommerce (Website)': 190000000, 'NextHub (B2B)': 125000000 },
-  { epoch: 'Tuần 3', 'iPOS (Tại quầy)': 328000000, 'Shopee': 345000000, 'Lazada': 142000000, 'TikTok Shop': 295000000, 'Delivery (App)': 105000000, 'eCommerce (Website)': 215000000, 'NextHub (B2B)': 138000000 },
-  { epoch: 'Tuần 4', 'iPOS (Tại quầy)': 443000000, 'Shopee': 359000000, 'Lazada': 157000000, 'TikTok Shop': 343000000, 'Delivery (App)': 158500000, 'eCommerce (Website)': 298000000, 'NextHub (B2B)': 188000000 },
+  { epoch: 'Tuần 1', 'iPOS (Tại quầy)': 312000000, 'VComm Mall': 288000000, 'VComm Supermarket': 124000000, 'VComm FlashSale': 195000000, 'VComm LiveStream': 88000000, 'eCommerce (Website)': 175000000, 'NextHub (B2B)': 112000000 },
+  { epoch: 'Tuần 2', 'iPOS (Tại quầy)': 345000000, 'VComm Mall': 310000000, 'VComm Supermarket': 118000000, 'VComm FlashSale': 240000000, 'VComm LiveStream': 92000000, 'eCommerce (Website)': 190000000, 'NextHub (B2B)': 125000000 },
+  { epoch: 'Tuần 3', 'iPOS (Tại quầy)': 328000000, 'VComm Mall': 345000000, 'VComm Supermarket': 142000000, 'VComm FlashSale': 295000000, 'VComm LiveStream': 105000000, 'eCommerce (Website)': 215000000, 'NextHub (B2B)': 138000000 },
+  { epoch: 'Tuần 4', 'iPOS (Tại quầy)': 443000000, 'VComm Mall': 359000000, 'VComm Supermarket': 157000000, 'VComm FlashSale': 343000000, 'VComm LiveStream': 158500000, 'eCommerce (Website)': 298000000, 'NextHub (B2B)': 188000000 },
 ];
 
 const CHANNEL_DATA_6_MONTHS = [
-  { epoch: 'Tháng 1', 'iPOS (Tại quầy)': 1250000000, 'Shopee': 1120000000, 'Lazada': 480000000, 'TikTok Shop': 750000000, 'Delivery (App)': 340000000, 'eCommerce (Website)': 720000000, 'NextHub (B2B)': 480000000 },
-  { epoch: 'Tháng 2', 'iPOS (Tại quầy)': 1180000000, 'Shopee': 1190000000, 'Lazada': 450000000, 'TikTok Shop': 890000000, 'Delivery (App)': 350000000, 'eCommerce (Website)': 690000000, 'NextHub (B2B)': 490000000 },
-  { epoch: 'Tháng 3', 'iPOS (Tại quầy)': 1450000000, 'Shopee': 1350000000, 'Lazada': 540000000, 'TikTok Shop': 1120000000, 'Delivery (App)': 420000000, 'eCommerce (Website)': 880000000, 'NextHub (B2B)': 590000000 },
-  { epoch: 'Tháng 4', 'iPOS (Tại quầy)': 1410000000, 'Shopee': 1390000000, 'Lazada': 510000000, 'TikTok Shop': 1360000000, 'Delivery (App)': 440000000, 'eCommerce (Website)': 910000000, 'NextHub (B2B)': 640000000 },
-  { epoch: 'Tháng 5', 'iPOS (Tại quầy)': 1720000000, 'Shopee': 1650000000, 'Lazada': 620000000, 'TikTok Shop': 1880000000, 'Delivery (App)': 590000000, 'eCommerce (Website)': 1120000000, 'NextHub (B2B)': 780000000 },
-  { epoch: 'Tháng 6', 'iPOS (Tại quầy)': 1850000000, 'Shopee': 1780000000, 'Lazada': 680000000, 'TikTok Shop': 2250000000, 'Delivery (App)': 640000000, 'eCommerce (Website)': 1250000000, 'NextHub (B2B)': 890000000 },
+  { epoch: 'Tháng 1', 'iPOS (Tại quầy)': 1250000000, 'VComm Mall': 1120000000, 'VComm Supermarket': 480000000, 'VComm FlashSale': 750000000, 'VComm LiveStream': 340000000, 'eCommerce (Website)': 720000000, 'NextHub (B2B)': 480000000 },
+  { epoch: 'Tháng 2', 'iPOS (Tại quầy)': 1180000000, 'VComm Mall': 1190000000, 'VComm Supermarket': 450000000, 'VComm FlashSale': 890000000, 'VComm LiveStream': 350000000, 'eCommerce (Website)': 690000000, 'NextHub (B2B)': 490000000 },
+  { epoch: 'Tháng 3', 'iPOS (Tại quầy)': 1450000000, 'VComm Mall': 1350000000, 'VComm Supermarket': 540000000, 'VComm FlashSale': 1120000000, 'VComm LiveStream': 420000000, 'eCommerce (Website)': 880000000, 'NextHub (B2B)': 590000000 },
+  { epoch: 'Tháng 4', 'iPOS (Tại quầy)': 1410000000, 'VComm Mall': 1390000000, 'VComm Supermarket': 510000000, 'VComm FlashSale': 1360000000, 'VComm LiveStream': 440000000, 'eCommerce (Website)': 910000000, 'NextHub (B2B)': 640000000 },
+  { epoch: 'Tháng 5', 'iPOS (Tại quầy)': 1720000000, 'VComm Mall': 1650000000, 'VComm Supermarket': 620000000, 'VComm FlashSale': 1880000000, 'VComm LiveStream': 590000000, 'eCommerce (Website)': 1120000000, 'NextHub (B2B)': 780000000 },
+  { epoch: 'Tháng 6', 'iPOS (Tại quầy)': 1850000000, 'VComm Mall': 1780000000, 'VComm Supermarket': 680000000, 'VComm FlashSale': 2250000000, 'VComm LiveStream': 640000000, 'eCommerce (Website)': 1250000000, 'NextHub (B2B)': 890000000 },
 ];
 
 const CHANNEL_METADATA = [
@@ -113,39 +113,39 @@ const CHANNEL_METADATA = [
     ordersCount: 950
   },
   {
-    name: 'Shopee',
+    name: 'VComm Mall',
     color: '#EA580C',
-    commissionFee: '12%',
-    desc: 'Bán online qua gian hàng Shopee Mall, tập trung tối đa đẩy quy mô đơn hàng và tồn dư.',
-    growth: '+14.2%',
-    avgOrder: 240000,
+    commissionFee: '5%',
+    desc: 'Gian hàng thương hiệu chính hãng VComm Mall, bảo chứng chất lượng và lưu lượng truy cập cao.',
+    growth: '+18.2%',
+    avgOrder: 380000,
     ordersCount: 3820
   },
   {
-    name: 'TikTok Shop',
-    color: '#000000',
-    commissionFee: '10.5%',
-    desc: 'Livestream kết hợp video ngắn sáng tạo, hiệu suất chuyển đổi bùng nổ, tệp khách hàng trẻ năng động.',
-    growth: '+28.6%',
+    name: 'VComm FlashSale',
+    color: '#EC4899',
+    commissionFee: '4.5%',
+    desc: 'Chương trình Deal chớp nhoáng trên sàn VComm, đẩy mạnh tốc độ tiêu thụ hàng hóa và lượt mua lặp lại.',
+    growth: '+32.6%',
     avgOrder: 210000,
     ordersCount: 5100
   },
   {
-    name: 'Lazada',
+    name: 'VComm Supermarket',
     color: '#2563EB',
-    commissionFee: '11%',
-    desc: 'Mua sắm phân khúc trung lưu kỹ tính, khâu đóng gói niêm phong chuyên nghiệp và đơn hàng giá trị cao.',
-    growth: '+3.1%',
-    avgOrder: 255000,
-    ordersCount: 1540
+    commissionFee: '6%',
+    desc: 'Phân hệ bách hóa, thực phẩm tươi sống và nhu yếu phẩm giao nhanh trong ngày qua mạng lưới kho VComm.',
+    growth: '+15.1%',
+    avgOrder: 320000,
+    ordersCount: 2540
   },
   {
-    name: 'Delivery (App)',
+    name: 'VComm LiveStream',
     color: '#10B981',
-    commissionFee: '22%',
-    desc: 'Giao nước hoả tốc iPOS qua GrabFood, Baemin & ShopeeFood. Phí sàn cao nhưng giải quyết nhanh cung giờ.',
-    growth: '+11.5%',
-    avgOrder: 110000,
+    commissionFee: '3%',
+    desc: 'Kênh phát sóng trực tiếp kết hợp giỏ hàng độc quyền trên ứng dụng VComm, tỷ lệ chốt đơn vượt trội.',
+    growth: '+27.5%',
+    avgOrder: 260000,
     ordersCount: 2200
   }
 ];
@@ -154,7 +154,7 @@ export function AnalyticsBI() {
   const [timeRange, setTimeRange] = React.useState<'7days' | '30days' | '6months'>('7days');
   const [chartType, setChartType] = React.useState<'stacked' | 'grouped' | 'line'>('stacked');
   const [activeChannels, setActiveChannels] = React.useState<string[]>([
-    'iPOS (Tại quầy)', 'eCommerce (Website)', 'NextHub (B2B)', 'Shopee', 'Lazada', 'TikTok Shop', 'Delivery (App)'
+    'iPOS (Tại quầy)', 'eCommerce (Website)', 'NextHub (B2B)', 'VComm Mall', 'VComm Supermarket', 'VComm FlashSale', 'VComm LiveStream'
   ]);
 
   const currentData = timeRange === '7days' 
@@ -198,7 +198,7 @@ export function AnalyticsBI() {
  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-700 bg-slate-100 px-2 py-0.5 rounded">Intelligence Hub</span>
  <div className="w-1 h-1 bg-slate-900 rounded-full animate-pulse" />
  </div>
- <h1 className="font-serif tracking-tight text-3xl font-black text-slate-900 tracking-tight">Business Intelligence</h1>
+ <h1 className="font-sans tracking-tight text-3xl font-black text-slate-900">Business Intelligence</h1>
  <p className="text-sm text-slate-600 font-medium mt-1">Hệ thống phân tích chuyên sâu RFM, LTV, CAC và Giám sát gian lận thời gian thực.</p>
  </div>
  <div className="flex flex-wrap gap-3">
@@ -275,7 +275,7 @@ export function AnalyticsBI() {
           <BarChart3 className="w-5 h-5 text-blue-600" /> Báo cáo Hiệu quả Kênh bán hàng & Doanh thu hợp nhất
         </h2>
         <p className="text-xs text-slate-500 font-medium mt-1">
-          So sánh tương quan giữa các sàn điện tử (Shopee, Lazada, TikTok Shop), giao hàng ẩm thực và quầy thu ngân iPOS.
+          So sánh tương quan giữa các phân hệ sàn TMĐT VComm (VComm Mall, Supermarket, FlashSale, LiveStream) và kênh B2B/quầy.
         </p>
       </div>
 

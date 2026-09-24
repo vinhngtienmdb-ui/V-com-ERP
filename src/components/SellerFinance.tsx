@@ -200,7 +200,7 @@ export function SellerFinance() {
 
     addNotification(
       'Hạn mức tín dụng mới được áp dụng',
-      `Đã cấp hạn mức thấu chi ${formatCurrency(newCreditLimit)} cho ${selectedSeller.sellerName}.${isSyncingMisa ? ' Đã hạch toán MISA.' : ''}`
+      `Đã cấp hạn mức thấu chi ${formatCurrency(newCreditLimit)} cho ${selectedSeller.sellerName}.${isSyncingMisa ? ' Đã hạch toán VComm.' : ''}`
     );
     setSelectedSeller(null);
   };
@@ -245,111 +245,123 @@ export function SellerFinance() {
     <div className="space-y-8 animate-in fade-in duration-500 pb-12 text-xs font-sans">
       
       {/* 1. Header Area */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
-          <h1 className="font-serif tracking-tight text-2xl font-black text-slate-900">
-            Supply Chain Finance (Hỗ trợ tài chính nhà bán)
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/60">
+              Supply Chain Finance
+            </span>
+            <span className="text-xs text-slate-500 font-medium">Chấm Điểm Tín Dụng & Ứng Vốn Nhanh</span>
+          </div>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+            Tài Chính Chuỗi Cung Ứng & Ứng Vốn Nhà Bán
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Chấm điểm tín dụng Seller thông minh, cung cấp các giải pháp thấu chi và ứng vốn xoay vòng nhanh.
+          <p className="text-xs text-slate-600 mt-0.5">
+            Chấm điểm tín nhiệm Seller tự động, cấp hạn mức thấu chi xoay vòng và giải ngân sớm đơn hàng thanh toán qua APIPay.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <button 
             onClick={() => setActiveTab('risk_analytics')}
             className={cn(
-              "px-3.5 py-2 rounded-lg text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer bg-white border-slate-300 hover:bg-slate-100",
-              activeTab === 'risk_analytics' && "bg-slate-900 border-slate-900 text-white hover:bg-slate-800"
+              "px-4 py-2.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-2 cursor-pointer shadow-2xs",
+              activeTab === 'risk_analytics' 
+                ? "bg-slate-900 border-slate-900 text-white" 
+                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
             )}
           >
-            <PieChart className="w-4 h-4" /> Báo cáo rủi ro nợ
+            <PieChart className="w-4 h-4 text-blue-500" /> Báo Cáo Rủi Ro Tín Dụng
           </button>
         </div>
       </div>
 
       {/* 2. Top Statistics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-slate-900 text-[#FAF9F5] p-5 rounded-xl border border-slate-850 shadow-sm flex flex-col justify-between">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-5 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-md shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
           <div className="flex justify-between items-start">
-            <div className="p-2 bg-slate-800 rounded-lg">
-              <BadgeDollarSign className="w-5 h-5" />
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Tổng Dư Nợ Thấu Chi</span>
+            <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+              <BadgeDollarSign className="w-4 h-4" />
             </div>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tổng dư nợ thấu chi</span>
           </div>
-          <div className="mt-4">
-            <div className="text-xl font-bold">{formatCurrency(788000000)}</div>
-            <div className="mt-2 flex items-center gap-1.5 text-[10px] text-emerald-500 font-bold">
+          <div className="mt-3">
+            <div className="text-2xl font-black text-slate-900 tracking-tight">{formatCurrency(788000000)}</div>
+            <div className="mt-2 flex items-center gap-1.5 text-xs text-emerald-600 font-semibold">
               <TrendingUp className="w-3.5 h-3.5" /> Tỷ lệ nợ xấu: 0.12%
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-3xs flex flex-col justify-between">
+        <div className="p-5 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-md shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
           <div className="flex justify-between items-start">
-            <div className="p-2 bg-slate-100 text-blue-600 rounded-lg">
-              <Clock className="w-5 h-5" />
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Chờ Duyệt Ứng Vốn</span>
+            <div className="p-2 bg-amber-50 text-amber-600 rounded-xl">
+              <Clock className="w-4 h-4" />
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chờ duyệt ứng vốn</span>
           </div>
-          <div className="mt-4">
-            <div className="text-xl font-bold text-slate-900">
+          <div className="mt-3">
+            <div className="text-2xl font-black text-slate-900 tracking-tight">
               {payouts.filter(p => p.status === 'pending').length} yêu cầu
             </div>
-            <p className="text-[10.5px] text-amber-600 font-medium mt-1">Cần đối soát thanh khoản sớm</p>
+            <p className="text-xs text-amber-600 font-medium mt-1">Cần đối soát thanh khoản sớm</p>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-3xs flex flex-col justify-between">
+        <div className="p-5 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-md shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
           <div className="flex justify-between items-start">
-            <div className="p-2 bg-slate-100 text-emerald-600 rounded-lg">
-              <Star className="w-5 h-5" />
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Doanh Thu Phí Dịch Vụ</span>
+            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+              <Star className="w-4 h-4" />
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Doanh thu phí dịch vụ</span>
           </div>
-          <div className="mt-4">
-            <div className="text-xl font-bold text-blue-600">
+          <div className="mt-3">
+            <div className="text-2xl font-black text-emerald-600 tracking-tight">
               {formatCurrency(payouts.reduce((acc, p) => p.status === 'disbursed' ? acc + p.discountFee : acc, 0) + 1240000)}
             </div>
-            <p className="text-[10.5px] text-emerald-600 font-medium mt-1">Dựa trên phí 1% giá trị giải ngân</p>
+            <p className="text-xs text-slate-500 mt-1">Thu phí 1% giá trị giải ngân</p>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-3xs flex flex-col justify-between">
+        <div className="p-5 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-md shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
           <div className="flex justify-between items-start">
-            <div className="p-2 bg-slate-100 text-indigo-600 rounded-lg">
-              <ShieldCheck className="w-5 h-5" />
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Seller Hạng AAA</span>
+            <div className="p-2 bg-purple-50 text-purple-600 rounded-xl">
+              <ShieldCheck className="w-4 h-4" />
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Seller AAA (Tín nhiệm cao)</span>
           </div>
-          <div className="mt-4">
-            <div className="text-xl font-bold text-emerald-600">
+          <div className="mt-3">
+            <div className="text-2xl font-black text-purple-600 tracking-tight">
               {sellers.filter(s => s.tier === 'AAA').length} đối tác
             </div>
-            <p className="text-[10.5px] text-slate-500 mt-1">Đủ điều kiện hạn mức thấu chi đặc biệt</p>
+            <p className="text-xs text-slate-500 mt-1">Hạn mức thấu chi ưu đãi cao nhất</p>
           </div>
         </div>
       </div>
 
       {/* 3. Navigation Tabs */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-3xs overflow-hidden">
-        <div className="flex border-b border-slate-200">
+      <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="p-3 bg-slate-50/70 border-b border-slate-200/80 flex flex-wrap gap-2">
           {[
-            { id: 'credit', label: 'Tín dụng & Thấu chi Seller', icon: ShieldCheck },
-            { id: 'early_payout', label: 'Yêu cầu Giải ngân sớm', icon: Banknote },
-            { id: 'risk_analytics', label: 'Phân tích rủi ro & Thanh khoản', icon: PieChart }
+            { id: 'credit', label: 'Tín Dụng & Thấu Chi Seller', icon: ShieldCheck },
+            { id: 'early_payout', label: 'Yêu Cầu Giải Ngân Sớm', icon: Banknote },
+            { id: 'risk_analytics', label: 'Phân Tích Rủi Ro & Thanh Khoản', icon: PieChart }
           ].map((tab) => (
-            <button 
+            <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={cn(
-                "px-5 py-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer bg-transparent border-transparent text-slate-500 hover:text-slate-900",
-                activeTab === tab.id && "border-blue-600 text-blue-600 bg-slate-50/50"
+                "px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer",
+                activeTab === tab.id
+                  ? "bg-blue-600 text-white shadow-sm shadow-blue-500/25"
+                  : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200/80 hover:bg-slate-100/50"
               )}
             >
-              <tab.icon className="w-4.5 h-4.5" /> {tab.label}
+              <tab.icon className="w-3.5 h-3.5" />
+              {tab.label}
             </button>
           ))}
         </div>
+
 
         {/* 4. Tab Content */}
         <div className="p-6">
@@ -1007,7 +1019,7 @@ export function SellerFinance() {
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    Định khoản hạch toán mô phỏng (ERP MISA)
+                    Định khoản hạch toán (VComm Finance)
                   </span>
                   <label className="flex items-center gap-1.5 text-[10px] font-bold text-slate-650 cursor-pointer">
                     <input 
@@ -1015,7 +1027,7 @@ export function SellerFinance() {
                       checked={isSyncingMisa} 
                       onChange={e => setIsSyncingMisa(e.target.checked)}
                       className="rounded text-blue-600 focus:ring-0 cursor-pointer"
-                    /> Đồng bộ MISA
+                    /> Đồng bộ Kế toán VComm
                   </label>
                 </div>
 
@@ -1162,7 +1174,7 @@ export function SellerFinance() {
                   </div>
 
                   <div className="p-3.5 bg-slate-100 border border-slate-200 rounded-xl space-y-2">
-                    <p className="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Định khoản hạch toán ERP MISA</p>
+                    <p className="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Định khoản hạch toán VComm Finance</p>
                     <div className="flex justify-between text-[10.5px] font-semibold text-slate-700">
                       <span>Nợ TK 131 (Phải thu khách hàng - Seller):</span>
                       <span className="font-mono text-slate-900">{formatCurrency(selectedPayout.amount)}</span>
@@ -1223,7 +1235,7 @@ export function SellerFinance() {
                   </div>
                   <h4 className="font-bold text-slate-900 text-sm">Giải ngân đã được duyệt chi & Ký số thành công!</h4>
                   <p className="text-[10.5px] text-slate-500 leading-relaxed">
-                    Yêu cầu ứng vốn sớm của đối tác đã được giải ngân thành công qua cổng thanh toán Napas 24/7 và ghi sổ kế toán MISA.
+                    Yêu cầu ứng vốn sớm của đối tác đã được giải ngân thành công qua cổng thanh toán Napas 24/7 và ghi sổ kế toán VComm.
                   </p>
 
                   <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 text-left space-y-2">

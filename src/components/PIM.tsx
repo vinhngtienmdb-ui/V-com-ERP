@@ -1,5 +1,7 @@
 import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState, useEffect, useRef } from 'react';
+import { CompactPageHeader } from './common/CompactPageHeader';
+import { CompactStatsRibbon, MetricRibbonItem } from './common/CompactStatsRibbon';
 import { 
  Package, 
  CheckCircle2, 
@@ -30,7 +32,14 @@ import {
  Maximize2,
  Eye,
  EyeOff,
- Loader2
+ Loader2,
+ Star,
+ MessageSquare,
+ ThumbsUp,
+ ThumbsDown,
+ MessageCircle,
+ Reply,
+ CheckCheck
 } from 'lucide-react';
 import { formatCurrency, cn } from '../lib/utils';
 import { Product } from '../types/erp';
@@ -53,13 +62,146 @@ import {
 } from '../lib/firebase';
 import nexhubProducts from '../constants/nexhub_products.json';
 
+export interface ProductReview {
+  id: string;
+  customerName: string;
+  productName: string;
+  sku: string;
+  rating: number;
+  comment: string;
+  date: string;
+  verifiedPurchase: boolean;
+  sentiment: 'positive' | 'neutral' | 'negative';
+  reply?: {
+    author: string;
+    text: string;
+    date: string;
+  };
+}
+
+const INITIAL_REVIEWS: ProductReview[] = [
+  {
+    id: 'REV-001',
+    customerName: 'Đặng Phương Thảo',
+    productName: 'Gói Combo Tiêu Chuẩn VComm',
+    sku: 'bundle-16',
+    rating: 5,
+    comment: 'Sản phẩm đóng gói rất cẩn thận, tem chính hãng VComm đầy đủ. Giao hàng hỏa tốc trong 2h siêu tiện lợi, dùng rất thích!',
+    date: 'Hôm nay, 14:20',
+    verifiedPurchase: true,
+    sentiment: 'positive',
+    reply: {
+      author: 'VComm Flagship Store',
+      text: 'Dạ cảm ơn bạn Thảo đã tin tưởng mua sắm tại VComm! Shop chúc bạn luôn có những trải nghiệm tuyệt vời ạ ❤️',
+      date: 'Hôm nay, 14:45'
+    }
+  },
+  {
+    id: 'REV-002',
+    customerName: 'Vũ Quốc Huy',
+    productName: 'Cà phê nguyên chất VComm Premium (Hộp 2 gói)',
+    sku: '8934669241349x2',
+    rating: 2,
+    comment: 'Hàng nhận về hộp ngoài hơi móp góc do bên vận chuyển đè nặng, mong shop gia cố thêm bóng khí chống sốc ở các góc hộp cho các đơn sau.',
+    date: 'Hôm qua, 18:30',
+    verifiedPurchase: true,
+    sentiment: 'negative'
+  },
+  {
+    id: 'REV-003',
+    customerName: 'Bùi Thị Hà',
+    productName: 'Máy POS Bán Lẻ Cảm Ứng Sunmi D2s Plus',
+    sku: 'TS-POS-001',
+    rating: 4,
+    comment: 'Máy chạy êm, phần mềm bán lẻ VComm load bill rất nhanh. Tuy nhiên dây nguồn hơi ngắn một chút so với bàn thu ngân của mình.',
+    date: '18/04/2026',
+    verifiedPurchase: true,
+    sentiment: 'neutral'
+  },
+  {
+    id: 'REV-004',
+    customerName: 'Trần Văn Hoàng',
+    productName: 'Máy kiểm kho Zebra Android TC21',
+    sku: 'TS-PDA-001',
+    rating: 5,
+    comment: 'Thiết bị quét mã vạch nhận diện cực nhạy, quét mã mờ rách vẫn đọc được. Đồng bộ tự động với kho WMS VComm không có độ trễ.',
+    date: '17/04/2026',
+    verifiedPurchase: true,
+    sentiment: 'positive',
+    reply: {
+      author: 'Kỹ Thuật Kho VComm',
+      text: 'Chào anh Hoàng, máy Zebra đã được đội ngũ nạp sẵn firmware tối ưu riêng cho hệ thống kho vận VComm. Rất vui vì thiết bị hỗ trợ tốt công việc của anh!',
+      date: '17/04/2026 15:10'
+    }
+  },
+  {
+    id: 'REV-005',
+    customerName: 'Lê Minh Tú',
+    productName: 'Máy in vận đơn nhiệt HPRT N41 K80',
+    sku: 'TS-PRN-001',
+    rating: 1,
+    comment: 'Lúc nhận máy in tem bị kẹt giấy một lần, phải tháo ra lắp lại con lăn mới chạy được. Cần shop hướng dẫn chi tiết hơn trong sách HDSD.',
+    date: '16/04/2026',
+    verifiedPurchase: true,
+    sentiment: 'negative'
+  }
+];
+
 export function PIM() {
- const [products, setProducts] = useState<Product[]>([]);
+  const [pimViewMode, setPimViewMode] = useState<'catalog' | 'reviews'>('catalog');
+  const [reviews, setReviews] = useState<ProductReview[]>(INITIAL_REVIEWS);
+  const [reviewRatingFilter, setReviewRatingFilter] = useState<'all' | '5' | '4' | '3' | '1-2' | 'unreplied'>('all');
+  const [reviewSearchQuery, setReviewSearchQuery] = useState('');
+  const [replyingReviewId, setReplyingReviewId] = useState<string | null>(null);
+  const [replyDraft, setReplyDraft] = useState('');
+
+  const [products, setProducts] = useState<Product[]>([]);
   const [syncingProductId, setSyncingProductId] = useState<string | null>(null);
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
- const [loading, setLoading] = useState(true);
- const [filterStatus, setFilterStatus] = useState<'all' | 'pending_approval' | 'in_stock' | 'hidden'>('all');
- const seedingRef = useRef(false);
+  const [loading, setLoading] = useState(true);
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending_approval' | 'in_stock' | 'hidden'>('all');
+  const seedingRef = useRef(false);
+
+  const handleReplyReview = (reviewId: string) => {
+    if (!replyDraft.trim()) return;
+    setReviews(prev => prev.map(r => r.id === reviewId ? {
+      ...r,
+      reply: {
+        author: 'VComm Flagship Store (Người bán)',
+        text: replyDraft.trim(),
+        date: 'Vừa xong'
+      }
+    } : r));
+    setReplyingReviewId(null);
+    setReplyDraft('');
+  };
+
+  const handleAiDraftReviewReply = (review: ProductReview) => {
+    if (review.sentiment === 'positive') {
+      setReplyDraft(`Dạ VComm Store xin cảm ơn anh/chị ${review.customerName} đã để lại đánh giá tích cực 5 sao cho sản phẩm ạ! Shop luôn nỗ lực đem lại trải nghiệm mua sắm chất lượng nhất cho quý khách. Chúc quý khách ngày mới vui vẻ!`);
+    } else if (review.sentiment === 'negative') {
+      setReplyDraft(`Dạ shop thành thật xin lỗi anh/chị ${review.customerName} về trải nghiệm chưa trọn vẹn này ạ. Bộ phận CSKH VComm đã ghi nhận thông tin và sẽ liên hệ hỗ trợ đổi mới/bảo hành ngay lập tức cho mình qua hotline/Zalo. Mong quý khách thông cảm cho shop!`);
+    } else {
+      setReplyDraft(`Dạ shop cảm ơn anh/chị ${review.customerName} đã mua sắm và đóng góp ý kiến quý báu ạ. Shop đã ghi nhận phản hồi để hoàn thiện sản phẩm và phụ kiện tốt hơn trong các phiên bản tới!`);
+    }
+  };
+
+  const filteredReviews = reviews.filter(r => {
+    const matchSearch = reviewSearchQuery === '' ||
+      r.customerName.toLowerCase().includes(reviewSearchQuery.toLowerCase()) ||
+      r.productName.toLowerCase().includes(reviewSearchQuery.toLowerCase()) ||
+      r.sku.toLowerCase().includes(reviewSearchQuery.toLowerCase()) ||
+      r.comment.toLowerCase().includes(reviewSearchQuery.toLowerCase());
+    
+    if (!matchSearch) return false;
+
+    if (reviewRatingFilter === '5') return r.rating === 5;
+    if (reviewRatingFilter === '4') return r.rating === 4;
+    if (reviewRatingFilter === '3') return r.rating === 3;
+    if (reviewRatingFilter === '1-2') return r.rating <= 2;
+    if (reviewRatingFilter === 'unreplied') return !r.reply;
+    return true;
+  });
  
  useEffect(() => {
  const unsub = onSnapshot(collection(db, 'products'), (snap) => {
@@ -538,24 +680,44 @@ export function PIM() {
     });
   }, [products, isAiSearch, aiSearchResults, filterStatus, filterCategory, filterBrand, searchQuery]);
 
+  const pimRibbonItems: MetricRibbonItem[] = [
+    {
+      id: 'pending',
+      icon: <Clock className="w-3.5 h-3.5" />,
+      label: 'Chờ duyệt Seller',
+      value: products.filter(p => p.status === 'pending' || p.status === 'draft').length || 245,
+      subText: 'SLA: 4h',
+      colorVariant: 'amber',
+      onClick: () => setFilterStatus('pending')
+    },
+    {
+      id: 'ai_error',
+      icon: <AlertCircle className="w-3.5 h-3.5" />,
+      label: 'Lỗi chuẩn hóa (AI)',
+      value: 18,
+      subText: 'AI Scan',
+      colorVariant: 'rose'
+    },
+    {
+      id: 'margin',
+      icon: <Calculator className="w-3.5 h-3.5" />,
+      label: 'Biên LN gộp',
+      value: '22.4%',
+      subText: '+1.2% Target',
+      colorVariant: 'emerald'
+    },
+    {
+      id: 'cat_ai',
+      icon: <Zap className="w-3.5 h-3.5" />,
+      label: 'Category AI',
+      value: '99.2%',
+      subText: 'Accuracy',
+      colorVariant: 'purple'
+    }
+  ];
+
  return (
- <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
- {/* Banner Khuyến mãi/Tính năng mới */}
- <div className="relative w-full h-48 rounded-lg overflow-hidden shadow-sm group">
- <img 
- src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200&h=400" 
- alt="Banner giới thiệu tính năng" 
- className="w-full h-full object-cover  transition-transform duration-700" 
- referrerPolicy="no-referrer"
- />
- <div className="absolute inset-0 bg-blue-900/60 flex flex-col justify-center px-6">
- <h2 className="text-3xl font-black text-[#FAF9F5] italic tracking-tight">Ra mắt Công cụ AI Pricing 2.0</h2>
- <p className="text-blue-100 text-sm mt-3 max-w-lg">Tối ưu hoá giá bán tự động dựa trên dữ liệu đối thủ và tồn kho thực tế. Giúp tăng 15% biên lợi nhuận chỉ trong 1 thao tác.</p>
- <button className="mt-6 w-fit px-6 py-3 bg-white text-blue-800 font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-slate-100 transition-all shadow-sm">
- Trải nghiệm ngay
- </button>
- </div>
- </div>
+ <div className="space-y-3 animate-in fade-in slide-in- duration-500 pb-12 font-sans">
 
  {/* Modal Bổ sung sản phẩm */}
  {isUploadModalOpen && (
@@ -1024,93 +1186,99 @@ export function PIM() {
  </div>
  )}
 
- <div className="flex items-center justify-between">
- <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Quản lý Sản phẩm (PIM)</h1>
- <p className="text-sm text-[#6B7280] mt-1">Chuẩn hóa dữ liệu, quản lý duyệt sản phẩm Seller và vận hành AI Governance.</p>
- </div>
- <div className="flex gap-3">
- <button 
- onClick={toggleScanMode}
- className="bg-white border border-slate-300 px-6 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 group shadow-sm hover:bg-slate-100 active:scale-95 border-b-4 border-b-blue-600"
- >
- <ScanBarcode className="w-5 h-5 text-[#2563EB]" />
- Quét mã / Kiểm kê
- </button>
- <button 
- onClick={toggleScan}
- disabled={isScanning}
- className={cn(
- "bg-white border border-slate-300 px-6 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 group shadow-sm",
-isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-95"
- )}
- >
- <Sparkles className={cn("w-4 h-4 text-[#2563EB] group-hover:rotate-12 transition-transform", isScanning && "animate-spin")} />
- {isScanning ? "AI đang quét dữ liệu..." : "AI Auto-Scan SP"}
- </button>
- <button 
- onClick={handleEmbedAllProducts}
- disabled={isEmbedding}
- className="bg-white border border-slate-300 px-6 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 group shadow-sm hover:bg-slate-100 active:scale-95 border-b-4 border-b-orange-600 disabled:opacity-50"
- >
- {isEmbedding ? <Loader2 className="w-4 h-4 animate-spin text-orange-600" /> : <Sparkles className="w-4 h-4 text-orange-600 group-hover:rotate-12 transition-transform" />}
- {isEmbedding ? "Đang đồng bộ..." : "Đồng bộ Vector AI"}
- </button>
- <button 
- onClick={() => setIsUploadModalOpen(true)}
- className="bg-[#111827] text-[#FAF9F5] px-6 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2 active:scale-95"
- >
- <Plus className="w-4 h-4" /> Bổ sung sản phẩm
- </button>
- <button 
- onClick={handleBulkApprove}
- disabled={isScanning}
- className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm shadow-slate-900/5 active:scale-95 disabled:opacity-50"
- >
- Duyệt sản phẩm mới (Bulk)
- </button>
- </div>
- </div>
+  {/* Compact Standardized Header */}
+  <CompactPageHeader
+    icon={<Package className="w-4 h-4 text-orange-600" />}
+    title="Quản lý Sản phẩm (PIM)"
+    badge={{ text: "AI Catalog", variant: "amber" }}
+    description="Chuẩn hóa dữ liệu, quản lý duyệt sản phẩm Seller và vận hành AI Governance."
+    actions={
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <button 
+          onClick={toggleScanMode}
+          className="bg-white hover:bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+        >
+          <ScanBarcode className="w-3.5 h-3.5 text-blue-600" />
+          <span>Quét mã</span>
+        </button>
+        <button 
+          onClick={toggleScan}
+          disabled={isScanning}
+          className={cn(
+            "bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer",
+            isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50"
+          )}
+        >
+          <Sparkles className={cn("w-3.5 h-3.5 text-blue-600", isScanning && "animate-spin")} />
+          <span>{isScanning ? "Đang quét..." : "AI Auto-Scan"}</span>
+        </button>
+        <button 
+          onClick={handleEmbedAllProducts}
+          disabled={isEmbedding}
+          className="bg-white hover:bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer disabled:opacity-50"
+        >
+          {isEmbedding ? <Loader2 className="w-3.5 h-3.5 animate-spin text-orange-600" /> : <Sparkles className="w-3.5 h-3.5 text-orange-600" />}
+          <span>{isEmbedding ? "Đang đồng bộ..." : "Vector AI"}</span>
+        </button>
+        <button 
+          onClick={() => setIsUploadModalOpen(true)}
+          className="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          <span>Thêm SP</span>
+        </button>
+        <button 
+          onClick={handleBulkApprove}
+          disabled={isScanning}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+        >
+          <CheckCheck className="w-3.5 h-3.5" />
+          <span>Duyệt Bulk</span>
+        </button>
+      </div>
+    }
+  />
 
- <DraggableGrid className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6" columns={4} gap={16}>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm transform  transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Chờ duyệt (Seller)</span>
- <Clock className="w-5 h-5 text-amber-500" />
- </div>
- <div className="text-3xl font-bold text-[#111827]">245</div>
- <p className="text-[10px] text-amber-600 mt-2 font-bold bg-amber-50 px-2 py-0.5 rounded w-fit">Cần SLA xử lý: 4h</p>
- </div>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm transform  transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Lỗi chuẩn hóa (AI)</span>
- <AlertCircle className="w-5 h-5 text-red-500" />
- </div>
- <div className="text-3xl font-bold text-red-500">18</div>
- <p className="text-[10px] text-slate-500 mt-2">Phát hiện bởi AI Auto-Scan</p>
- </div>
- <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-sm transform  transition-all">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">Biên lợi nhuận gộp</span>
- <Calculator className="w-5 h-5 text-orange-700" />
- </div>
- <div className="text-3xl font-bold text-[#111827]">22.4%</div>
- <p className="text-[10px] text-emerald-600 mt-2 font-bold">Tối ưu +1.2% Target</p>
- </div>
- <div className="bg-[#111827] p-6 rounded-lg shadow-sm shadow-slate-200 relative overflow-hidden group">
- <div className="relative z-10 flex flex-col justify-between h-full">
- <div className="flex justify-between items-start mb-3">
- <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Category AI</span>
- <Zap className="w-5 h-5 text-orange-600" />
- </div>
- <div>
- <div className="text-3xl font-bold text-[#FAF9F5] tracking-tighter">99.2%</div>
- <p className="text-[10px] text-emerald-400 font-bold mt-1 uppercase">Accuracy Rate</p>
- </div>
- </div>
- <Package className="absolute -bottom-6 -right-6 w-24 h-24 text-[#FAF9F5]/5 group-hover:rotate-12 transition-transform duration-700" />
- </div>
- </DraggableGrid>
+  {/* View Mode Tab Switcher */}
+  <div className="flex bg-white rounded-xl p-1 border border-slate-200/90 shadow-2xs gap-1 w-fit">
+    <button
+      onClick={() => setPimViewMode('catalog')}
+      className={cn(
+        "px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer",
+        pimViewMode === 'catalog'
+          ? "bg-slate-900 text-white shadow-2xs"
+          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+      )}
+    >
+      <Package className="w-3.5 h-3.5" /> 
+      <span>Danh Mục & Tồn Kho</span>
+    </button>
+    <button
+      onClick={() => setPimViewMode('reviews')}
+      className={cn(
+        "px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer relative",
+        pimViewMode === 'reviews'
+          ? "bg-amber-600 text-white shadow-2xs"
+          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+      )}
+    >
+      <Star className="w-3.5 h-3.5 text-amber-300 fill-amber-300" /> 
+      <span>Đánh Giá & Phản Hồi</span>
+      <span className={cn(
+        "ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-black",
+        pimViewMode === 'reviews' ? "bg-white text-amber-700" : "bg-amber-100 text-amber-800"
+      )}>
+        {reviews.length}
+      </span>
+    </button>
+  </div>
+
+  {pimViewMode === 'catalog' && (
+    <>
+      <CompactStatsRibbon
+        items={pimRibbonItems}
+        storageKey="pim_stats_ribbon"
+      />
 
  <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
  <div className="p-6 border-b border-[#F3F4F6] space-y-4">
@@ -1390,7 +1558,7 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  <Sparkles className="w-8 h-8" />
  </div>
  <div>
- <h3 className="text-3xl font-extrabold italic font-serif tracking-tight">AI Metadata Engine</h3>
+  <h3 className="text-3xl font-extrabold italic font-sans tracking-tight">AI Metadata Engine</h3>
  <p className="text-blue-200 text-[10px] font-bold uppercase tracking-widest mt-1 pl-1">Data Governance v2.0</p>
  </div>
  </div>
@@ -1447,6 +1615,253 @@ isScanning ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50 active:scale-9
  <Activity className="absolute -top-12 -right-12 w-48 h-48 text-slate-100 opacity-50  transition-transform duration-700" />
  </div>
  </DraggableGrid>
+ </>
+ )}
+
+ {/* REVIEW & FEEDBACK VIEW */}
+ {pimViewMode === 'reviews' && (
+   <div className="space-y-6 animate-in fade-in duration-300">
+     {/* Top KPI Cards for Reviews */}
+     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+         <div className="flex items-center justify-between mb-2">
+           <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Điểm Đánh Giá TB</span>
+           <div className="p-2 bg-amber-50 text-amber-600 rounded-xl">
+             <Star className="w-4 h-4 fill-amber-500" />
+           </div>
+         </div>
+         <div className="flex items-baseline gap-2">
+           <span className="text-3xl font-black text-slate-900 tracking-tight">4.6</span>
+           <span className="text-sm font-bold text-slate-400">/ 5.0</span>
+         </div>
+         <div className="mt-2 text-xs font-semibold text-emerald-600 flex items-center gap-1">
+           <ThumbsUp className="w-3.5 h-3.5" /> 92.4% phản hồi tích cực trên sàn VComm
+         </div>
+       </div>
+
+       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+         <div className="flex items-center justify-between mb-2">
+           <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Tổng Số Đánh Giá</span>
+           <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+             <MessageSquare className="w-4 h-4" />
+           </div>
+         </div>
+         <div className="text-3xl font-black text-slate-900 tracking-tight">{reviews.length}</div>
+         <div className="mt-2 text-xs text-slate-500">100% từ người mua đã xác thực đơn hàng</div>
+       </div>
+
+       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+         <div className="flex items-center justify-between mb-2">
+           <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Chưa Phản Hồi</span>
+           <div className="p-2 bg-rose-50 text-rose-600 rounded-xl">
+             <Clock className="w-4 h-4" />
+           </div>
+         </div>
+         <div className="text-3xl font-black text-rose-600 tracking-tight">
+           {reviews.filter(r => !r.reply).length}
+         </div>
+         <div className="mt-2 text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md w-fit">
+           Cần phản hồi trong 24h
+         </div>
+       </div>
+
+       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+         <div className="flex items-center justify-between mb-2">
+           <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Tỷ Lệ Trả Lời Shop</span>
+           <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+             <CheckCircle2 className="w-4 h-4" />
+           </div>
+         </div>
+         <div className="text-3xl font-black text-emerald-600 tracking-tight">
+           {Math.round((reviews.filter(r => r.reply).length / Math.max(reviews.length, 1)) * 100)}%
+         </div>
+         <div className="mt-2 text-xs text-slate-500">Đạt tiêu chuẩn Shop Uy Tín VComm</div>
+       </div>
+     </div>
+
+     {/* Filter Bar & Reviews List */}
+     <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+       <div className="p-5 border-b border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
+         <div className="relative flex-1 w-full max-w-md">
+           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+           <input
+             type="text"
+             value={reviewSearchQuery}
+             onChange={e => setReviewSearchQuery(e.target.value)}
+             placeholder="Tìm theo tên khách, sản phẩm, SKU hoặc nội dung..."
+             className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+           />
+         </div>
+
+         {/* Star Rating & Unreplied Filter Buttons */}
+         <div className="flex items-center gap-1.5 flex-wrap">
+           {[
+             { id: 'all', label: 'Tất cả' },
+             { id: '5', label: '5 Sao' },
+             { id: '4', label: '4 Sao' },
+             { id: '3', label: '3 Sao' },
+             { id: '1-2', label: '1-2 Sao' },
+             { id: 'unreplied', label: 'Chưa phản hồi' }
+           ].map(f => (
+             <button
+               key={f.id}
+               onClick={() => setReviewRatingFilter(f.id as any)}
+               className={cn(
+                 "px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                 reviewRatingFilter === f.id
+                   ? "bg-slate-900 text-white shadow-xs"
+                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+               )}
+             >
+               {f.label}
+             </button>
+           ))}
+         </div>
+       </div>
+
+       {/* Reviews list */}
+       <div className="divide-y divide-slate-100">
+         {filteredReviews.length === 0 ? (
+           <div className="p-12 text-center text-slate-400">
+             <Star className="w-12 h-12 mx-auto mb-2 text-slate-300" />
+             <p className="text-sm font-bold">Không tìm thấy đánh giá nào phù hợp với bộ lọc.</p>
+           </div>
+         ) : (
+           filteredReviews.map(review => (
+             <div key={review.id} className="p-6 hover:bg-slate-50/50 transition-colors space-y-3">
+               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-full bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-sm">
+                     {review.customerName[0]}
+                   </div>
+                   <div>
+                     <div className="flex items-center gap-2">
+                       <span className="font-bold text-sm text-slate-900">{review.customerName}</span>
+                       {review.verifiedPurchase && (
+                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                           <CheckCircle2 className="w-3 h-3" /> Đã mua hàng trên VComm
+                         </span>
+                       )}
+                     </div>
+                     <div className="text-xs text-slate-400 mt-0.5">{review.date}</div>
+                   </div>
+                 </div>
+
+                 {/* Stars & Sentiment */}
+                 <div className="flex items-center gap-3">
+                   <div className="flex items-center gap-0.5">
+                     {[1, 2, 3, 4, 5].map(star => (
+                       <Star
+                         key={star}
+                         className={cn(
+                           "w-4 h-4",
+                           star <= review.rating ? "text-amber-400 fill-amber-400" : "text-slate-200"
+                         )}
+                       />
+                     ))}
+                   </div>
+                   <span className={cn(
+                     "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase",
+                     review.sentiment === 'positive' ? "bg-emerald-50 text-emerald-700" :
+                     review.sentiment === 'negative' ? "bg-rose-50 text-rose-700" :
+                     "bg-amber-50 text-amber-700"
+                   )}>
+                     {review.sentiment === 'positive' ? 'Tích cực' : review.sentiment === 'negative' ? 'Cần hỗ trợ' : 'Trung tính'}
+                   </span>
+                 </div>
+               </div>
+
+               {/* Product referenced */}
+               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg text-xs font-medium text-slate-700">
+                 <Package className="w-3.5 h-3.5 text-slate-500" />
+                 <span className="font-bold">{review.productName}</span>
+                 <span className="text-slate-400 font-mono">({review.sku})</span>
+               </div>
+
+               {/* Comment text */}
+               <p className="text-sm text-slate-800 leading-relaxed font-medium bg-slate-50/70 p-3.5 rounded-xl border border-slate-100">
+                 "{review.comment}"
+               </p>
+
+               {/* Existing reply from shop */}
+               {review.reply && (
+                 <div className="ml-6 p-3.5 bg-blue-50/50 rounded-xl border border-blue-100 space-y-1">
+                   <div className="flex items-center justify-between">
+                     <span className="text-xs font-bold text-blue-900 flex items-center gap-1.5">
+                       <Reply className="w-3.5 h-3.5 text-blue-600" />
+                       Phản hồi từ: {review.reply.author}
+                     </span>
+                     <span className="text-[10px] text-blue-500 font-medium">{review.reply.date}</span>
+                   </div>
+                   <p className="text-xs text-blue-950 font-medium">{review.reply.text}</p>
+                 </div>
+               )}
+
+               {/* Actions & Reply Form */}
+               {!review.reply && (
+                 <div className="pt-1">
+                   {replyingReviewId === review.id ? (
+                     <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3 animate-in fade-in duration-200">
+                       <div className="flex items-center justify-between">
+                         <span className="text-xs font-bold text-slate-700">Soạn phản hồi gửi khách hàng</span>
+                         <button
+                           type="button"
+                           onClick={() => handleAiDraftReviewReply(review)}
+                           className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer"
+                         >
+                           <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                           AI Gợi ý phản hồi chuẩn VComm
+                         </button>
+                       </div>
+                       <textarea
+                         rows={3}
+                         value={replyDraft}
+                         onChange={e => setReplyDraft(e.target.value)}
+                         placeholder="Nhập nội dung phản hồi chân thành tới khách hàng..."
+                         className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       />
+                       <div className="flex items-center justify-end gap-2">
+                         <button
+                           type="button"
+                           onClick={() => {
+                             setReplyingReviewId(null);
+                             setReplyDraft('');
+                           }}
+                           className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
+                         >
+                           Hủy
+                         </button>
+                         <button
+                           type="button"
+                           onClick={() => handleReplyReview(review.id)}
+                           className="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors cursor-pointer"
+                         >
+                           Gửi Phản Hồi
+                         </button>
+                       </div>
+                     </div>
+                   ) : (
+                     <button
+                       type="button"
+                       onClick={() => {
+                         setReplyingReviewId(review.id);
+                         setReplyDraft('');
+                       }}
+                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
+                     >
+                       <Reply className="w-3.5 h-3.5 text-slate-600" />
+                       Trả Lời Đánh Giá Này
+                     </button>
+                   )}
+                 </div>
+               )}
+             </div>
+           ))
+         )}
+       </div>
+     </div>
+   </div>
+ )}
  
  {/* P&L Details Modal */}
  {showPnLForProduct && (

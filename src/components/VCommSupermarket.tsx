@@ -411,7 +411,7 @@ export function VCommSupermarket() {
               <Building className="w-2.5 h-2.5" /> Chuỗi Siêu Thị Offline VComm
             </span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-100">Siêu Thị Offline VComm</h2>
+          <h2 className="text-2xl md:text-3xl font-black text-slate-100 tracking-tight">Chuỗi Siêu Thị Offline VComm</h2>
           <p className="text-xs md:text-sm text-emerald-150 max-w-2xl mt-1.5">
             Phần mềm quản lý tính tiền tại quầy (POS), quản trị mã kho hàng, phân khu kệ quầy và in bill hóa đơn nhiệt mini khổ K80 tự động dành riêng cho các siêu thị do VComm trực tiếp sở hữu kinh doanh.
           </p>
@@ -874,7 +874,7 @@ export function VCommSupermarket() {
           >
             <div className="bg-emerald-900 text-white p-5 flex items-center justify-between">
               <div>
-                <h3 className="font-serif font-black text-base">Thêm Mặt Hàng Siêu Thị VComm</h3>
+                <h3 className="font-black text-base tracking-tight">Thêm Mặt Hàng Siêu Thị VComm</h3>
                 <p className="text-[11px] text-slate-350">Tạo mã vạch, đặt giá và kê khai vị trí quầy trưng bày.</p>
               </div>
               <button onClick={() => setShowAddModal(false)} className="text-white/60 hover:text-white p-1 rounded-md">
@@ -1044,7 +1044,7 @@ export function VCommSupermarket() {
                 className="bg-white text-black p-4 w-[80mm] border border-slate-350 shadow-xs text-[10px] font-mono leading-tight select-none"
               >
                 <div className="text-center mb-4 space-y-1">
-                  <h1 className="font-serif tracking-tight text-sm font-black uppercase text-slate-900">VComm Supermarket</h1>
+                  <h1 className="font-mono tracking-tight text-sm font-black uppercase text-slate-900">VComm Supermarket</h1>
                   <p className="text-[9px] font-semibold">Cửa hàng Offline số 1 • Thành Phố Hà Nội</p>
                   <p className="text-[9px] font-semibold">Địa chỉ: 15 Lê Duẩn, Nguyễn Du, Hai Bà Trưng</p>
                   <p className="text-[9px] font-semibold">Hotline hỗ trợ: 1900.8198</p>
@@ -1132,7 +1132,7 @@ export function VCommSupermarket() {
                 {/* Footer and dynamic barcode */}
                 <div className="text-center space-y-1 mt-3">
                   <p className="font-extrabold text-[9px]">Quét Barcode nhận tích điểm Loyalty 5% vào Ví!</p>
-                  <div className="mx-auto my-2 w-44 bg-slate-900 h-8 flex items-center justify-center text-white font-serif tracking-[0.4em] font-extrabold text-[12px] opacity-90 rounded">
+                  <div className="mx-auto my-2 w-44 bg-slate-900 h-8 flex items-center justify-center text-white font-mono tracking-[0.4em] font-extrabold text-[12px] opacity-90 rounded">
                     ||||||||||||||||||
                   </div>
                   <p className="text-[8px] italic mt-2 text-slate-400">Cảm ơn quý khách đã đồng hành cùng VComm!</p>

@@ -42,16 +42,120 @@ import {
   FileSpreadsheet,
   Grid3X3,
   AlignLeft,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FolderOpen,
+  ArrowRight,
+  History,
+  FileCheck
 } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const MOCK_DOCS = [
   { id: 'CV-2024-001', title: 'Quyết định bổ nhiệm Giám đốc Khối Vận hành', type: 'outbound', status: 'signed', date: '20/03/2024', signer: 'CEO', category: 'Quyết định', aiSummary: 'Bổ nhiệm ông Nguyễn Văn A giữ chức vụ Giám đốc Khối Vận hành từ ngày 01/04/2024.', department: 'Ban Giám đốc', urgency: 'high', fileType: 'pdf' },
   { id: 'CV-2024-002', title: 'Công văn từ Bộ TT&TT về an toàn thông tin', type: 'inbound', status: 'processing', date: '21/03/2024', signer: 'Bộ TT&TT', category: 'Công văn', aiSummary: 'Yêu cầu các đơn vị trực thuộc tăng cường rà soát lỗ hổng bảo mật hệ thống do các nguy cơ tấn công gia tăng.', department: 'CNTT', urgency: 'critical', fileType: 'docx' },
   { id: 'QĐ-2024-05A', title: 'Quyết định ban hành nội quy công ty 2024', type: 'internal', status: 'draft', date: '22/03/2024', signer: 'CEO', category: 'Quy định', aiSummary: 'Cập nhật nội quy về thời gian làm việc, chính sách đãi ngộ, quy định trang phục cho toàn bộ cán bộ công nhân viên.', department: 'Nhân sự', urgency: 'normal', fileType: 'pdf' },
   { id: 'TB-2024-003', title: 'Danh sách nhân sự thưởng thi đua Quý 1/2024', type: 'internal', status: 'processing', date: '25/03/2024', signer: 'HR Director', category: 'Danh sách', aiSummary: 'Bảng tổng hợp chi tiết mức thưởng cho 45 cá nhân xuất sắc trong Quý 1.', department: 'Nhân sự', urgency: 'normal', fileType: 'xlsx' }
+];
+
+const MOCK_FLOWS = [
+  {
+    id: 'FLOW-2026-001',
+    docId: 'CV-2024-002',
+    docTitle: 'Công văn từ Bộ TT&TT về an toàn thông tin hệ thống',
+    assignedTo: 'Trần Thị B (Trưởng phòng CNTT)',
+    role: 'Chủ trì xử lý',
+    collaborators: ['Đỗ Văn D (CNTT)', 'Nguyễn Văn A (Vận hành)'],
+    directive: 'Khẩn trương rà soát các lỗ hổng bảo mật và gửi báo cáo trước 17h ngày 25/03.',
+    status: 'in_progress',
+    deadline: '25/03/2026',
+    daysLeft: 2,
+    urgency: 'critical',
+    history: [
+      { time: '08:30 21/03', action: 'Tiếp nhận văn bản & vào Sổ công văn đến', actor: 'Lê Văn C (Văn thư)' },
+      { time: '09:15 21/03', action: 'Bút phê chỉ đạo xử lý khẩn', actor: 'Nguyễn Văn A (Tổng Giám đốc)' },
+      { time: '10:00 21/03', action: 'Giao phòng CNTT chủ trì, điều phối chuyên viên rà soát', actor: 'Trần Thị B (Trưởng phòng)' },
+    ]
+  },
+  {
+    id: 'FLOW-2026-002',
+    docId: 'QĐ-2024-05A',
+    docTitle: 'Quyết định ban hành nội quy lao động và an toàn thông tin 2026',
+    assignedTo: 'Lê Hoàng Minh (Phòng Pháp chế)',
+    role: 'Chủ trì soạn thảo',
+    collaborators: ['Phòng Nhân sự', 'Khối Vận hành'],
+    directive: 'Lấy ý kiến công đoàn và các bộ phận, hoàn thiện bản v2.0 để ký ban hành.',
+    status: 'reviewing',
+    deadline: '28/03/2026',
+    daysLeft: 5,
+    urgency: 'high',
+    history: [
+      { time: '14:00 22/03', action: 'Khởi tạo dự thảo v1.0', actor: 'Lê Hoàng Minh' },
+      { time: '16:30 22/03', action: 'Gửi xin ý kiến góp ý các đơn vị', actor: 'Phòng Pháp chế' },
+    ]
+  },
+  {
+    id: 'FLOW-2026-003',
+    docId: 'TB-2024-003',
+    docTitle: 'Danh sách nhân sự thưởng thi đua Quý 1/2026',
+    assignedTo: 'Nguyễn Diệu Nhi (Phòng Nhân sự)',
+    role: 'Chủ trì tổng hợp',
+    collaborators: ['Kế toán trưởng'],
+    directive: 'Chuyển kế toán lập danh sách chuyển khoản trước ngày 30/03.',
+    status: 'completed',
+    deadline: '26/03/2026',
+    daysLeft: 0,
+    urgency: 'normal',
+    history: [
+      { time: '09:00 25/03', action: 'Ban hành thông báo khen thưởng', actor: 'HR Director' },
+      { time: '11:20 25/03', action: 'Hoàn tất chuyển danh sách cho kế toán thanh toán', actor: 'Nguyễn Diệu Nhi' },
+    ]
+  }
+];
+
+const MOCK_APPROVAL_DOCS = [
+  {
+    id: 'TR-2026-08',
+    title: 'Tờ trình về việc nâng cấp hạ tầng Server Cloud HSM cho ký số tập trung',
+    version: 'v2.1',
+    creator: 'Đặng Tuấn Anh (Trưởng nhóm Hạ tầng)',
+    dept: 'Khối Công nghệ',
+    date: '26/03/2026',
+    status: 'pending_ceo',
+    currentApprover: 'Nguyễn Văn A (Tổng Giám đốc)',
+    steps: [
+      { name: 'Soạn thảo tờ trình', actor: 'Đặng Tuấn Anh', status: 'done', date: '24/03' },
+      { name: 'Ký nháy thể thức', actor: 'Lê Hoàng Minh (Pháp chế)', status: 'done', date: '25/03' },
+      { name: 'Kế toán trưởng duyệt kinh phí', actor: 'Phạm Thanh Thảo', status: 'done', date: '25/03' },
+      { name: 'Tổng Giám đốc ký duyệt', actor: 'Nguyễn Văn A', status: 'pending', date: 'Hôm nay' },
+      { name: 'Văn thư vào sổ đóng dấu', actor: 'Bộ phận Văn thư', status: 'waiting', date: '-' }
+    ],
+    versions: [
+      { ver: 'v2.1', date: '25/03 16:30', note: 'Bổ sung giải trình chi phí gói Cloud HSM 5 năm', author: 'Đặng Tuấn Anh' },
+      { ver: 'v2.0', date: '25/03 10:00', note: 'Chỉnh sửa theo ý kiến Pháp chế', author: 'Đặng Tuấn Anh' },
+      { ver: 'v1.0', date: '24/03 14:00', note: 'Bản thảo ban đầu', author: 'Đặng Tuấn Anh' }
+    ]
+  },
+  {
+    id: 'QĐ-2026-19',
+    title: 'Quyết định ban hành chính sách chiết khấu đối tác nhà bán hàng Sellers 2026',
+    version: 'v1.2',
+    creator: 'Vũ Thị Lan (GĐ Kinh doanh)',
+    dept: 'Khối Kinh doanh',
+    date: '27/03/2026',
+    status: 'pending_director',
+    currentApprover: 'Trần Văn B (Phó TGĐ Thường trực)',
+    steps: [
+      { name: 'Soạn thảo', actor: 'Vũ Thị Lan', status: 'done', date: '26/03' },
+      { name: 'Ký nháy thể thức', actor: 'Pháp chế & Tuân thủ', status: 'done', date: '26/03' },
+      { name: 'Phó TGĐ phê duyệt', actor: 'Trần Văn B', status: 'pending', date: 'Hôm nay' },
+      { name: 'Văn thư cấp số & phát hành', actor: 'Bộ phận Văn thư', status: 'waiting', date: '-' }
+    ],
+    versions: [
+      { ver: 'v1.2', date: '26/03 17:00', note: 'Điều chỉnh hạn mức chiết khấu ngành hàng gia dụng', author: 'Vũ Thị Lan' },
+      { ver: 'v1.0', date: '26/03 09:00', note: 'Bản thảo khởi tạo', author: 'Vũ Thị Lan' }
+    ]
+  }
 ];
 
 const MOCK_CATEGORIES = [
@@ -61,7 +165,27 @@ const MOCK_CATEGORIES = [
 ];
 
 export function DocumentManager() {
-  const [activeTab, setActiveTab] = useState('inbound');
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+
+  const getMappedDocTab = (tab: string | null): string => {
+    if (!tab) return 'inbound';
+    if (tab === 'archives' || tab === 'books') return 'books';
+    if (tab === 'outbound') return 'outbound';
+    if (tab === 'internal') return 'internal';
+    if (tab === 'flow') return 'flow';
+    if (tab === 'approvals' || tab === 'signature') return 'approvals';
+    if (tab === 'config') return 'config';
+    return tab;
+  };
+
+  const [activeTab, setActiveTab] = useState<string>(() => getMappedDocTab(tabParam));
+
+  React.useEffect(() => {
+    if (tabParam) {
+      setActiveTab(getMappedDocTab(tabParam));
+    }
+  }, [tabParam]);
   const [isCreatingBook, setIsCreatingBook] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<any>(null);
   
@@ -70,6 +194,10 @@ export function DocumentManager() {
   const [showRoutingForm, setShowRoutingForm] = useState(false);
   const [showSignForm, setShowSignForm] = useState(false);
   const [isCreatingDoc, setIsCreatingDoc] = useState(false);
+  const [selectedFlowForTimeline, setSelectedFlowForTimeline] = useState<any>(null);
+  const [selectedDocVersions, setSelectedDocVersions] = useState<any>(null);
+  const [flows, setFlows] = useState(MOCK_FLOWS);
+  const [approvalDocs, setApprovalDocs] = useState(MOCK_APPROVAL_DOCS);
   
   const navigate = useNavigate();
 
@@ -84,72 +212,201 @@ export function DocumentManager() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
-      <div className="flex items-center justify-between">
-        <div className="header-title">
-          <h1 className="font-serif tracking-tight text-2xl font-semibold text-slate-900">Quản trị Công văn & e-Office</h1>
-          <p className="text-sm text-slate-600 mt-1">Hệ thống quản lý văn bản, áp dụng Nghị định 30/CP, ký số và luân chuyển.</p>
+    <div className="space-y-6 animate-in fade-in duration-300 pb-12 font-sans text-xs">
+      {/* Top Glassmorphism Navigation Bar */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-5 rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/80 shadow-xl shadow-slate-200/40">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 border border-amber-300/60 text-xs font-black transition-all shadow-2xs cursor-pointer active:scale-95 shrink-0"
+            title="Quay lại Launcher chính (/)"
+          >
+            <ChevronLeft className="w-4 h-4 text-amber-700" />
+            <span>Launcher</span>
+          </button>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                Văn Thư Điều Hành & e-Office
+              </h1>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/60 flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-indigo-500" /> Apple Glass UI
+              </span>
+              <span className="px-2 py-0.5 text-[10px] bg-rose-50 text-rose-700 font-bold rounded-full border border-rose-200">
+                Nghị định 30/CP
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 font-medium mt-0.5">
+              Hệ thống tiếp nhận, luân chuyển văn bản xử lý, cấp số sổ công văn và ký số mộc thời gian TSA
+            </p>
+          </div>
         </div>
-        <div className="flex gap-3 items-center">
+
+        <div className="flex flex-wrap gap-2.5 items-center">
           {/* Role Toggle for Demo */}
-          <div className="mr-4 flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-300">
+          <div className="flex items-center gap-2 bg-slate-100/80 px-3.5 py-2 rounded-2xl border border-slate-200 shadow-2xs">
             <UserCog className="w-4 h-4 text-slate-700" />
             <select 
               value={currentUserRole}
               onChange={(e) => setCurrentUserRole(e.target.value as any)}
-              className="text-sm font-bold text-slate-800 bg-transparent border-none focus:outline-none focus:ring-0 cursor-pointer appearance-none outline-none py-0.5"
+              className="text-xs font-bold text-slate-800 bg-transparent border-none focus:outline-none focus:ring-0 cursor-pointer appearance-none outline-none"
             >
-              <option value="staff">Vai trò: Nhân viên / Chuyên viên</option>
-              <option value="director">Vai trò: Giám đốc (Ký duyệt)</option>
-              <option value="archivist">Vai trò: Văn thư</option>
+              <option value="staff">Chuyên viên xử lý</option>
+              <option value="director">Lãnh đạo phê duyệt</option>
+              <option value="archivist">Cán bộ văn thư</option>
             </select>
           </div>
 
-          <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2 text-slate-800">
-            <Filter className="w-4 h-4" />
-            Lọc & Báo cáo
+          <button 
+            onClick={() => navigate('/workspace')}
+            className="px-3.5 py-2 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1.5"
+          >
+            <span>Bàn làm việc</span>
           </button>
+
+          <button 
+            onClick={() => navigate('/dochub')}
+            className="bg-indigo-50 border border-indigo-200 text-indigo-700 px-3.5 py-2 rounded-2xl text-xs font-bold hover:bg-indigo-100 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+            title="Chuyển sang module Kho Tài Liệu Điện Tử DocHub"
+          >
+            <FolderOpen className="w-3.5 h-3.5 text-indigo-600" />
+            <span>Kho DocHub</span>
+          </button>
+
           <button 
             onClick={() => setIsCreatingDoc(true)}
-            className="bg-slate-900 text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
+            className="bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white px-4 py-2 rounded-2xl text-xs font-black shadow-lg shadow-rose-500/25 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
           >
             <Plus className="w-4 h-4" />
-            Tạo văn bản mới
+            <span>Tạo Văn Bản Mới</span>
           </button>
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Sidebar */}
-        {!selectedDoc && (
-          <div className="w-full lg:w-[240px] shrink-0 space-y-1">
-            {[
-              { id: 'inbound', label: 'Văn bản đến', icon: Inbox },
-              { id: 'outbound', label: 'Văn bản đi', icon: Send },
-              { id: 'internal', label: 'Văn bản nội bộ', icon: FileText },
-              { id: 'books', label: 'Sổ văn bản', icon: BookOpen },
-              { id: 'config', label: 'Cấu hình & Đánh số', icon: Settings },
-              { id: 'signature', label: 'Trình ký số', icon: FileSignature },
-            ].map(tab => (
+      {/* Official Dispatch Pulse Bar */}
+      {!selectedDoc && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <div 
+            onClick={() => { setActiveTab('inbound'); setSelectedDoc(null); }}
+            className="p-4 rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/80 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer group"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold text-slate-500">Công Văn Đến</span>
+              <div className="p-2 rounded-xl bg-rose-50 text-rose-600 border border-rose-100 group-hover:bg-rose-600 group-hover:text-white transition-colors">
+                <Inbox className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-black text-rose-600">12</span>
+              <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded-md">
+                2 Hỏa tốc
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-400 mt-1 line-clamp-1">Văn bản cơ quan bên ngoài gửi đến</p>
+          </div>
+
+          <div 
+            onClick={() => { setActiveTab('outbound'); setSelectedDoc(null); }}
+            className="p-4 rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/80 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer group"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold text-slate-500">Công Văn Đi</span>
+              <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <Send className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-black text-slate-900">48</span>
+              <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded-md">
+                Đã ban hành
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-400 mt-1 line-clamp-1">Văn bản đã ký số gửi đối tác</p>
+          </div>
+
+          <div 
+            onClick={() => { setActiveTab('flow'); setSelectedDoc(null); }}
+            className="p-4 rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/80 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer group"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold text-slate-500">Đang Luân Chuyển</span>
+              <div className="p-2 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                <CornerUpRight className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-black text-amber-600">{flows.filter(f => f.status !== 'completed').length}</span>
+              <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-md">
+                Trong hạn
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-400 mt-1 line-clamp-1">Hồ sơ công việc đang xử lý</p>
+          </div>
+
+          <div 
+            onClick={() => { setActiveTab('approvals'); setSelectedDoc(null); }}
+            className="p-4 rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/80 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer group"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold text-slate-500">Trình Ký Duyệt</span>
+              <div className="p-2 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                <FileSignature className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-black text-purple-600">{approvalDocs.length}</span>
+              <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded-md">
+                Cloud HSM
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-400 mt-1 line-clamp-1">Tờ trình & Quyết định chờ mộc</p>
+          </div>
+        </div>
+      )}
+
+      {/* Modern Sub-Tab Pill Bar */}
+      {!selectedDoc && (
+        <div className="flex items-center gap-1.5 p-1.5 rounded-3xl bg-white/70 backdrop-blur-xl border border-white/80 shadow-sm overflow-x-auto text-xs font-bold">
+          {[
+            { id: 'inbound', label: 'Văn Bản Đến', icon: Inbox, count: 12 },
+            { id: 'outbound', label: 'Văn Bản Đi', icon: Send, count: 48 },
+            { id: 'internal', label: 'Văn Bản Nội Bộ', icon: FileText, count: 8 },
+            { id: 'flow', label: 'Luân Chuyển Xử Lý', icon: CornerUpRight, count: flows.length },
+            { id: 'approvals', label: 'Trình Ký Phê Duyệt', icon: FileSignature, count: approvalDocs.length },
+            { id: 'books', label: 'Sổ Văn Bản', icon: BookOpen, count: 3 },
+            { id: 'config', label: 'Cấu Hình & Đánh Số', icon: Settings },
+          ].map(tab => {
+            const Icon = tab.icon;
+            return (
               <button
                 key={tab.id}
-                onClick={() => tab.id === 'signature' ? navigate('/signature') : setActiveTab(tab.id)}
+                onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all text-left",
-                  activeTab === tab.id 
-                    ? "bg-slate-100 text-orange-800 font-bold" 
-                    : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
+                  "flex items-center gap-2 px-4 py-2 rounded-2xl transition-all cursor-pointer shrink-0",
+                  activeTab === tab.id
+                    ? "bg-slate-900 text-white shadow-sm"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
                 )}
               >
-                <tab.icon className="w-4 h-4" />
-                {tab.label}
+                <Icon className={cn("w-3.5 h-3.5", activeTab === tab.id ? "text-rose-400" : "text-slate-400")} />
+                <span>{tab.label}</span>
+                {tab.count !== undefined && (
+                  <span className={cn(
+                    "px-1.5 py-0.2 rounded-full text-[10px] font-bold ml-0.5",
+                    activeTab === tab.id ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"
+                  )}>
+                    {tab.count}
+                  </span>
+                )}
               </button>
-            ))}
-          </div>
-        )}
+            );
+          })}
+        </div>
+      )}
 
+      <div className="w-full">
         {/* Content */}
-        <div className={cn("flex-1 bg-white border border-slate-300 rounded-lg shadow-sm overflow-hidden flex flex-col", selectedDoc ? "lg:w-full" : "")}>
+        <div className="w-full bg-white/80 backdrop-blur-2xl border border-white/80 rounded-3xl shadow-xl shadow-slate-200/40 overflow-hidden flex flex-col">
           
           {selectedDoc ? (
             // Document Detail View
@@ -822,6 +1079,225 @@ export function DocumentManager() {
                    </div>
                  </div>
               )}
+
+              {/* Tab Luân chuyển xử lý (E-Office Flow) */}
+              {activeTab === 'flow' && (
+                <div className="p-6 space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                        <CornerUpRight className="w-5 h-5 text-blue-600" />
+                        Luân chuyển & Xử lý Văn bản
+                        <span className="text-xs bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full">E-Office</span>
+                      </h3>
+                      <p className="text-sm text-slate-600 mt-1">
+                        Theo dõi phân công chủ trì, bộ phận phối hợp, ý kiến chỉ đạo điều hành và thời hạn SLA giải quyết công văn.
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => setShowRoutingForm(true)}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-xs cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Phân công luân chuyển mới
+                    </button>
+                  </div>
+
+                  {/* Flow KPI Summary */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Đang luân chuyển</span>
+                      <div className="text-2xl font-black text-slate-900 mt-1">{flows.length}</div>
+                      <span className="text-[11px] text-slate-500">Tất cả văn bản trong luồng</span>
+                    </div>
+                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                      <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Cần xử lý chính</span>
+                      <div className="text-2xl font-black text-blue-700 mt-1">{flows.filter(f => f.status === 'in_progress').length}</div>
+                      <span className="text-[11px] text-blue-600 font-medium">Đơn vị chủ trì thực hiện</span>
+                    </div>
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                      <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Đang lấy ý kiến</span>
+                      <div className="text-2xl font-black text-amber-700 mt-1">{flows.filter(f => f.status === 'reviewing').length}</div>
+                      <span className="text-[11px] text-amber-600 font-medium">Phối hợp & Đóng góp ý kiến</span>
+                    </div>
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                      <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Đã hoàn thành</span>
+                      <div className="text-2xl font-black text-emerald-700 mt-1">{flows.filter(f => f.status === 'completed').length}</div>
+                      <span className="text-[11px] text-emerald-600 font-medium">Đã kết thúc xử lý</span>
+                    </div>
+                  </div>
+
+                  {/* Flow Data Table */}
+                  <div className="border border-slate-300 rounded-xl overflow-hidden shadow-2xs bg-white">
+                    <table className="w-full text-left border-collapse text-sm">
+                      <thead className="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                          <th className="px-5 py-3.5 text-xs font-bold text-slate-600 uppercase tracking-wider">Mã luồng & Văn bản</th>
+                          <th className="px-5 py-3.5 text-xs font-bold text-slate-600 uppercase tracking-wider">Đơn vị chủ trì & Phối hợp</th>
+                          <th className="px-5 py-3.5 text-xs font-bold text-slate-600 uppercase tracking-wider">Ý kiến chỉ đạo</th>
+                          <th className="px-5 py-3.5 text-xs font-bold text-slate-600 uppercase tracking-wider">Thời hạn SLA</th>
+                          <th className="px-5 py-3.5 text-xs font-bold text-slate-600 uppercase tracking-wider">Trạng thái</th>
+                          <th className="px-5 py-3.5 text-xs font-bold text-slate-600 uppercase tracking-wider text-right">Thao tác</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200">
+                        {flows.map((flow) => (
+                          <tr key={flow.id} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="px-5 py-4">
+                              <div className="font-mono text-xs font-bold text-blue-600">{flow.id}</div>
+                              <div className="font-bold text-slate-900 text-sm mt-0.5 line-clamp-1">{flow.docTitle}</div>
+                              <div className="text-xs text-slate-500 mt-0.5">Số hiệu: {flow.docId}</div>
+                            </td>
+                            <td className="px-5 py-4">
+                              <div className="font-semibold text-slate-900 text-xs flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                                {flow.assignedTo}
+                              </div>
+                              <div className="text-[11px] text-slate-500 mt-1">
+                                Phối hợp: {flow.collaborators.join(', ')}
+                              </div>
+                            </td>
+                            <td className="px-5 py-4 max-w-xs">
+                              <p className="text-xs text-slate-700 line-clamp-2 italic">
+                                "{flow.directive}"
+                              </p>
+                            </td>
+                            <td className="px-5 py-4 whitespace-nowrap">
+                              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+                                <Clock className="w-3.5 h-3.5 text-slate-500" />
+                                {flow.deadline}
+                              </div>
+                              {flow.daysLeft > 0 ? (
+                                <span className="text-[11px] text-amber-600 font-medium">Còn {flow.daysLeft} ngày</span>
+                              ) : (
+                                <span className="text-[11px] text-emerald-600 font-medium">Đúng tiến độ</span>
+                              )}
+                            </td>
+                            <td className="px-5 py-4 whitespace-nowrap">
+                              {flow.status === 'in_progress' ? (
+                                <span className="px-2.5 py-1 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 rounded-full inline-flex items-center gap-1">
+                                  <Clock className="w-3 h-3" /> Đang xử lý
+                                </span>
+                              ) : flow.status === 'reviewing' ? (
+                                <span className="px-2.5 py-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full inline-flex items-center gap-1">
+                                  <Users className="w-3 h-3" /> Xin ý kiến
+                                </span>
+                              ) : (
+                                <span className="px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full inline-flex items-center gap-1">
+                                  <CheckCircle2 className="w-3 h-3" /> Đã kết thúc
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-5 py-4 text-right whitespace-nowrap">
+                              <button
+                                onClick={() => setSelectedFlowForTimeline(flow)}
+                                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 rounded-md text-xs font-bold transition-all inline-flex items-center gap-1 cursor-pointer"
+                              >
+                                <History className="w-3.5 h-3.5 text-blue-600" />
+                                Xem luồng
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab Trình ký & Phê duyệt (E-Office Multi-level Approvals & Versioning) */}
+              {activeTab === 'approvals' && (
+                <div className="p-6 space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                        <FileSignature className="w-5 h-5 text-emerald-600" />
+                        Trình ký & Phê duyệt đa cấp
+                        <span className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Cloud HSM</span>
+                      </h3>
+                      <p className="text-sm text-slate-600 mt-1">
+                        Luồng phê duyệt văn bản đi, quyết định ban hành, quản lý phiên bản tài liệu (Versioning) và ký số bảo mật.
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => setShowSignForm(true)}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-xs cursor-pointer"
+                    >
+                      <Fingerprint className="w-4 h-4" />
+                      Ký số một chạm
+                    </button>
+                  </div>
+
+                  {/* Approval Documents List */}
+                  <div className="space-y-4">
+                    {approvalDocs.map((docItem) => (
+                      <div key={docItem.id} className="border border-slate-300 rounded-xl p-5 bg-white shadow-2xs hover:shadow-xs transition-all space-y-4">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                          <div className="flex items-center gap-2.5">
+                            <span className="font-mono text-xs font-black bg-slate-100 text-slate-800 px-2 py-0.5 rounded border border-slate-300">
+                              {docItem.id}
+                            </span>
+                            <h4 className="font-bold text-slate-900 text-base">{docItem.title}</h4>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setSelectedDocVersions(docItem)}
+                              className="flex items-center gap-1 px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md text-xs font-bold hover:bg-indigo-100 transition-all cursor-pointer"
+                              title="Xem lịch sử các phiên bản dự thảo"
+                            >
+                              <History className="w-3.5 h-3.5" />
+                              <span>Phiên bản: {docItem.version}</span>
+                            </button>
+                            <span className="text-xs text-slate-500 font-medium">{docItem.date}</span>
+                          </div>
+                        </div>
+
+                        {/* Visual 5-Step Approval Stepper */}
+                        <div className="bg-slate-50/80 rounded-xl p-4 border border-slate-200">
+                          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-3">Tiến trình phê duyệt đa cấp:</span>
+                          <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                            {docItem.steps.map((step, idx) => (
+                              <div key={idx} className={cn(
+                                "flex flex-col p-2.5 rounded-lg border text-xs transition-all",
+                                step.status === 'done' ? "bg-emerald-50/80 border-emerald-300 text-emerald-900" :
+                                step.status === 'pending' ? "bg-blue-50/80 border-blue-400 text-blue-900 ring-2 ring-blue-400/30" :
+                                "bg-white border-slate-200 text-slate-500"
+                              )}>
+                                <div className="flex items-center justify-between font-bold mb-1">
+                                  <span>{idx + 1}. {step.name}</span>
+                                  {step.status === 'done' ? (
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                  ) : step.status === 'pending' ? (
+                                    <Clock className="w-3.5 h-3.5 text-blue-600 animate-spin shrink-0" />
+                                  ) : null}
+                                </div>
+                                <span className="text-[11px] truncate">{step.actor}</span>
+                                <span className="text-[10px] text-slate-400 mt-1">{step.date}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Footer info & Actions */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                          <div className="text-xs text-slate-600">
+                            Người khởi tạo: <span className="font-bold text-slate-800">{docItem.creator}</span> ({docItem.dept}) • Đang chờ: <span className="font-bold text-blue-700">{docItem.currentApprover}</span>
+                          </div>
+                          <div className="flex gap-2 items-center">
+                            <button 
+                              onClick={() => setShowSignForm(true)}
+                              className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                            >
+                              <ShieldCheck className="w-3.5 h-3.5" />
+                              Ký số duyệt
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           )}
 
@@ -943,6 +1419,105 @@ export function DocumentManager() {
                  <Send className="w-4 h-4" />
                  Khởi tạo & Luân chuyển
                </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Flow Timeline Modal */}
+      {selectedFlowForTimeline && (
+        <div className="fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+              <div>
+                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <CornerUpRight className="w-4 h-4 text-blue-600" />
+                  Chi tiết luồng xử lý văn bản ({selectedFlowForTimeline.id})
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">{selectedFlowForTimeline.docTitle}</p>
+              </div>
+              <button onClick={() => setSelectedFlowForTimeline(null)} className="text-slate-400 hover:text-slate-700 cursor-pointer">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-900 space-y-1">
+                <div><span className="font-bold">Đơn vị chủ trì:</span> {selectedFlowForTimeline.assignedTo}</div>
+                <div><span className="font-bold">Ý kiến chỉ đạo:</span> {selectedFlowForTimeline.directive}</div>
+                <div><span className="font-bold">Hạn hoàn thành:</span> {selectedFlowForTimeline.deadline}</div>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Nhật ký các chặng luân chuyển:</span>
+                {selectedFlowForTimeline.history.map((step: any, sIdx: number) => (
+                  <div key={sIdx} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                    <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                      {sIdx + 1}
+                    </div>
+                    <div className="flex-1 text-xs">
+                      <div className="font-bold text-slate-900">{step.action}</div>
+                      <div className="text-slate-500 mt-0.5 flex items-center gap-2">
+                        <span>Thực hiện: {step.actor}</span>
+                        <span>•</span>
+                        <span>{step.time}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-end">
+              <button 
+                onClick={() => setSelectedFlowForTimeline(null)}
+                className="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-bold hover:bg-slate-900 transition cursor-pointer"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Version History Modal */}
+      {selectedDocVersions && (
+        <div className="fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+              <div>
+                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <History className="w-4 h-4 text-indigo-600" />
+                  Lịch sử các phiên bản dự thảo ({selectedDocVersions.id})
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">{selectedDocVersions.title}</p>
+              </div>
+              <button onClick={() => setSelectedDocVersions(null)} className="text-slate-400 hover:text-slate-700 cursor-pointer">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-3 max-h-[70vh] overflow-y-auto">
+              {selectedDocVersions.versions.map((ver: any, vIdx: number) => (
+                <div key={vIdx} className="flex items-start justify-between p-3.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition">
+                  <div className="space-y-1 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">{ver.ver}</span>
+                      <span className="text-slate-500">{ver.date}</span>
+                    </div>
+                    <p className="text-slate-800 font-medium">{ver.note}</p>
+                    <div className="text-[11px] text-slate-500">Tác giả: {ver.author}</div>
+                  </div>
+                  <button className="text-xs px-2.5 py-1 bg-white border border-slate-300 text-slate-700 rounded hover:bg-slate-100 font-semibold transition cursor-pointer">
+                    Tải về
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-end">
+              <button 
+                onClick={() => setSelectedDocVersions(null)}
+                className="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-bold hover:bg-slate-900 transition cursor-pointer"
+              >
+                Đóng
+              </button>
             </div>
           </div>
         </div>

@@ -45,6 +45,7 @@ import {
  Volume2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { CompactPageHeader } from './common/CompactPageHeader';
 // @ts-ignore
 import { Responsive as ResponsiveGridLayoutNative, useContainerWidth } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
@@ -291,106 +292,48 @@ export function Dashboard() {
  }, []);
 
  return (
- <div className="flex flex-col h-full gap-6 animate-in fade-in duration-700 overflow-y-auto custom-scrollbar pb-12 pt-2">
- {/* AI Intelligence Command Center */}
- <div className="relative md:min-h-[14rem] bg-gradient-to-br from-[#0B1121] via-[#1E293B] to-[#0F172A] rounded-xl p-6 md:p-6 text-[#FAF9F5] overflow-hidden shadow-sm shadow-slate-900/5 group">
- {/* Decorative background glass circles */}
- <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-400/30 rounded-full blur-3xl" />
- <div className="absolute top-20 right-40 w-32 h-32 bg-primary-500/20 rounded-full blur-2xl" />
- 
- <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none  group-hover:rotate-6 transition-transform duration-700">
- <BrainCircuit className="w-64 h-64" />
- </div>
- 
- <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 h-full">
- <div className="space-y-4">
- <div className="flex items-center gap-4">
- <div className="bg-white/15 p-3 rounded-lg backdrop-blur-xl border border-white/20 shadow-sm group-hover:rotate-12 transition-transform duration-500">
- <Sparkles className="w-7 h-7 text-blue-200" />
- </div>
- <div>
- <div className="flex items-center gap-2 mb-1">
- <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-300">Trung tâm Trí tuệ</span>
- <div className="w-1 h-1 bg-blue-400 rounded-full animate-pulse" />
- </div>
- <h2 className="text-3xl font-black tracking-tight leading-none">Trung tâm Điều hành VComm</h2>
- <p className="text-blue-100/60 text-xs font-medium mt-2 max-w-md">Kiến trúc AI-First giúp tối ưu hóa 35% hiệu suất vận hành chuỗi cung ứng.</p>
- </div>
- </div>
- 
- <div className="flex flex-wrap gap-2 pt-2">
- {[
- { icon: Zap, label: 'Dự đoán: BẬT', color: 'text-amber-300' },
- { icon: Store, label: 'Kho vận: TỐT', color: 'text-emerald-400' },
- { icon: Bot, label: 'Omni Agent: HOẠT ĐỘNG', color: 'text-cyan-300' }
- ].map((chip) => (
- <div key={chip.label} className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md hover:bg-white/10 transition-colors">
- <chip.icon className={cn("w-3 h-3", chip.color)} />
- <span className="text-[10px] font-bold tracking-wide uppercase">{chip.label}</span>
- </div>
- ))}
- </div>
- </div>
+    <div className="flex flex-col h-full gap-3 animate-in fade-in duration-500 overflow-y-auto custom-scrollbar pb-12 pt-1 font-sans">
+      {/* Compact Standardized Header */}
+      <CompactPageHeader
+        icon={<BrainCircuit className="w-4 h-4 text-indigo-600" />}
+        title="Tổng quan Điều hành VComm ERP"
+        badge={{ text: "Realtime AI", variant: "emerald" }}
+        description="Theo dõi hiệu suất đa kênh, điều phối AI và giám sát dòng tiền toàn hệ thống."
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            <button className="bg-white border border-slate-200 hover:bg-slate-50 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer">
+              <Activity className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Báo cáo</span>
+            </button>
+            <button className="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-2xs cursor-pointer">
+              Xuất dữ liệu BI
+            </button>
+            <button 
+              onClick={() => setIsConfigOpen(true)}
+              className="bg-white border border-slate-200 hover:bg-slate-50 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+            >
+              <Settings2 className="w-3.5 h-3.5 text-orange-600" />
+              <span>Tùy biến</span>
+            </button>
+          </div>
+        }
+      />
 
- {/* AI Insights Card - Styled to match screenshot */}
- <div className="relative flex-shrink-0 w-full md:w-auto h-full flex items-center md:items-stretch">
- <div className="bg-white/10 hover:bg-white/15 p-5 md:p-6 rounded-lg border border-white/20 backdrop-blur-2xl shadow-sm w-full md:w-[340px] transition-all duration-500 group-hover:translate-y-[-4px] group-hover:shadow-slate-900/5 flex flex-col justify-center">
- <div className="flex items-center justify-between mb-4">
- <div className="flex items-center gap-2">
- <div className="p-1 px-2 bg-white/10 rounded border border-white/20">
- <span className="text-[9px] font-black uppercase tracking-widest text-blue-300">AI Đề xuất Ưu tiên</span>
- </div>
- </div>
- <div className="relative flex h-2 w-2">
- <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
- <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]"></span>
- </div>
- </div>
- 
- <p className="text-xs font-semibold leading-relaxed mb-5 text-slate-300 italic">
- "Nhu cầu SKU-992 tăng +45% vào tuần tới. Đề xuất điều chuyển tồn kho từ Kho A sang B trong hôm nay."
- </p>
- 
- <button className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-[#FAF9F5] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shadow-blue-500/20 border border-blue-400/50 hover:scale-[1.02] active:scale-95">
- Thực thi Đề xuất AI
- </button>
- </div>
- </div>
- </div>
- </div>
- <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
- <div>
- <div className="flex items-center gap-3 mb-2">
- <span className="px-3 py-1 bg-slate-100 text-orange-800 text-[10px] font-black rounded-lg uppercase tracking-widest border border-orange-200/60 shadow-sm">Bảng điều khiển Trực tiếp</span>
- <span className="text-[11px] text-slate-600 font-bold uppercase tracking-wider flex items-center gap-1.5">
- <span className="relative flex h-2 w-2">
- <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
- <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
- </span>
- Đồng bộ realtime
- </span>
- </div>
- <h1 className="font-serif tracking-tight text-3xl font-black text-slate-900 tracking-tight">Tổng quan Hệ thống</h1>
- <p className="text-sm text-slate-600 mt-2 max-w-lg font-medium">Theo dõi hiệu suất đa kênh.</p>
- </div>
- 
- <div className="flex gap-3">
- <button className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-50 hover:text-orange-700 transition-all flex items-center justify-center gap-2 shadow-sm">
- <Activity className="w-4 h-4 text-emerald-500" />
- Báo cáo Vận hành
- </button>
- <button className="bg-slate-900 text-[#FAF9F5] px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-900 transition-all shadow-sm shadow-slate-900/10 hover:shadow-slate-900/5">
- Xuất dữ liệu BI
- </button>
- <button 
- onClick={() => setIsConfigOpen(true)}
- className="bg-white border border-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm shrink-0"
- >
- <Settings2 className="w-4 h-4 text-orange-600" />
- Tùy biến
- </button>
- </div>
- </div>
+      {/* Sleek AI Insight Ribbon Banner */}
+      <div className="bg-indigo-50/80 border border-indigo-200/80 px-3.5 py-2 rounded-xl flex items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+          </span>
+          <span className="font-bold text-indigo-950 truncate">
+            AI Đề xuất: "Nhu cầu SKU-992 tăng +45% vào tuần tới. Đề xuất điều chuyển tồn kho từ Kho A sang B trong hôm nay."
+          </span>
+        </div>
+        <button className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shrink-0 cursor-pointer shadow-2xs transition-all">
+          Thực thi
+        </button>
+      </div>
 
  {config.showQuickNav && (
  <div className="flex flex-wrap items-center gap-3">

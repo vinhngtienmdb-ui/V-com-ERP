@@ -88,9 +88,9 @@ export function Sidebar() {
   ) : (
     <>
      <div className="w-4 h-4 bg-[#2563EB] rounded-sm transform rotate-45 shadow-sm shadow-slate-900/5"></div>
-     <h1 className="font-serif tracking-tight text-xl font-black text-[#111827]">
-     VComm <span className="text-[#2563EB]">ERP</span>
-     </h1>
+      <h1 className="font-sans tracking-tight text-xl font-black text-slate-900">
+        VComm <span className="text-blue-600">ERP</span>
+      </h1>
     </>
   )}
   </div>

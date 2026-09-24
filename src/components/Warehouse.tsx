@@ -1,4 +1,6 @@
 import { DraggableGrid } from './ui/DraggableGrid';
+import { CompactPageHeader } from './common/CompactPageHeader';
+import { CompactStatsRibbon, MetricRibbonItem } from './common/CompactStatsRibbon';
 import { useState, useEffect } from 'react';
 import {
   Users,
@@ -40,8 +42,10 @@ import {
   Camera,
   QrCode,
   RefreshCw,
+  ShieldCheck,
 } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
+import { DigitalTwinWMS } from './DigitalTwinWMS';
 import { cn, formatCurrency } from '../lib/utils';
 import { db, collection, onSnapshot, query, where, getDocs, range, orderBy, search, addDoc } from '../lib/firebase';
 import { useStore } from '../context/StoreContext';
@@ -86,11 +90,25 @@ const WAREHOUSE_MODULE_GROUPS = [
     title: 'Vận hành & Tối ưu AI',
     items: [
       {
+        id: 'wh_smart_routing',
+        label: 'Smart Order Routing (SOR)',
+        desc: 'AI định tuyến đơn hàng tự động đến kho gần nhất & khả dụng.',
+        icon: Navigation,
+        color: 'indigo',
+      },
+      {
+        id: 'wh_fefo_batches',
+        label: 'Quản trị Lô & Xuất kho FEFO',
+        desc: 'Tự động gắp hàng có HSD gần nhất, cảnh báo cận date.',
+        icon: Timer,
+        color: 'rose',
+      },
+      {
         id: 'wh_ff_orders',
         label: 'Quản lý vận chuyển',
         desc: 'Theo dõi đơn hàng đang giao.',
         icon: ListTodo,
-        color: 'indigo',
+        color: 'blue',
       },
       {
         id: 'wh_ff_predict',
@@ -111,7 +129,7 @@ const WAREHOUSE_MODULE_GROUPS = [
         label: 'Theo dõi lộ trình',
         desc: 'Real-time tracking vận chuyển.',
         icon: Navigation,
-        color: 'blue',
+        color: 'emerald',
       },
     ],
   },
@@ -517,6 +535,74 @@ export function WarehouseModule() {
   const [skuSearchQuery, setSkuSearchQuery] = useState<string>('');
   const [selectedLogDetail, setSelectedLogDetail] = useState<any | null>(MOCK_TRANSFER_LOGS[0]);
   const [showCreateTransferModal, setShowCreateTransferModal] = useState<boolean>(false);
+
+  // Smart Order Routing (SOR) & FEFO States
+  const [fulfillmentHubs, setFulfillmentHubs] = useState<any[]>([]);
+  const [fefoBatches, setFefoBatches] = useState<any[]>([]);
+  const [fefoFilter, setFefoFilter] = useState<'ALL' | 'NEAR_EXPIRY' | 'SAFE'>('ALL');
+  const [isRoutingOrder, setIsRoutingOrder] = useState<boolean>(false);
+  const [routingResult, setRoutingResult] = useState<any | null>(null);
+  const [simulatedOrder, setSimulatedOrder] = useState({
+    orderId: 'ORD-VC-2026-8891',
+    customerName: 'Hoàng Minh Châu',
+    phone: '0988.765.432',
+    shippingAddress: 'Số 18 Lý Thường Kiệt, Quận Hoàn Kiếm, Hà Nội',
+    shippingProvince: 'Hà Nội',
+    sku: 'SKU-S24-ULTRA',
+    productName: 'Samsung Galaxy S24 Ultra 512GB Titanium Gray',
+    quantity: 2
+  });
+
+  // Tải dữ liệu Hubs và FEFO Batches từ Core Gateway
+  useEffect(() => {
+    fetch('/api/v1/wms/fulfillment-hubs')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.hubs) setFulfillmentHubs(data.hubs);
+      })
+      .catch(err => console.error('Failed to fetch hubs:', err));
+
+    fetch('/api/v1/wms/fefo-batches')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.batches) setFefoBatches(data.batches);
+      })
+      .catch(err => console.error('Failed to fetch fefo batches:', err));
+  }, []);
+
+  const handleExecuteSmartRouting = async () => {
+    setIsRoutingOrder(true);
+    try {
+      const res = await fetch('/api/v1/wms/smart-order-routing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: simulatedOrder.orderId,
+          customerName: simulatedOrder.customerName,
+          phone: simulatedOrder.phone,
+          shippingAddress: simulatedOrder.shippingAddress,
+          shippingProvince: simulatedOrder.shippingProvince,
+          items: [
+            {
+              sku: simulatedOrder.sku,
+              productName: simulatedOrder.productName,
+              quantity: Number(simulatedOrder.quantity)
+            }
+          ]
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.decision) {
+        setRoutingResult(data.decision);
+      } else {
+        alert(data.message || 'Lỗi định tuyến');
+      }
+    } catch (e: any) {
+      alert('Lỗi gọi Smart Order Routing: ' + e.message);
+    } finally {
+      setIsRoutingOrder(false);
+    }
+  };
   const [newTransfer, setNewTransfer] = useState({
     skuId: 'SKU-881',
     quantity: 50,
@@ -1369,100 +1455,87 @@ export function WarehouseModule() {
     }
   }, [showScanner]);
 
+  const whRibbonItems: MetricRibbonItem[] = [
+    {
+      id: 'val',
+      icon: <DollarSign className="w-3.5 h-3.5" />,
+      label: 'Giá trị tồn kho',
+      value: formatCurrency(4850000000),
+      subText: '+5.2% YoY',
+      colorVariant: 'emerald'
+    },
+    {
+      id: 'ful',
+      icon: <Truck className="w-3.5 h-3.5" />,
+      label: 'Đơn Fulfillment',
+      value: '1,248',
+      subText: '85 Đang giao',
+      colorVariant: 'blue'
+    },
+    {
+      id: 'min_warn',
+      icon: <AlertCircle className="w-3.5 h-3.5" />,
+      label: 'Cảnh báo tồn tối thiểu',
+      value: '42 SKUs',
+      subText: 'Cần nhập',
+      colorVariant: 'amber'
+    },
+    {
+      id: 'sla',
+      icon: <Clock className="w-3.5 h-3.5" />,
+      label: 'Uptime Vận hành WMS',
+      value: '99.8%',
+      subText: 'Realtime SLA',
+      colorVariant: 'purple'
+    }
+  ];
+
   return (
-    <div className="space-y-8 animate-in fade-in slide-in- duration-500 pb-12">
-      <div className="flex items-center justify-between">
-        <div className="header-title">
-          <div className="flex items-center gap-2 mb-1">
-            {activeTab !== 'overview' && (
-              <button
-                onClick={() => setActiveTab('overview')}
-                className="p-1 hover:bg-slate-100 rounded-md transition-colors mr-1"
-              >
-                <ArrowLeft className="w-4 h-4 text-slate-600" />
-              </button>
-            )}
-            <h1 className="font-serif tracking-tight text-2xl font-bold text-[#111827]">
-              Quản trị Kho vận
-            </h1>
+    <div className="space-y-3 animate-in fade-in slide-in- duration-500 pb-12 font-sans">
+      {/* Compact Standardized Header */}
+      <CompactPageHeader
+        icon={
+          activeTab !== 'overview' ? (
+            <button 
+              onClick={() => setActiveTab('overview')} 
+              className="p-1 hover:bg-slate-200 rounded-lg transition-colors text-slate-600 hover:text-slate-900 cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+          ) : (
+            <Warehouse className="w-4 h-4 text-blue-600" />
+          )
+        }
+        title="Quản trị Kho vận Multi-WMS"
+        badge={{ text: "Fulfillment & Barcode/QR", variant: "emerald" }}
+        description="Quản lý mạng lưới 3-10 kho chi nhánh, vị trí kệ hàng chuẩn A-01-02 và luân chuyển tồn kho thời gian thực."
+        actions={
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setActiveTab('wh_map' as any)}
+              className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+            >
+              <LayoutGrid className="w-3.5 h-3.5 text-slate-500" /> 
+              <span>Sơ đồ vị trí kệ</span>
+            </button>
+            <button 
+              onClick={() => setActiveTab('wh_in_out' as any)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" /> 
+              <span>Tạo phiếu kho</span>
+            </button>
           </div>
-          <p className="text-sm text-[#6B7280]">
-            Quản lý nhập xuất kho, kiểm kê và vận hành Fulfillment.
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
-            <Filter className="w-4 h-4" /> Bản đồ kho
-          </button>
-          <button className="bg-[#2563EB] text-[#FAF9F5] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Tạo phiếu kho
-          </button>
-        </div>
-      </div>
+        }
+      />
 
       {activeTab === 'overview' && (
-        <div className="space-y-8">
-          {/* Stats Cards */}
-          <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
-            <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
-              <div className="flex justify-between items-start mb-3">
-                <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
-                  Giá trị tồn kho
-                </span>
-                <DollarSign className="w-4 h-4 text-emerald-600" />
-              </div>
-              <div className="flex items-end justify-between">
-                <span className="text-2xl font-black text-[#111827]">
-                  {formatCurrency(4850000000)}
-                </span>
-                <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">
-                  +5.2%
-                </span>
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
-              <div className="flex justify-between items-start mb-3">
-                <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
-                  Đơn Fulfillment
-                </span>
-                <Truck className="w-4 h-4 text-orange-700" />
-              </div>
-              <div className="flex items-end justify-between">
-                <span className="text-2xl font-black text-[#111827]">1,248</span>
-                <span className="text-[10px] text-orange-700 font-bold bg-slate-100 px-2 py-0.5 rounded">
-                  85 Đang giao
-                </span>
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
-              <div className="flex justify-between items-start mb-3">
-                <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
-                  Hàng sắp hết (Alt)
-                </span>
-                <AlertCircle className="w-4 h-4 text-orange-600" />
-              </div>
-              <div className="flex items-end justify-between">
-                <span className="text-2xl font-black text-[#111827]">42 SKUs</span>
-                <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">
-                  Cần nhập
-                </span>
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm hover:shadow-sm transition-all">
-              <div className="flex justify-between items-start mb-3">
-                <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest">
-                  Uptime Kho vận
-                </span>
-                <Clock className="w-4 h-4 text-primary-600" />
-              </div>
-              <div className="flex items-end justify-between">
-                <span className="text-2xl font-black text-[#111827]">99.8%</span>
-                <span className="text-[10px] text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded">
-                  Realtime
-                </span>
-              </div>
-            </div>
-          </DraggableGrid>
+        <div className="space-y-3">
+          {/* Compact Stats Ribbon */}
+          <CompactStatsRibbon
+            items={whRibbonItems}
+            storageKey="warehouse_stats_ribbon"
+          />
 
           {/* Matrix Grid Layout */}
           <div className="space-y-6">
@@ -1503,6 +1576,472 @@ export function WarehouseModule() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB: SMART ORDER ROUTING (SOR) AI MULTI-HUB ENGINE                        */}
+      {/* ========================================================================= */}
+      {activeTab === 'wh_smart_routing' && (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          {/* Header Banner */}
+          <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 p-6 rounded-2xl border border-slate-800 text-white shadow-md relative overflow-hidden">
+            <div className="absolute right-0 top-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                    <Navigation className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-black tracking-tight text-white flex items-center gap-2">
+                      Smart Order Routing (SOR) AI Engine
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-950 text-blue-400 border border-blue-800/80">
+                        Multi-Hub Proximity & Stock Aware
+                      </span>
+                    </h2>
+                    <p className="text-xs text-slate-400">
+                      Tự động tính toán khoảng cách địa lý Haversine, đối chiếu tồn kho khả dụng và chỉ định trung tâm hoàn tất đơn hàng tối ưu nhất để giao hỏa tốc & tiết kiệm chi phí.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveTab('overview')}
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white transition-all border border-white/10 flex items-center gap-2"
+                >
+                  <ArrowLeft className="w-4 h-4" /> Quay lại
+                </button>
+              </div>
+            </div>
+
+            {/* 3 Fulfillment Hubs Status */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-5 border-t border-slate-800/80">
+              {fulfillmentHubs.map((hub) => (
+                <div key={hub.id} className="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-sm text-white">{hub.name}</span>
+                    <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800">
+                      {hub.code}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 line-clamp-1">{hub.address}</p>
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-800/60 text-xs">
+                    <span className="text-slate-400">Năng lực xử lý:</span>
+                    <span className="font-bold text-emerald-400">{hub.capacityScore}% Load Score</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Interactive Routing Simulator */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Input Form */}
+            <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+              <div className="flex items-center gap-2 border-b border-slate-200/80 pb-3">
+                <Sparkles className="w-4 h-4 text-indigo-600" />
+                <h3 className="font-black text-slate-900 text-sm">Mô phỏng Định tuyến Đơn hàng Thực tế</h3>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Mã đơn hàng</label>
+                  <input
+                    type="text"
+                    value={simulatedOrder.orderId}
+                    onChange={(e) => setSimulatedOrder({ ...simulatedOrder, orderId: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="font-bold text-slate-700 block mb-1">Tên khách hàng</label>
+                    <input
+                      type="text"
+                      value={simulatedOrder.customerName}
+                      onChange={(e) => setSimulatedOrder({ ...simulatedOrder, customerName: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-slate-700 block mb-1">Số điện thoại</label>
+                    <input
+                      type="text"
+                      value={simulatedOrder.phone}
+                      onChange={(e) => setSimulatedOrder({ ...simulatedOrder, phone: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Tỉnh / Thành phố giao hàng</label>
+                  <select
+                    value={simulatedOrder.shippingProvince}
+                    onChange={(e) => {
+                      const prov = e.target.value;
+                      let addr = 'Số 18 Lý Thường Kiệt, Quận Hoàn Kiếm, Hà Nội';
+                      if (prov === 'Hồ Chí Minh') addr = 'Số 220 Hai Bà Trưng, Phường Tân Định, Quận 1, TP. Hồ Chí Minh';
+                      if (prov === 'Đà Nẵng') addr = 'Số 56 Nguyễn Văn Linh, Quận Hải Châu, TP. Đà Nẵng';
+                      if (prov === 'Cần Thơ') addr = 'Số 12 Đại lộ Hòa Bình, Quận Ninh Kiều, TP. Cần Thơ';
+                      if (prov === 'Hải Phòng') addr = 'Số 85 Lạch Tray, Quận Ngô Quyền, TP. Hải Phòng';
+                      setSimulatedOrder({
+                        ...simulatedOrder,
+                        shippingProvince: prov,
+                        shippingAddress: addr
+                      });
+                    }}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold"
+                  >
+                    <option value="Hà Nội">Hà Nội (Khu vực Miền Bắc)</option>
+                    <option value="Hồ Chí Minh">TP. Hồ Chí Minh (Khu vực Miền Nam)</option>
+                    <option value="Đà Nẵng">Đà Nẵng (Khu vực Miền Trung)</option>
+                    <option value="Hải Phòng">Hải Phòng (Khu vực Miền Bắc)</option>
+                    <option value="Cần Thơ">Cần Thơ (Khu vực Miền Tây Nam Bộ)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Địa chỉ chi tiết nhận hàng</label>
+                  <input
+                    type="text"
+                    value={simulatedOrder.shippingAddress}
+                    onChange={(e) => setSimulatedOrder({ ...simulatedOrder, shippingAddress: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
+                  />
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="col-span-2">
+                    <label className="font-bold text-slate-700 block mb-1">Sản phẩm xuất kho</label>
+                    <select
+                      value={simulatedOrder.sku}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setSimulatedOrder({
+                          ...simulatedOrder,
+                          sku: val,
+                          productName: val === 'SKU-S24-ULTRA' ? 'Samsung Galaxy S24 Ultra 512GB' : 'Sữa tươi hữu cơ VComm Farm 1L'
+                        });
+                      }}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
+                    >
+                      <option value="SKU-S24-ULTRA">Samsung Galaxy S24 Ultra</option>
+                      <option value="SKU-ORGANIC-MILK">Sữa tươi hữu cơ VComm Farm 1L</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="font-bold text-slate-700 block mb-1">Số lượng</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={50}
+                      value={simulatedOrder.quantity}
+                      onChange={(e) => setSimulatedOrder({ ...simulatedOrder, quantity: Number(e.target.value) })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold font-mono text-center"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleExecuteSmartRouting}
+                  disabled={isRoutingOrder}
+                  className="w-full mt-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-50"
+                >
+                  <Navigation className="w-4 h-4" />
+                  {isRoutingOrder ? "AI đang tính toán tuyến đường..." : "Kích hoạt Định tuyến SOR AI"}
+                </button>
+              </div>
+            </div>
+
+            {/* Decision Result Display */}
+            <div className="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <h3 className="font-black text-slate-900 text-sm">Kết quả Quyết định Định tuyến (Routing Decision)</h3>
+                </div>
+                {routingResult && (
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Độ tin cậy: {routingResult.confidenceScore}%
+                  </span>
+                )}
+              </div>
+
+              {!routingResult ? (
+                <div className="h-[360px] flex flex-col items-center justify-center text-center text-slate-400 space-y-3">
+                  <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                    <Navigation className="w-8 h-8 animate-pulse text-indigo-500" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-700">Chưa có quyết định định tuyến</p>
+                    <p className="text-xs text-slate-400 mt-1">Nhấn "Kích hoạt Định tuyến SOR AI" bên cạnh để chạy thuật toán.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4 text-xs animate-in fade-in duration-300">
+                  {/* Selected Hub Card */}
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200/80 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider">Tổng kho được chỉ định</span>
+                        <h4 className="font-black text-base text-slate-900 mt-0.5">{routingResult.selectedWarehouse?.name}</h4>
+                        <p className="text-[11px] text-slate-600 font-mono mt-0.5">{routingResult.selectedWarehouse?.code} • {routingResult.selectedWarehouse?.address}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-2xl font-black text-indigo-700 font-mono">{routingResult.distanceKm}</span>
+                        <span className="text-xs text-indigo-600 font-bold ml-1">km</span>
+                        <p className="text-[10px] text-slate-500 font-medium">Khoảng cách địa lý</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Delivery & Carrier SLA */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                      <span className="text-[10px] text-slate-500 font-bold uppercase">Thời gian cam kết</span>
+                      <p className="font-bold text-slate-900 mt-1 text-xs">{routingResult.deliveryEstimate}</p>
+                      <span className="text-[10px] text-emerald-600 font-semibold">SLA: &lt; {routingResult.carrierRecommendation?.slaHours}h</span>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                      <span className="text-[10px] text-slate-500 font-bold uppercase">Đối tác 3PL đề xuất</span>
+                      <p className="font-bold text-slate-900 mt-1 text-xs">{routingResult.carrierRecommendation?.carrierName}</p>
+                      <span className="text-[10px] text-blue-600 font-semibold">Cước ước tính: {formatCurrency(routingResult.carrierRecommendation?.estimatedCost || 28000)}</span>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 col-span-2 sm:col-span-1">
+                      <span className="text-[10px] text-slate-500 font-bold uppercase">Quy tắc định tuyến</span>
+                      <p className="font-bold text-slate-900 mt-1 text-xs font-mono">{routingResult.routingRule}</p>
+                      <span className="text-[10px] text-purple-600 font-semibold">100% Tồn khả dụng</span>
+                    </div>
+                  </div>
+
+                  {/* FEFO Batches Allocated */}
+                  <div className="border border-slate-200 rounded-xl overflow-hidden">
+                    <div className="bg-slate-100 p-2.5 border-b border-slate-200 flex items-center justify-between">
+                      <span className="font-bold text-slate-700 text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                        <Timer className="w-3.5 h-3.5 text-rose-600" />
+                        Danh mục Lô hàng bốc theo FEFO (Picking List)
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-medium">Hạn sử dụng gần nhất xuất trước</span>
+                    </div>
+
+                    <div className="divide-y divide-slate-100">
+                      {routingResult.fefoAllocations?.map((item: any, idx: number) => (
+                        <div key={idx} className="p-3 space-y-2">
+                          <div className="flex justify-between font-semibold text-slate-900">
+                            <span>{item.productName}</span>
+                            <span className="font-mono font-bold text-indigo-700">SL: {item.requestedQty}</span>
+                          </div>
+
+                          {item.allocatedBatches?.map((b: any, bIdx: number) => (
+                            <div key={bIdx} className="bg-slate-50 p-2.5 rounded-lg flex items-center justify-between text-[11px]">
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono font-bold text-slate-800">{b.batchNumber}</span>
+                                <span className="px-2 py-0.5 rounded bg-slate-200 text-slate-700 text-[10px] font-mono">
+                                  Kệ: {b.shelfLocation}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <span className="text-slate-500">
+                                  HSD: <strong className="text-slate-800">{b.expiryDate}</strong> ({b.daysRemaining} ngày)
+                                </span>
+                                <span className="px-2 py-0.5 rounded-full font-bold text-[10px] bg-emerald-100 text-emerald-800">
+                                  Bốc: {b.allocatedQty} cái
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Rationale explanation */}
+                  <div className="bg-emerald-50/70 p-3 rounded-xl border border-emerald-200/80 text-[11px] text-emerald-900 flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="font-bold">Lý do thuật toán:</strong> {routingResult.reason}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB: QUẢN TRỊ LÔ & XUẤT KHO FEFO (FIRST EXPIRED, FIRST OUT)                */}
+      {/* ========================================================================= */}
+      {activeTab === 'wh_fefo_batches' && (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          {/* Header Banner */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-rose-50 text-rose-600 border border-rose-200/60">
+                  <Timer className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-black tracking-tight text-slate-900 flex items-center gap-2">
+                    Quản Trị Lô Sản Xuất & Cơ Chế Xuất Kho FEFO
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                      First Expired, First Out
+                    </span>
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Chủ động kiểm soát hạn sử dụng hàng hóa, ưu tiên bốc hàng cận date trước và khóa chặn tự động các lô đã hết hạn hoặc cận hạn &lt; 30 ngày.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all flex items-center gap-1.5"
+              >
+                <ArrowLeft className="w-4 h-4" /> Quay lại
+              </button>
+            </div>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+              <p className="text-[11px] font-bold text-slate-500 uppercase">Tổng số Lô hàng</p>
+              <p className="text-2xl font-black text-slate-900 mt-1 font-mono">{fefoBatches.length || 5} Lô</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">Trên toàn bộ 3 tổng kho</p>
+            </div>
+            <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+              <p className="text-[11px] font-bold text-rose-600 uppercase">Lô Cận Hạn Khẩn Cấp (&lt; 45 ngày)</p>
+              <p className="text-2xl font-black text-rose-600 mt-1 font-mono">
+                {fefoBatches.filter(b => b.daysRemaining <= 45).length || 2} Lô
+              </p>
+              <p className="text-[10px] text-rose-500 font-bold mt-0.5">Ưu tiên xuất bán FEFO ngay</p>
+            </div>
+            <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+              <p className="text-[11px] font-bold text-emerald-600 uppercase">Lô Hạn Dài An Toàn (&gt; 90 ngày)</p>
+              <p className="text-2xl font-black text-emerald-600 mt-1 font-mono">
+                {fefoBatches.filter(b => b.daysRemaining > 90).length || 3} Lô
+              </p>
+              <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">Chất lượng tiêu chuẩn</p>
+            </div>
+            <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+              <p className="text-[11px] font-bold text-indigo-600 uppercase">Tỷ lệ Tuân thủ FEFO</p>
+              <p className="text-2xl font-black text-indigo-600 mt-1 font-mono">99.4%</p>
+              <p className="text-[10px] text-indigo-600 font-semibold mt-0.5">Giảm 95% thất thoát date</p>
+            </div>
+          </div>
+
+          {/* Batches Table */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div className="p-4 border-b border-slate-200/80 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-700">Bộ lọc trạng thái Lô:</span>
+                {(['ALL', 'NEAR_EXPIRY', 'SAFE'] as const).map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setFefoFilter(f)}
+                    className={cn(
+                      "px-3 py-1 rounded-lg text-xs font-bold transition-colors",
+                      fefoFilter === f ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    )}
+                  >
+                    {f === 'ALL' ? 'Tất cả Lô' : f === 'NEAR_EXPIRY' ? 'Cận date khẩn cấp' : 'An toàn'}
+                  </button>
+                ))}
+              </div>
+              <span className="text-xs text-slate-500 font-mono">
+                Chuẩn ISO 22000 &amp; GMP Warehouse
+              </span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-slate-100/90 text-slate-700 font-bold border-b border-slate-200 uppercase tracking-wider text-[11px]">
+                  <tr>
+                    <th className="px-4 py-3">Mã Lô (Batch No)</th>
+                    <th className="px-4 py-3">Mã SKU &amp; Tên sản phẩm</th>
+                    <th className="px-4 py-3">Tổng kho &amp; Vị trí kệ</th>
+                    <th className="px-4 py-3">Ngày SX (MFG)</th>
+                    <th className="px-4 py-3">Hạn dùng (EXP)</th>
+                    <th className="px-4 py-3 text-center">Còn lại (Ngày)</th>
+                    <th className="px-4 py-3 text-right">Tồn khả dụng</th>
+                    <th className="px-4 py-3 text-center">Ưu tiên FEFO</th>
+                    <th className="px-4 py-3 text-center">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {fefoBatches
+                    .filter(b => fefoFilter === 'ALL' || b.status === fefoFilter)
+                    .map((b) => (
+                      <tr key={b.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="px-4 py-3">
+                          <span className="font-mono font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded border border-slate-200">
+                            {b.batchNumber}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="font-bold text-slate-900">{b.productName}</div>
+                          <div className="text-[10px] font-mono text-slate-400">{b.sku}</div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="font-medium text-slate-800">{b.warehouseCode}</div>
+                          <div className="text-[10px] font-mono text-indigo-600 font-bold">Kệ: {b.shelfLocation}</div>
+                        </td>
+                        <td className="px-4 py-3 font-mono text-slate-600">
+                          {b.manufacturingDate}
+                        </td>
+                        <td className="px-4 py-3 font-mono font-bold text-slate-900">
+                          {b.expiryDate}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={cn(
+                            "px-2 py-0.5 rounded-full font-mono font-black text-[11px]",
+                            b.daysRemaining <= 45 ? "bg-rose-100 text-rose-700 border border-rose-300" :
+                            b.daysRemaining <= 90 ? "bg-amber-100 text-amber-700 border border-amber-300" :
+                            "bg-emerald-100 text-emerald-700 border border-emerald-300"
+                          )}>
+                            {b.daysRemaining} ngày
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right font-mono font-bold text-slate-900">
+                          {b.availableQty} cái
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {b.daysRemaining <= 45 ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                              <AlertCircle className="w-3 h-3" /> Xuất ngay
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                              <CheckCircle2 className="w-3 h-3" /> An toàn
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <button
+                            onClick={() => {
+                              alert(`Đã tạo lệnh xuất kho FEFO cho Lô ${b.batchNumber} tại Kệ ${b.shelfLocation}. Hệ thống đã gửi thông báo đến máy bốc hàng của Thủ kho.`);
+                            }}
+                            className="px-3 py-1 rounded-lg text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition-all shadow-2xs active:scale-95"
+                          >
+                            Lệnh bốc
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
@@ -2018,14 +2557,17 @@ export function WarehouseModule() {
                   setActiveTab('overview');
                   setSelectedShelf(null);
                 }}
-                className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg shadow-sm font-sans"
+                className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-orange-700 transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg shadow-sm font-sans cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" /> Quay lại Giao diện chung
               </button>
-              <div className="hidden sm:flex items-center gap-2 text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100 text-[11px] font-bold font-sans">
-                <Sparkles className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
-                <span>AI Mapping Live</span>
-              </div>
+              <button
+                onClick={() => setActiveTab('wh_req_purchase')}
+                className="hidden sm:flex items-center gap-2 text-orange-700 bg-orange-50 hover:bg-orange-100 px-3 py-1.5 rounded-lg border border-orange-200 text-xs font-bold font-sans cursor-pointer transition-all"
+              >
+                <Zap className="w-3.5 h-3.5 text-orange-600" />
+                <span>Động cơ Điểm Đặt Hàng Lại ROP</span>
+              </button>
             </div>
 
             {/* Zone Selector */}
@@ -2449,7 +2991,7 @@ export function WarehouseModule() {
                           Cảm biến live
                         </span>
                       </div>
-                      <h3 className="text-xl font-bold font-serif text-slate-900 flex items-center gap-2">
+                      <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
                         Vị trí: {selectedShelf.id}
                       </h3>
                     </div>
@@ -3097,10 +3639,20 @@ export function WarehouseModule() {
         </div>
       )}
 
+            {(activeTab === 'wh_req_purchase' || activeTab === 'wh_in_out' || activeTab === 'wh_transfer_history') && (
+        <DigitalTwinWMS 
+          initialSubTab={activeTab === 'wh_req_purchase' ? 'req_purchase' : 'in_out_vouchers'}
+          onBackToOverview={() => setActiveTab('overview')}
+        />
+      )}
+
       {activeTab !== 'overview' &&
         activeTab !== 'wh_partners' &&
         !activeTab.startsWith('wh_ff_') &&
-        activeTab !== 'wh_stock' && (
+        activeTab !== 'wh_stock' &&
+        activeTab !== 'wh_req_purchase' &&
+        activeTab !== 'wh_in_out' &&
+        activeTab !== 'wh_transfer_history' && (
           <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden min-h-[600px] flex flex-col mt-4">
             <div className="p-6 border-b border-[#F3F4F6] bg-slate-50/50">
               <button

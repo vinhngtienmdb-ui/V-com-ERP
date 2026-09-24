@@ -144,7 +144,7 @@ export function EMenu() {
  {/* Header */}
  <header className="bg-white/80 backdrop-blur-md sticky top-0 z-30 px-6 py-6 border-b border-slate-200 flex items-center justify-between">
  <div className="flex flex-col">
- <h1 className="font-serif tracking-tight text-xs font-black text-primary-600 uppercase tracking-[0.2em]">E-Menu Experience</h1>
+ <h1 className="font-sans tracking-tight text-xs font-black text-primary-600 uppercase tracking-[0.2em]">E-Menu Experience</h1>
  <div className="flex items-center gap-2">
  <span className="text-xl font-bold text-slate-900 underline decoration-indigo-200 underline-offset-4">Bàn {tableId}</span>
  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />

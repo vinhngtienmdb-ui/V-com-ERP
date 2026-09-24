@@ -48,7 +48,7 @@ export function UserProfile() {
  <div className="max-w-5xl mx-auto animate-in fade-in slide-in- duration-500">
  <div className="flex items-center justify-between mb-8">
  <div>
- <h1 className="font-serif tracking-tight text-2xl font-bold text-slate-900">Cài đặt tài khoản</h1>
+ <h1 className="font-sans tracking-tight text-2xl font-black text-slate-900">Cài đặt tài khoản</h1>
  <p className="text-sm text-slate-600 mt-1">Quản lý thông tin cá nhân, bảo mật và tùy chỉnh trải nghiệm của bạn.</p>
  </div>
  <button 

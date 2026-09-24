@@ -1,4 +1,4 @@
-import { DraggableGrid } from './ui/DraggableGrid';
+﻿import { DraggableGrid } from './ui/DraggableGrid';
 import React, { useState } from 'react';
 import { 
  FileText, 
@@ -94,68 +94,104 @@ export function SettlementManagement() {
 
  return (
  <div className="space-y-8 animate-in fade-in slide-in- duration-500">
- <div className="flex items-center justify-between">
- <div className="header-title">
- <h1 className="font-serif tracking-tight text-2xl font-semibold text-[#111827]">Đối soát & Hóa đơn Điện tử</h1>
- <p className="text-sm text-[#6B7280] mt-1">Đối soát dòng tiền Seller, xử lý yêu cầu rút tiền và tự động xuất hóa đơn GTGT.</p>
- </div>
- <div className="flex gap-3">
- <button className="bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
- <RefreshCcw className="w-4 h-4" />
- Chạy đối soát tự động
- </button>
- <button className="bg-[#2563EB] text-[#FAF9F5] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
- <Receipt className="w-4 h-4" />
- Xuất hóa đơn hàng loạt
- </button>
- </div>
- </div>
+      {/* Top Header Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/60">
+              Escrow & e-Invoice Automation
+            </span>
+            <span className="text-xs text-slate-500 font-medium">Đối Soát COD 3PL & Thuế TMĐT</span>
+          </div>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Đối Soát Dòng Tiền & Hóa Đơn Điện Tử</h1>
+          <p className="text-xs text-slate-600 mt-0.5">
+            Đối soát dòng tiền ký quỹ Escrow nhà bán, khấu trừ thuế sàn theo NĐ 126/TT 88 và tự động phát hành hóa đơn điện tử VComm Invoice.
+          </p>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <button className="bg-white border border-slate-200 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 transition-all flex items-center gap-2 shadow-2xs cursor-pointer">
+            <RefreshCcw className="w-4 h-4 text-blue-600" />
+            Chạy Đối Soát Tự Động
+          </button>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-500/20 flex items-center gap-2 cursor-pointer">
+            <Receipt className="w-4 h-4" />
+            Xuất Hóa Đơn Hàng Loạt
+          </button>
+        </div>
+      </div>
 
- <DraggableGrid className="grid grid-cols-1 md:grid-cols-4 gap-6" columns={4} gap={24}>
- <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Số dư Ví Sàn (Tất cả)</p>
- <div className="text-2xl font-bold text-[#111827]">{formatCurrency(15450000000)}</div>
- <div className="mt-1 flex items-center gap-1 text-[10px] text-[#10B981] font-medium">
- <CheckCircle2 className="w-3 h-3" /> Tài khoản Escrow an toàn
- </div>
- </div>
- <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Đang chờ giải ngân (Payout)</p>
- <div className="text-2xl font-bold text-[#2563EB]">{formatCurrency(2450000000)}</div>
- <p className="text-[10px] text-[#6B7280] mt-1">Sẽ tự động chuyển sau 3 ngày</p>
- </div>
- <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Lệnh rút tiền chờ duyệt</p>
- <div className="text-2xl font-bold text-[#F59E0B]">42</div>
- <p className="text-[10px] text-[#6B7280] mt-1">Ưu tiên: Nhà bán hàng (35)</p>
- </div>
- <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-sm">
- <p className="text-[10px] text-[#6B7280] font-bold uppercase tracking-widest mb-1">Doanh thu hoa hồng (Margin)</p>
- <div className="text-2xl font-bold text-[#10B981]">{formatCurrency(845000000)}</div>
- <p className="text-[10px] text-[#6B7280] mt-1">Tháng: 03/2024</p>
- </div>
- </DraggableGrid>
+      {/* Metric Cards */}
+      <DraggableGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" columns={4} gap={16}>
+        <div className="p-5 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-md shadow-xs hover:shadow-md transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Số Dư Ký Quỹ Escrow</span>
+            <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-slate-900 tracking-tight">{formatCurrency(15450000000)}</div>
+          <div className="mt-2 flex items-center gap-1 text-xs text-emerald-600 font-semibold">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>Tài khoản Escrow chuẩn định danh</span>
+          </div>
+        </div>
 
- <div className="bg-white rounded-lg border border-slate-300 shadow-sm overflow-hidden">
- <div className="flex border-b border-[#F3F4F6]">
- {[
- { id: 'settlement', label: 'Đối soát Nhà bán (Seller)', icon: RefreshCcw },
- { id: 'cod', label: 'Đối soát COD (Vận chuyển)', icon: Truck },
- { id: 'withdrawal', label: 'Yêu cầu Rút tiền', icon: Wallet },
- { id: 'einvoice', label: 'Hóa đơn Điện tử (e-Invoice)', icon: FileText }
- ].map((tab) => (
- <button 
- key={tab.id}
- onClick={() => setActiveTab(tab.id as any)}
- className={cn(
- "px-6 py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
- activeTab === tab.id ? "border-[#2563EB] text-[#2563EB] bg-slate-100/30" : "border-transparent text-[#6B7280] hover:text-[#111827]"
- )}
- >
- <tab.icon className="w-4 h-4" /> {tab.label}
- </button>
- ))}
- </div>
+        <div className="p-5 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-md shadow-xs hover:shadow-md transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Đang Chờ Giải Ngân</span>
+            <div className="p-2 bg-purple-50 text-purple-600 rounded-xl">
+              <Wallet className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-purple-600 tracking-tight">{formatCurrency(2450000000)}</div>
+          <p className="mt-2 text-xs text-slate-500 font-medium">Tự động chuyển khoản sau T+3</p>
+        </div>
+
+        <div className="p-5 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-md shadow-xs hover:shadow-md transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Lệnh Rút Chờ Duyệt</span>
+            <div className="p-2 bg-amber-50 text-amber-600 rounded-xl">
+              <RefreshCcw className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-amber-600 tracking-tight">42 lệnh</div>
+          <p className="mt-2 text-xs text-slate-500 font-medium">Ưu tiên xử lý: 35 nhà bán lớn</p>
+        </div>
+
+        <div className="p-5 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-md shadow-xs hover:shadow-md transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Doanh Thu Hoa Hồng (Margin)</span>
+            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+              <Receipt className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-emerald-600 tracking-tight">{formatCurrency(845000000)}</div>
+          <p className="mt-2 text-xs text-slate-500 font-medium">Kỳ quyết toán tháng 03/2026</p>
+        </div>
+      </DraggableGrid>
+
+      <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="p-3 bg-slate-50/70 border-b border-slate-200/80 flex flex-wrap gap-2">
+          {[
+            { id: 'settlement', label: 'Đối Soát Nhà Bán (Seller Payout)', icon: RefreshCcw },
+            { id: 'cod', label: 'Đối Soát COD Đối Tác 3PL', icon: Truck },
+            { id: 'withdrawal', label: 'Lệnh Rút Tiền Về Ngân Hàng', icon: Wallet },
+            { id: 'einvoice', label: 'Hóa Đơn Điện Tử VComm Invoice', icon: FileText }
+          ].map((tab) => (
+            <button 
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={cn(
+                "px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer",
+                activeTab === tab.id
+                  ? "bg-blue-600 text-white shadow-sm shadow-blue-500/25"
+                  : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200/80 hover:bg-slate-100/50"
+              )}
+            >
+              <tab.icon className="w-3.5 h-3.5" /> {tab.label}
+            </button>
+          ))}
+        </div>
 
  <div className="p-4 bg-[#F9FAFB] border-b border-[#F3F4F6] flex justify-between items-center bg-[#F9FAFB]">
  <div className="flex gap-4">

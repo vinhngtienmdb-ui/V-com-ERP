@@ -22,6 +22,7 @@ import {
  Zap,
  Printer,
  ChevronRight,
+ ChevronLeft,
  Layout,
  AlertTriangle,
  Trash2,
@@ -31,7 +32,14 @@ import {
  Scale,
  BookOpen,
  Loader2,
- Calculator
+ Calculator,
+ ArrowLeft,
+ Calendar,
+ CreditCard,
+ Users,
+ Check,
+ Paperclip,
+ Building
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -50,12 +58,116 @@ const INITIAL_REQUESTS = [
 ];
 
 const INITIAL_FORM_CONFIGS = [
- { id: 'F01', name: 'Đơn xin nghỉ phép', category: 'Hành chính', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: '' }, { id: 2, ruleType: 'specific', sla: '48h', specificUser: 'Giám đốc Nhân sự' }], fields: [{id: 'f1', label: 'Từ ngày', type: 'date', required: true}, {id: 'f2', label: 'Đến ngày', type: 'date', required: true}, {id: 'f3', label: 'Loại phép', type: 'select', options: ['Phép năm', 'Phép không lương', 'Nghỉ ốm'], required: true}] },
- { id: 'F02', name: 'Đăng ký OT', category: 'Hành chính', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: '' }], fields: [{id: 'f1', label: 'Ngày OT', type: 'date', required: true}, {id: 'f2', label: 'Số giờ', type: 'number', required: true}] },
- { id: 'F03', name: 'Tạm ứng', category: 'Tài chính', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: '' }, { id: 2, ruleType: 'specific', sla: '48h', specificUser: 'Kế toán trưởng' }], fields: [{id: 'f1', label: 'Số tiền (VNĐ)', type: 'number', required: true}, {id: 'f2', label: 'Thông tin tài khoản nhận', type: 'text', required: true}] },
- { id: 'F04', name: 'Thanh toán', category: 'Tài chính', isActive: true, workflow: [{ id: 1, ruleType: 'specific', sla: '48h', specificUser: 'Kế toán trưởng' }], fields: [{id: 'f1', label: 'Số tiền (VNĐ)', type: 'number', required: true}, {id: 'f2', label: 'Thông tin tài khoản nhận', type: 'text', required: true}] },
- { id: 'F05', name: 'Mua sắm', category: 'Khác', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: '' }], fields: [{id: 'f1', label: 'Danh sách mặt hàng', type: 'textarea', required: true}, {id: 'f2', label: 'Kinh phí dự kiến (VNĐ)', type: 'number', required: true}] },
- { id: 'F06', name: 'Tuyển dụng', category: 'Khác', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: '' }, { id: 2, ruleType: 'specific', sla: '48h', specificUser: 'Giám đốc Nhân sự' }], fields: [{id: 'f1', label: 'Vị trí cần tuyển', type: 'text', required: true}, {id: 'f2', label: 'Số lượng', type: 'number', required: true}, {id: 'f3', label: 'Hạn chót cần offer', type: 'date', required: true}] },
+  { id: 'F01', name: 'Đơn xin nghỉ phép', category: 'Hành chính', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: 'Quản lý trực tiếp' }, { id: 2, ruleType: 'specific', sla: '48h', specificUser: 'Giám đốc Nhân sự' }], fields: [{id: 'f1', label: 'Từ ngày', type: 'date', required: true}, {id: 'f2', label: 'Đến ngày', type: 'date', required: true}, {id: 'f3', label: 'Loại phép', type: 'select', options: ['Phép năm (Hưởng lương)', 'Nghỉ ốm đau', 'Việc riêng có lương', 'Việc riêng không lương', 'Nghỉ thai sản'], required: true}] },
+  { id: 'F02', name: 'Đăng ký làm thêm giờ (OT)', category: 'Hành chính', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: 'Quản lý trực tiếp' }], fields: [{id: 'f1', label: 'Ngày làm thêm', type: 'date', required: true}, {id: 'f2', label: 'Số giờ', type: 'number', required: true}] },
+  { id: 'F03', name: 'Đề nghị tạm ứng', category: 'Tài chính', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: 'Quản lý trực tiếp' }, { id: 2, ruleType: 'specific', sla: '48h', specificUser: 'Kế toán trưởng' }], fields: [{id: 'f1', label: 'Số tiền (VNĐ)', type: 'number', required: true}, {id: 'f2', label: 'Thông tin tài khoản nhận', type: 'text', required: true}] },
+  { id: 'F04', name: 'Đề nghị thanh toán', category: 'Tài chính', isActive: true, workflow: [{ id: 1, ruleType: 'specific', sla: '48h', specificUser: 'Kế toán trưởng' }, { id: 2, ruleType: 'specific', sla: '48h', specificUser: 'Giám đốc Điều hành (CEO)' }], fields: [{id: 'f1', label: 'Số tiền (VNĐ)', type: 'number', required: true}, {id: 'f2', label: 'Thông tin tài khoản nhận', type: 'text', required: true}] },
+  { id: 'F05', name: 'Đề xuất mua sắm', category: 'Khác', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: 'Quản lý trực tiếp' }], fields: [{id: 'f1', label: 'Danh sách mặt hàng', type: 'textarea', required: true}, {id: 'f2', label: 'Kinh phí dự kiến (VNĐ)', type: 'number', required: true}] },
+  { id: 'F06', name: 'Đề xuất tuyển dụng', category: 'Khác', isActive: true, workflow: [{ id: 1, ruleType: 'system', sla: '24h', specificUser: 'Quản lý trực tiếp' }, { id: 2, ruleType: 'specific', sla: '48h', specificUser: 'Giám đốc Nhân sự' }], fields: [{id: 'f1', label: 'Vị trí cần tuyển', type: 'text', required: true}, {id: 'f2', label: 'Số lượng', type: 'number', required: true}, {id: 'f3', label: 'Hạn chót cần offer', type: 'date', required: true}] },
+];
+
+const REQUEST_PRESETS = [
+  {
+    id: 'leave',
+    name: 'Đơn xin nghỉ phép',
+    category: 'Hành chính',
+    icon: Calendar,
+    color: 'from-blue-500 to-indigo-600',
+    bgColor: 'bg-blue-50',
+    textColor: 'text-blue-700',
+    borderColor: 'border-blue-200',
+    desc: 'Nghỉ phép năm, ốm đau, thai sản, việc riêng có/không lương',
+    defaultTitle: 'Đơn xin nghỉ phép năm',
+    reviewers: [
+      { step: 1, reviewer: 'Quản lý trực tiếp' },
+      { step: 2, reviewer: 'Giám đốc Nhân sự' }
+    ],
+    defaultData: { leaveType: 'Phép năm (Hưởng lương)', startDate: '', endDate: '', days: 1, handoverTo: '', reason: '' }
+  },
+  {
+    id: 'ot',
+    name: 'Đăng ký làm thêm giờ (OT)',
+    category: 'Hành chính',
+    icon: Clock,
+    color: 'from-amber-500 to-orange-600',
+    bgColor: 'bg-amber-50',
+    textColor: 'text-amber-700',
+    borderColor: 'border-amber-200',
+    desc: 'Làm thêm ca tối, làm thêm cuối tuần hoặc các dịp sự kiện cao điểm',
+    defaultTitle: 'Đăng ký làm thêm giờ (OT) dự án',
+    reviewers: [
+      { step: 1, reviewer: 'Quản lý trực tiếp' }
+    ],
+    defaultData: { otDate: '', startTime: '18:00', endTime: '21:00', totalHours: 3, project: 'Dự án VComm ERP', reason: '' }
+  },
+  {
+    id: 'advance',
+    name: 'Đề nghị tạm ứng',
+    category: 'Tài chính',
+    icon: DollarSign,
+    color: 'from-emerald-500 to-teal-600',
+    bgColor: 'bg-emerald-50',
+    textColor: 'text-emerald-700',
+    borderColor: 'border-emerald-200',
+    desc: 'Tạm ứng công tác phí, chi phí triển khai dự án, tiếp khách',
+    defaultTitle: 'Đề nghị tạm ứng công tác phí',
+    reviewers: [
+      { step: 1, reviewer: 'Quản lý trực tiếp' },
+      { step: 2, reviewer: 'Kế toán trưởng' }
+    ],
+    defaultData: { amount: '', amountWords: '', deadline: '', bankAccount: '', bankName: '', reason: '' }
+  },
+  {
+    id: 'payment',
+    name: 'Đề nghị thanh toán',
+    category: 'Tài chính',
+    icon: CreditCard,
+    color: 'from-purple-500 to-pink-600',
+    bgColor: 'bg-purple-50',
+    textColor: 'text-purple-700',
+    borderColor: 'border-purple-200',
+    desc: 'Thanh toán chi phí hóa đơn NCC, quyết toán hợp đồng dịch vụ',
+    defaultTitle: 'Đề nghị thanh toán chi phí đối tác',
+    reviewers: [
+      { step: 1, reviewer: 'Kế toán trưởng' },
+      { step: 2, reviewer: 'Giám đốc Điều hành (CEO)' }
+    ],
+    defaultData: { amount: '', beneficiary: '', invoiceNo: '', bankAccount: '', bankName: '', reason: '' }
+  },
+  {
+    id: 'procure',
+    name: 'Đề xuất mua sắm',
+    category: 'Khác',
+    icon: Briefcase,
+    color: 'from-cyan-500 to-blue-600',
+    bgColor: 'bg-cyan-50',
+    textColor: 'text-cyan-700',
+    borderColor: 'border-cyan-200',
+    desc: 'Trang bị máy tính, trang thiết bị văn phòng, công cụ phần mềm',
+    defaultTitle: 'Đề xuất mua sắm trang thiết bị làm việc',
+    reviewers: [
+      { step: 1, reviewer: 'Quản lý trực tiếp' },
+      { step: 2, reviewer: 'Kế toán trưởng' }
+    ],
+    defaultData: { items: '', estimatedCost: '', department: 'Khối Vận hành', reason: '' }
+  },
+  {
+    id: 'recruit',
+    name: 'Đề xuất tuyển dụng',
+    category: 'Khác',
+    icon: Users,
+    color: 'from-rose-500 to-pink-600',
+    bgColor: 'bg-rose-50',
+    textColor: 'text-rose-700',
+    borderColor: 'border-rose-200',
+    desc: 'Bổ sung định biên nhân sự mới, tuyển dụng chuyên viên phòng ban',
+    defaultTitle: 'Đề xuất tuyển dụng nhân sự mới',
+    reviewers: [
+      { step: 1, reviewer: 'Quản lý trực tiếp' },
+      { step: 2, reviewer: 'Giám đốc Nhân sự' }
+    ],
+    defaultData: { position: '', quantity: 1, salaryRange: '', deadline: '', reason: '' }
+  }
 ];
 
 export function RequestHub() {
@@ -363,20 +475,67 @@ export function RequestHub() {
  stepName: `Duyệt cấp ${currentLevel}`
  }]
  };
- } else {
- // Final approval
- return { 
- ...req, 
- status: 'approved',
- approvalLog: [...approvalLog, { 
- level: currentLevel, 
- status: 'approved', 
- by: user?.displayName || 'Director', 
- time: new Date().toLocaleString('vi-VN'),
- stepName: 'Duyệt cấp cuối'
- }]
- };
- }
+   } else {
+  // Final approval - Cross-App Automation
+  const autoAmount = (req as any).amount || 15000000;
+  
+  // 1. Cross-App: Auto Finance Journal Entry for Tạm ứng / Thanh toán / Mua sắm
+  if (req.type === 'finance' || req.subtype === 'Tạm ứng' || req.subtype === 'Thanh toán') {
+    try {
+      addDoc(collection(db, 'finance_transactions'), {
+        type: 'expense',
+        amount: autoAmount,
+        category: `Chi ${req.subtype}`,
+        description: `[Tự động từ Tờ trình #${req.id}] ${req.title} - Người nhận: ${req.requester}`,
+        debitAccount: req.subtype === 'Tạm ứng' ? '1411' : '3311',
+        creditAccount: '1121',
+        date: serverTimestamp(),
+        source: 'requesthub_cross_app',
+        voucherRef: req.id
+      }).catch(e => console.error('Cross-App Finance err:', e));
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // 2. Cross-App: Archive approved document to DocHub RBAC
+  try {
+    addDoc(collection(db, 'vcomm_documents'), {
+      title: `Tờ trình đã duyệt: ${req.title} (#${req.id})`,
+      category: 'legal',
+      folderId: 'FLD-LEGAL',
+      version: '1.0',
+      status: 'effective',
+      fileSize: '240 KB',
+      author: req.requester,
+      signStatus: 'hsm_signed',
+      metadata: { reqId: req.id, type: req.subtype },
+      createdAt: serverTimestamp()
+    }).catch(e => console.error('Cross-App DocHub err:', e));
+  } catch (e) {
+    console.error(e);
+  }
+
+  if (addNotification) {
+    addNotification(
+      'Cross-App Automation Đã Kích Hoạt ⚡',
+      `Tờ trình #${req.id} (${req.subtype}) duyệt thành công -> Đã tự động sinh Bút toán Kế toán và Lưu trữ DocHub!`
+    );
+  }
+
+  return { 
+  ...req, 
+  status: 'approved',
+  isCrossAppAutomated: true,
+  approvalLog: [...approvalLog, { 
+  level: currentLevel, 
+  status: 'approved', 
+  by: user?.displayName || 'Director', 
+  time: new Date().toLocaleString('vi-VN'),
+  stepName: 'Duyệt cấp cuối (Auto-Finance & DocHub)'
+  }]
+  };
+  }
  } else if (newStatus === 'rejected') {
  return {
  ...req,
@@ -452,13 +611,26 @@ export function RequestHub() {
 
  // Create Request Modal State
  const [showAddModal, setShowAddModal] = useState(false);
+ const [selectedPresetCategory, setSelectedPresetCategory] = useState('all');
  const [newRequest, setNewRequest] = useState<any>({ 
- subtype: 'Đơn xin nghỉ phép', 
- title: '', 
- requester: 'Tôi (Người đang đăng nhập)', 
- formData: {},
- isUrgent: false,
- customReviewers: [{ step: 1, reviewer: 'Quản lý trực tiếp' }]
+   subtype: 'Đơn xin nghỉ phép', 
+   title: 'Đơn xin nghỉ phép năm', 
+   requester: 'Tôi (Người đang đăng nhập)', 
+   department: 'Khối Vận hành',
+   formData: {
+     leaveType: 'Phép năm (Hưởng lương)',
+     startDate: new Date().toISOString().split('T')[0],
+     endDate: new Date().toISOString().split('T')[0],
+     days: 1,
+     handoverTo: '',
+     reason: ''
+   },
+   isUrgent: false,
+   signatureMethod: 'token',
+   customReviewers: [
+     { step: 1, reviewer: 'Quản lý trực tiếp' },
+     { step: 2, reviewer: 'Giám đốc Nhân sự' }
+   ]
  });
 
  const handleAddRequest = () => {
@@ -539,9 +711,11 @@ export function RequestHub() {
   const rect = canvas.getBoundingClientRect();
   const clientX = 'touches' in e ? (e.touches[0] ? e.touches[0].clientX : e.changedTouches[0].clientX) : e.clientX;
   const clientY = 'touches' in e ? (e.touches[0] ? e.touches[0].clientY : e.changedTouches[0].clientY) : e.clientY;
+  const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
+  const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
   return {
-   x: clientX - rect.left,
-   y: clientY - rect.top
+   x: (clientX - rect.left) * scaleX,
+   y: (clientY - rect.top) * scaleY
   };
  };
 
@@ -699,79 +873,186 @@ export function RequestHub() {
     }
   };
  return (
- <div className="space-y-4 animate-in fade-in slide-in- duration-500 pb-4">
- <div className="flex items-center justify-between">
- <div className="header-title border-l-4 border-primary-600 pl-4 py-1">
- <h1 className="text-3xl font-bold text-slate-900 tracking-tight leading-tight">Đề xuất, Phê duyệt & Ký số <span className="text-primary-600">E-Form</span></h1>
- <p className="text-xs font-bold text-slate-600 mt-2 uppercase tracking-widest">Hành chính • Tài chính • Nhân sự • Quy trình số</p>
- </div>
- <div className="flex gap-3">
- <button 
- onClick={() => navigate('/signature')}
- className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-all shadow-sm flex items-center gap-2"
- >
- <FileSignature className="w-4 h-4" />
- Trung tâm Ký số
- </button>
- <button 
- onClick={() => {
-   setTemplateAction('submit_request');
-   setShowTemplateGallery(true);
- }}
- className="bg-[#111827] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2">
- <Plus className="w-4 h-4" />
- Tạo đề xuất
- </button>
- </div>
- </div>
+  <div className="space-y-6 animate-in fade-in duration-300 pb-8 font-sans text-xs">
+    {/* Top Glassmorphism Navigation Bar */}
+    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-5 rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/80 shadow-xl shadow-slate-200/40">
+      <div className="flex items-center gap-4">
+        <button 
+          onClick={() => navigate('/')}
+          className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 border border-amber-300/60 text-xs font-black transition-all shadow-2xs cursor-pointer active:scale-95 shrink-0"
+          title="Quay lại Launcher chính (/)"
+        >
+          <ChevronLeft className="w-4 h-4 text-amber-700" />
+          <span>Launcher</span>
+        </button>
 
- <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
- <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> Cần tôi duyệt</h3>
- <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'pending').length}</p>
- </div>
- <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><Send className="w-4 h-4 text-blue-600" /> Tôi gửi đi</h3>
- <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.requester === 'Tôi (Người đang đăng nhập)').length}</p>
- </div>
- <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Đã duyệt (Tháng)</h3>
- <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved').length}</p>
- </div>
- <div className="bg-white border border-slate-300 p-6 rounded-lg shadow-sm">
- <h3 className="text-[13px] font-bold text-slate-900 mb-1 flex items-center gap-2"><FileSignature className="w-4 h-4 text-purple-500" /> Chờ ký số</h3>
- <p className="text-xl font-bold text-slate-900 mt-2">{requests.filter(r => r.status === 'approved' && r.signatureStatus !== 'signed').length}</p>
- </div>
- </div>
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Cổng Xét Duyệt & Ký Số Điện Tử
+            </h1>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-emerald-500" /> Apple Glass UI
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 font-medium mt-0.5">
+            Hệ thống xử lý tờ trình, phiếu tạm ứng, thanh toán chi phí & ký duyệt số Cloud HSM đa cấp
+          </p>
+        </div>
+      </div>
 
- <div className="flex gap-6">
- {/* Sidebar */}
- <div className="w-[240px] shrink-0 space-y-1">
- {[
- { id: 'all', label: 'Tất cả Đề xuất', icon: Inbox },
- { id: 'admin', label: 'Hành chính (Nghỉ phép, OT)', icon: Coffee },
- { id: 'finance', label: 'Tài chính (Tạm ứng, TT)', icon: DollarSign },
- { id: 'other', label: 'Khác (VPP, Tuyển dụng)', icon: UserPlus },
- { id: 'settings', label: 'Cấu hình Form Đề xuất', icon: Settings },
- ].map(tab => (
- <button
- key={tab.id}
- onClick={() => setActiveTab(tab.id)}
- className={cn(
- "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all text-left",
- activeTab === tab.id 
- ? "bg-emerald-50 text-emerald-700 font-bold" 
- : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
- )}
- >
- <tab.icon className="w-4 h-4" />
- {tab.label}
- </button>
- ))}
- </div>
+      {/* Right Quick Navigations & Action Center */}
+      <div className="flex items-center gap-2.5 flex-wrap">
+        <button 
+          onClick={() => navigate('/workspace')}
+          className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-all shadow-2xs cursor-pointer"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Về Bàn làm việc</span>
+        </button>
+        <button 
+          onClick={() => navigate('/signature')}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-black shadow-lg shadow-purple-500/25 transition-all cursor-pointer"
+        >
+          <FileSignature className="w-3.5 h-3.5" />
+          <span>Trung Tâm Ký Số</span>
+        </button>
+        <button 
+          onClick={() => {
+            setShowAddModal(true);
+          }}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-black shadow-lg shadow-emerald-500/25 transition-all cursor-pointer active:scale-95"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Tạo Đề Xuất Mới</span>
+        </button>
+      </div>
+    </div>
 
- {/* Content */}
- <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+    {/* Approval Pulse Bar: 4 Live Core Metrics */}
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+      <div 
+        onClick={() => { setStatusFilter('pending'); setActiveTab('all'); }}
+        className="p-4 rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/80 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer group"
+      >
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[11px] font-bold text-slate-500">Cần Tôi Duyệt</span>
+          <div className="p-2 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+            <Clock className="w-4 h-4" />
+          </div>
+        </div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-black text-amber-600">
+            {requests.filter(r => r.status === 'pending').length}
+          </span>
+          <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-md">
+            Chờ xử lý
+          </span>
+        </div>
+        <p className="text-[10px] text-slate-400 mt-1 line-clamp-1">Phiếu cần thẩm quyền xác nhận</p>
+      </div>
+
+      <div 
+        onClick={() => { setRequesterFilter('Tôi (Người đang đăng nhập)'); setActiveTab('all'); }}
+        className="p-4 rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/80 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer group"
+      >
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[11px] font-bold text-slate-500">Tôi Gửi Đi</span>
+          <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+            <Send className="w-4 h-4" />
+          </div>
+        </div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-black text-slate-900">
+            {requests.filter(r => r.requester === 'Tôi (Người đang đăng nhập)').length}
+          </span>
+          <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded-md">
+            Đang theo dõi
+          </span>
+        </div>
+        <p className="text-[10px] text-slate-400 mt-1 line-clamp-1">Các đề xuất của cá nhân tôi</p>
+      </div>
+
+      <div 
+        onClick={() => { setStatusFilter('approved'); setActiveTab('all'); }}
+        className="p-4 rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/80 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer group"
+      >
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[11px] font-bold text-slate-500">Đã Duyệt (Tháng)</span>
+          <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+            <CheckCircle2 className="w-4 h-4" />
+          </div>
+        </div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-black text-emerald-600">
+            {requests.filter(r => r.status === 'approved').length}
+          </span>
+          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md">
+            Hoàn tất 100%
+          </span>
+        </div>
+        <p className="text-[10px] text-slate-400 mt-1 line-clamp-1">Đã thông qua & ghi sổ kế toán</p>
+      </div>
+
+      <div 
+        onClick={() => navigate('/signature')}
+        className="p-4 rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/80 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer group"
+      >
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[11px] font-bold text-slate-500">Chờ Ký Số HSM</span>
+          <div className="p-2 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+            <FileSignature className="w-4 h-4" />
+          </div>
+        </div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-black text-purple-600">
+            {requests.filter(r => r.status === 'approved' && r.signatureStatus !== 'signed').length}
+          </span>
+          <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded-md">
+            Cloud HSM
+          </span>
+        </div>
+        <p className="text-[10px] text-slate-400 mt-1 line-clamp-1">Chờ gắn chứng thư & mộc TSA</p>
+      </div>
+    </div>
+
+    {/* Modern Sub-Tab Pill Bar */}
+    <div className="flex items-center gap-1.5 p-1.5 rounded-3xl bg-white/70 backdrop-blur-xl border border-white/80 shadow-sm overflow-x-auto text-xs font-bold">
+      {[
+        { id: 'all', label: 'Tất Cả Đề Xuất', icon: Inbox, count: requests.length },
+        { id: 'admin', label: 'Hành Chính (Nghỉ Phép, OT)', icon: Coffee, count: requests.filter(r => r.type === 'admin').length },
+        { id: 'finance', label: 'Tài Chính (Tạm Ứng, Chi Phí)', icon: DollarSign, count: requests.filter(r => r.type === 'finance').length },
+        { id: 'other', label: 'Khác (Mua Sắm, Tuyển Dụng)', icon: UserPlus, count: requests.filter(r => r.type === 'other').length },
+        { id: 'settings', label: 'Cấu Hình Mẫu Phiếu E-Form', icon: Settings, count: formConfigs.length },
+      ].map(tab => {
+        const Icon = tab.icon;
+        return (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 rounded-2xl transition-all cursor-pointer shrink-0",
+              activeTab === tab.id
+                ? "bg-slate-900 text-white shadow-sm"
+                : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
+            )}
+          >
+            <Icon className={cn("w-3.5 h-3.5", activeTab === tab.id ? "text-emerald-400" : "text-slate-400")} />
+            <span>{tab.label}</span>
+            <span className={cn(
+              "px-1.5 py-0.2 rounded-full text-[10px] font-bold ml-0.5",
+              activeTab === tab.id ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"
+            )}>
+              {tab.count}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+
+    <div className="w-full">
+      {/* Content */}
+      <div className="bg-white/80 backdrop-blur-2xl border border-white/80 rounded-3xl shadow-xl shadow-slate-200/40 overflow-hidden flex flex-col">
  {activeTab !== 'settings' ? (
  <>
  <div className="p-4 border-b border-slate-200 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-50/80">
@@ -1158,216 +1439,747 @@ export function RequestHub() {
  </div>
  </div>
 
- {showAddModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowAddModal(false)}>
- <div className="bg-white rounded-xl shadow-sm w-full max-w-md overflow-hidden flex flex-col animate-in fade-in zoom-in-95" onClick={(e) => e.stopPropagation()}>
- <div className="px-4 py-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
- <h3 className="text-lg font-bold text-slate-900">Tạo đề xuất mới</h3>
- <button onClick={() => setShowAddModal(false)} className="p-2 text-slate-500 hover:text-slate-700 rounded-full hover:bg-slate-200 transition-colors">
- <X className="w-5 h-5" />
- </button>
- </div>
- <div className="p-6 space-y-4">
- <div>
- <label className="block text-[13px] font-bold text-slate-800 mb-2">Loại đề xuất</label>
- <select 
- value={newRequest.subtype}
- onChange={(e) => setNewRequest({...newRequest, subtype: e.target.value, formData: {} })}
- className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
- >
- {Array.from(new Set(formConfigs.map(c => c.category))).map(cat => (
- <optgroup key={cat} label={cat}>
- {formConfigs.filter(c => c.category === cat).map(c => (
- <option key={c.id} value={c.name}>{c.name}</option>
- ))}
- </optgroup>
- ))}
- </select>
- </div>
- <div>
- <label className="block text-[13px] font-bold text-slate-800 mb-2">Lý do / Nội dung chung</label>
- <textarea 
- value={newRequest.title}
- onChange={(e) => setNewRequest({...newRequest, title: e.target.value})}
- className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium min-h-[80px]"
- placeholder="Ví dụ: Nghỉ phép 2 ngày đi du lịch gia đình..."
- />
- </div>
+  {showAddModal && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-in fade-in" onClick={() => setShowAddModal(false)}>
+      <div 
+        className="w-full max-w-5xl bg-white/95 backdrop-blur-2xl rounded-3xl border border-white/80 shadow-2xl flex flex-col max-h-[92vh] overflow-hidden animate-in zoom-in-95 duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Apple Glassmorphism Header */}
+        <div className="px-6 py-4 border-b border-slate-200/80 bg-slate-50/80 backdrop-blur-md flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/20">
+              <FileSignature className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">Khởi Tạo Đề Xuất & Tờ Trình e-Office</h3>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  Chuẩn ISO 9001
+                </span>
+                <span className="hidden sm:inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  Apple Glass UI
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 font-medium">
+                Chọn biểu mẫu chuẩn hóa, điền thông tin và ký xác nhận luân chuyển tự động
+              </p>
+            </div>
+          </div>
+          <button 
+            onClick={() => setShowAddModal(false)}
+            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
- {/* Dynamic Fields */}
- <div className="pt-2 border-t border-slate-200 mt-2">
- <div className="grid grid-cols-2 gap-4">
- {formConfigs.find(c => c.name === newRequest.subtype)?.fields?.map(field => (
- <div key={field.id} className={cn(field.type === 'textarea' ? "col-span-2" : "")}>
- <label className="block text-xs font-bold text-slate-800 mb-1">
- {field.label} {field.required && <span className="text-red-500">*</span>}
- </label>
- {field.type === 'textarea' ? (
- <textarea 
- className="w-full border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
- required={field.required}
- value={newRequest.formData[field.id] || ''}
- onChange={(e) => setNewRequest({...newRequest, formData: {...newRequest.formData, [field.id]: e.target.value}})}
- />
- ) : field.type === 'select' ? (
- <select
- className="w-full border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
- required={field.required}
- value={newRequest.formData[field.id] || ''}
- onChange={(e) => setNewRequest({...newRequest, formData: {...newRequest.formData, [field.id]: e.target.value}})}
- >
- <option value="">-- Chọn --</option>
- {field.options?.map((opt: string) => <option key={opt} value={opt}>{opt}</option>)}
- </select>
- ) : (
- <input 
- type={field.type} 
- className="w-full border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
- required={field.required}
- value={newRequest.formData[field.id] || ''}
- onChange={(e) => setNewRequest({...newRequest, formData: {...newRequest.formData, [field.id]: e.target.value}})}
- />
- )}
- </div>
- ))}
- </div>
- </div>
- </div>
-  {/* Workflow Enhancements in Modal */}
-  <div className="pt-6 border-t border-slate-200 mt-4">
-  <h4 className="text-[13px] font-bold text-slate-900 mb-4 flex items-center gap-2">
-  <UserPlus className="w-4 h-4 text-emerald-600" />
-  Tùy chỉnh luồng xử lý
-  </h4>
-  <div className="space-y-4">
-  <label className="flex items-center gap-3 p-3 bg-rose-50/50 border border-rose-100 rounded-lg cursor-pointer hover:bg-rose-50 transition-colors">
-  <input 
-  type="checkbox"
-  checked={newRequest.isUrgent}
-  onChange={(e) => setNewRequest({...newRequest, isUrgent: e.target.checked})}
-  className="w-4 h-4 text-rose-600 rounded border-slate-400 focus:ring-rose-500"
-  />
-  <div className="flex gap-2 items-center">
-  <AlertTriangle className="w-4 h-4 text-rose-500" />
-  <div>
-  <p className="text-[13px] font-bold text-rose-900">Yêu cầu xử lý khẩn cấp</p>
-  <p className="text-xs text-rose-600/80">Bỏ qua SLA rườm rà, thông báo ưu tiên trực tiếp tới người phê duyệt.</p>
-  </div>
-  </div>
-  </label>
+        {/* Modal Body - Scrollable */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {/* Section 1: Template Selection Pills & Grid */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                1. Chọn Mẫu Đề Xuất / Tờ Trình Chuẩn Hóa
+              </label>
+              
+              {/* Category Filter Buttons */}
+              <div className="flex items-center gap-1 bg-slate-100/90 p-1 rounded-2xl border border-slate-200/80 text-[11px] font-bold">
+                {['all', 'Hành chính', 'Tài chính', 'Khác'].map(cat => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setSelectedPresetCategory(cat)}
+                    className={cn(
+                      "px-3 py-1 rounded-xl transition-all cursor-pointer",
+                      selectedPresetCategory === cat 
+                        ? "bg-white text-slate-900 shadow-xs" 
+                        : "text-slate-500 hover:text-slate-800"
+                    )}
+                  >
+                    {cat === 'all' ? 'Tất Cả Mẫu' : cat}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-  <div className="bg-slate-50 rounded-2xl border border-slate-300 overflow-hidden">
-  <div className="px-4 py-3 border-b border-slate-300 bg-white flex justify-between items-center">
-  <p className="text-[13px] font-bold text-slate-800">Người phê duyệt từng bước</p>
-  <button 
-  type="button" 
-  onClick={() => setNewRequest({...newRequest, customReviewers: [...(newRequest.customReviewers||[]), { step: (newRequest.customReviewers?.length || 0) + 1, reviewer: '' }]})}
-  className="text-xs font-bold text-emerald-600 hover:text-emerald-800 flex items-center gap-1"
-  >
-  <Plus className="w-3 h-3" /> Thêm bước
-  </button>
-  </div>
-  <div className="p-4 space-y-3">
-  {(newRequest.customReviewers || []).map((reviewer: any, index: number) => (
-  <div key={index} className="flex items-center gap-3">
-  <div className="w-16 shrink-0 text-xs font-bold text-slate-600 uppercase tracking-widest">
-  Bước {reviewer.step}
-  </div>
-  <select 
-  value={reviewer.reviewer}
-  onChange={(e) => {
-  const newRef = [...(newRequest.customReviewers||[])];
-  newRef[index].reviewer = e.target.value;
-  setNewRequest({...newRequest, customReviewers: newRef});
-  }}
-  className="flex-1 border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-  required
-  >
-  <option value="">-- Chọn người phê duyệt --</option>
-  <option value="Quản lý trực tiếp">Quản lý trực tiếp</option>
-  <option value="Giám đốc Nhân sự">Giám đốc Nhân sự</option>
-  <option value="Kế toán trưởng">Kế toán trưởng</option>
-  <option value="Giám đốc Điều hành">Giám đốc Điều hành (CEO)</option>
-  <option value="Nguyễn Văn A (IT)">Nguyễn Văn A (IT)</option>
-  </select>
-  {(newRequest.customReviewers || []).length > 1 && (
-  <button 
-  type="button"
-  onClick={() => {
-  const newRef = [...(newRequest.customReviewers||[])];
-  newRef.splice(index, 1);
-  newRef.forEach((r, idx) => r.step = idx + 1);
-  setNewRequest({...newRequest, customReviewers: newRef});
-  }}
-  className="p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
-  >
-  <Trash2 className="w-4 h-4" />
-  </button>
+            {/* Template Cards Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+              {REQUEST_PRESETS
+                .filter(p => selectedPresetCategory === 'all' || p.category === selectedPresetCategory)
+                .map((preset) => {
+                  const isSelected = newRequest.subtype === preset.name;
+                  const Icon = preset.icon;
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => {
+                        setNewRequest({
+                          ...newRequest,
+                          subtype: preset.name,
+                          title: preset.defaultTitle,
+                          customReviewers: preset.reviewers,
+                          formData: { ...preset.defaultData }
+                        });
+                      }}
+                      className={cn(
+                        "p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between group relative overflow-hidden",
+                        isSelected
+                          ? "bg-emerald-50/70 border-emerald-400 ring-2 ring-emerald-500/20 shadow-md shadow-emerald-500/10"
+                          : "bg-white/80 hover:bg-slate-50 border-slate-200/80 hover:border-slate-300 shadow-2xs"
+                      )}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className={cn(
+                          "w-8 h-8 rounded-xl flex items-center justify-center text-white bg-gradient-to-br shadow-xs",
+                          preset.color
+                        )}>
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        {isSelected && (
+                          <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center">
+                            <Check className="w-2.5 h-2.5 stroke-[3]" />
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <div className={cn(
+                          "font-bold text-xs tracking-tight leading-snug line-clamp-1",
+                          isSelected ? "text-emerald-950 font-black" : "text-slate-800"
+                        )}>
+                          {preset.name}
+                        </div>
+                        <p className="text-[10px] text-slate-500 mt-0.5 line-clamp-1">{preset.desc}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+            </div>
+          </div>
+
+          {/* Section 2: Two-Column Form Details */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-2 border-t border-slate-200/80">
+            {/* Left Column: Form Details (7 of 12) */}
+            <div className="lg:col-span-7 space-y-4">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-blue-600" />
+                  2. Thông Tin Chi Tiết Đề Xuất
+                </label>
+                <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
+                  {newRequest.subtype}
+                </span>
+              </div>
+
+              {/* Title Input */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Tiêu đề / Trích yếu đề xuất <span className="text-rose-500">*</span>
+                </label>
+                <input 
+                  type="text"
+                  value={newRequest.title}
+                  onChange={(e) => setNewRequest({ ...newRequest, title: e.target.value })}
+                  placeholder="Nhập trích yếu tóm lược nội dung đề xuất..."
+                  className="w-full text-xs font-semibold px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all shadow-2xs"
+                />
+              </div>
+
+              {/* Requester Info Card */}
+              <div className="p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/80 flex items-center justify-between flex-wrap gap-2 text-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-indigo-600 text-white font-black flex items-center justify-center text-xs shadow-xs">
+                    {user?.name ? user.name[0] : 'U'}
+                  </div>
+                  <div>
+                    <div className="font-bold text-slate-900">{user?.name || user?.email || 'Người dùng hiện tại'}</div>
+                    <div className="text-[11px] text-slate-500">Phòng ban: <span className="font-semibold text-slate-700">Khối Vận hành</span></div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className="px-2.5 py-1 rounded-xl bg-white border border-slate-200 font-bold text-slate-600 flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-slate-400" /> Hôm nay, {new Date().toLocaleDateString('vi-VN')}
+                  </span>
+                </div>
+              </div>
+
+              {/* Context Specific Smart Fields */}
+              <div className="p-4 rounded-2xl bg-slate-50/60 border border-slate-200/80 space-y-3.5">
+                {/* 1. NGHỈ PHÉP */}
+                {newRequest.subtype === 'Đơn xin nghỉ phép' && (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Loại phép nghỉ</label>
+                        <select
+                          value={newRequest.formData?.leaveType || 'Phép năm (Hưởng lương)'}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, leaveType: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:border-emerald-500"
+                        >
+                          <option>Phép năm (Hưởng lương)</option>
+                          <option>Nghỉ ốm đau (Hưởng BHXH)</option>
+                          <option>Việc riêng có lương (Cưới hỏi, tang lễ)</option>
+                          <option>Việc riêng không hưởng lương</option>
+                          <option>Nghỉ thai sản</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Người nhận bàn giao công việc</label>
+                        <input 
+                          type="text"
+                          placeholder="Họ tên nhân sự bàn giao..."
+                          value={newRequest.formData?.handoverTo || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, handoverTo: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Từ ngày</label>
+                        <input 
+                          type="date"
+                          value={newRequest.formData?.startDate || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, startDate: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Đến ngày</label>
+                        <input 
+                          type="date"
+                          value={newRequest.formData?.endDate || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, endDate: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Số ngày nghỉ</label>
+                        <input 
+                          type="number"
+                          min="0.5"
+                          step="0.5"
+                          value={newRequest.formData?.days || 1}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, days: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Lý do nghỉ chi tiết</label>
+                      <textarea 
+                        rows={2}
+                        placeholder="Nêu rõ lý do nghỉ phép, kế hoạch liên lạc khẩn cấp khi cần..."
+                        value={newRequest.formData?.reason || ''}
+                        onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, reason: e.target.value } })}
+                        className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:border-emerald-500 resize-none"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. ĐĂNG KÝ OT */}
+                {newRequest.subtype === 'Đăng ký làm thêm giờ (OT)' && (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Ngày làm thêm</label>
+                        <input 
+                          type="date"
+                          value={newRequest.formData?.otDate || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, otDate: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Từ giờ - Đến giờ</label>
+                        <div className="flex items-center gap-1">
+                          <input 
+                            type="time"
+                            value={newRequest.formData?.startTime || '18:00'}
+                            onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, startTime: e.target.value } })}
+                            className="w-1/2 text-xs font-semibold px-2 py-2 rounded-xl bg-white border border-slate-200"
+                          />
+                          <span className="text-slate-400">-</span>
+                          <input 
+                            type="time"
+                            value={newRequest.formData?.endTime || '21:00'}
+                            onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, endTime: e.target.value } })}
+                            className="w-1/2 text-xs font-semibold px-2 py-2 rounded-xl bg-white border border-slate-200"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Số giờ OT</label>
+                        <input 
+                          type="number"
+                          step="0.5"
+                          value={newRequest.formData?.totalHours || 3}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, totalHours: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Dự án & Nhiệm vụ cụ thể</label>
+                      <textarea 
+                        rows={2}
+                        placeholder="Nội dung công việc cần giải quyết trong ca làm thêm..."
+                        value={newRequest.formData?.reason || ''}
+                        onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, reason: e.target.value } })}
+                        className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 resize-none"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. TẠM ỨNG */}
+                {newRequest.subtype === 'Đề nghị tạm ứng' && (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Số tiền tạm ứng (VNĐ) <span className="text-rose-500">*</span></label>
+                        <input 
+                          type="number"
+                          placeholder="Ví dụ: 15000000"
+                          value={newRequest.formData?.amount || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, amount: e.target.value } })}
+                          className="w-full text-xs font-bold px-3 py-2 rounded-xl bg-white border border-slate-200 text-emerald-700 focus:outline-none focus:border-emerald-500"
+                        />
+                        {newRequest.formData?.amount && (
+                          <p className="text-[10px] text-emerald-600 font-bold mt-1">
+                            {Number(newRequest.formData.amount).toLocaleString('vi-VN')} VNĐ
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Thời hạn hoàn ứng</label>
+                        <input 
+                          type="date"
+                          value={newRequest.formData?.deadline || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, deadline: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Số tài khoản nhận</label>
+                        <input 
+                          type="text"
+                          placeholder="Số tài khoản ngân hàng..."
+                          value={newRequest.formData?.bankAccount || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, bankAccount: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Ngân hàng & Chi nhánh</label>
+                        <input 
+                          type="text"
+                          placeholder="VD: Vietcombank CN TP.HCM"
+                          value={newRequest.formData?.bankName || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, bankName: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Mục đích chi tiêu tạm ứng</label>
+                      <textarea 
+                        rows={2}
+                        placeholder="Nêu chi tiết nội dung cần chi tiêu và danh mục công tác phí..."
+                        value={newRequest.formData?.reason || ''}
+                        onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, reason: e.target.value } })}
+                        className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 resize-none"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* 4. THANH TOÁN */}
+                {newRequest.subtype === 'Đề nghị thanh toán' && (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Số tiền thanh toán (VNĐ) <span className="text-rose-500">*</span></label>
+                        <input 
+                          type="number"
+                          placeholder="Ví dụ: 45000000"
+                          value={newRequest.formData?.amount || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, amount: e.target.value } })}
+                          className="w-full text-xs font-bold px-3 py-2 rounded-xl bg-white border border-slate-200 text-purple-700 focus:outline-none focus:border-purple-500"
+                        />
+                        {newRequest.formData?.amount && (
+                          <p className="text-[10px] text-purple-600 font-bold mt-1">
+                            {Number(newRequest.formData.amount).toLocaleString('vi-VN')} VNĐ
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Đơn vị / Cá nhân thụ hưởng</label>
+                        <input 
+                          type="text"
+                          placeholder="Tên công ty hoặc người thụ hưởng..."
+                          value={newRequest.formData?.beneficiary || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, beneficiary: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Số hóa đơn VAT / Hợp đồng tham chiếu</label>
+                        <input 
+                          type="text"
+                          placeholder="VD: HĐ-2024/098 hoặc HD00129..."
+                          value={newRequest.formData?.invoiceNo || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, invoiceNo: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Tài khoản & Ngân hàng thụ hưởng</label>
+                        <input 
+                          type="text"
+                          placeholder="STK - Tên Ngân hàng..."
+                          value={newRequest.formData?.bankAccount || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, bankAccount: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Nội dung thanh toán</label>
+                      <textarea 
+                        rows={2}
+                        placeholder="Mô tả nội dung nghiệm thu hoặc mục đích thanh toán..."
+                        value={newRequest.formData?.reason || ''}
+                        onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, reason: e.target.value } })}
+                        className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 resize-none"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* 5. MUA SẮM */}
+                {newRequest.subtype === 'Đề xuất mua sắm' && (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Kinh phí dự kiến (VNĐ)</label>
+                        <input 
+                          type="number"
+                          placeholder="Dự toán tổng chi phí..."
+                          value={newRequest.formData?.estimatedCost || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, estimatedCost: e.target.value } })}
+                          className="w-full text-xs font-bold px-3 py-2 rounded-xl bg-white border border-slate-200 text-cyan-700"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Phòng ban sử dụng</label>
+                        <input 
+                          type="text"
+                          value={newRequest.formData?.department || 'Khối Vận hành'}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, department: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Danh mục mặt hàng / Trang thiết bị cần mua</label>
+                      <textarea 
+                        rows={2}
+                        placeholder="Liệt kê tên thiết bị, số lượng, quy cách cấu hình kỹ thuật..."
+                        value={newRequest.formData?.items || ''}
+                        onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, items: e.target.value } })}
+                        className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 resize-none"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* 6. TUYỂN DỤNG & KHÁC */}
+                {newRequest.subtype !== 'Đơn xin nghỉ phép' &&
+                 newRequest.subtype !== 'Đăng ký làm thêm giờ (OT)' &&
+                 newRequest.subtype !== 'Đề nghị tạm ứng' &&
+                 newRequest.subtype !== 'Đề nghị thanh toán' &&
+                 newRequest.subtype !== 'Đề xuất mua sắm' && (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Vị trí / Hạng mục đề xuất</label>
+                        <input 
+                          type="text"
+                          placeholder="Nhập tên chức danh hoặc hạng mục..."
+                          value={newRequest.formData?.position || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, position: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Thời hạn mong muốn</label>
+                        <input 
+                          type="date"
+                          value={newRequest.formData?.deadline || ''}
+                          onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, deadline: e.target.value } })}
+                          className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Nội dung giải trình chi tiết</label>
+                      <textarea 
+                        rows={3}
+                        placeholder="Nêu rõ căn cứ đề xuất, sự cần thiết và kết quả dự kiến đạt được..."
+                        value={newRequest.formData?.reason || ''}
+                        onChange={(e) => setNewRequest({ ...newRequest, formData: { ...newRequest.formData, reason: e.target.value } })}
+                        className="w-full text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 resize-none"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Attachments Section */}
+              <div className="p-3.5 rounded-2xl border border-dashed border-slate-300 bg-white/70 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
+                    <Paperclip className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-800">Tài liệu đính kèm & Minh chứng</p>
+                    <p className="text-[10px] text-slate-400">Hỗ trợ PDF, DOCX, XLSX, Ảnh hóa đơn (tối đa 25MB)</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => alert('Đã đính kèm tệp mẫu: ToTrinh_MinhChung.pdf')}
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+                >
+                  Chọn tệp
+                </button>
+              </div>
+            </div>
+
+            {/* Right Column: Workflow, Urgency & Signature (5 of 12) */}
+            <div className="lg:col-span-5 space-y-4">
+              <label className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
+                3. Luồng Duyệt & Chữ Ký Số
+              </label>
+
+              {/* Priority Toggle Card */}
+              <div className={cn(
+                "p-3.5 rounded-2xl border transition-all flex items-center justify-between",
+                newRequest.isUrgent 
+                  ? "bg-rose-50 border-rose-200" 
+                  : "bg-slate-50/80 border-slate-200/80"
+              )}>
+                <div className="flex items-center gap-2.5">
+                  <div className={cn(
+                    "w-8 h-8 rounded-xl flex items-center justify-center",
+                    newRequest.isUrgent ? "bg-rose-500 text-white" : "bg-slate-200 text-slate-600"
+                  )}>
+                    <AlertTriangle className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900">Xử lý Hỏa tốc / Khẩn cấp</div>
+                    <div className="text-[10px] text-slate-500">Thông báo đẩy tức thời tới lãnh đạo</div>
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox"
+                    checked={newRequest.isUrgent}
+                    onChange={(e) => setNewRequest({ ...newRequest, isUrgent: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+                </label>
+              </div>
+
+              {/* Approval Chain Card */}
+              <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-emerald-600" />
+                    Chuỗi phê duyệt ({newRequest.customReviewers?.length || 1} cấp)
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const list = [...(newRequest.customReviewers || [])];
+                      list.push({ step: list.length + 1, reviewer: 'Kế toán trưởng' });
+                      setNewRequest({ ...newRequest, customReviewers: list });
+                    }}
+                    className="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
+                  >
+                    <Plus className="w-3 h-3" /> Thêm cấp
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {(newRequest.customReviewers || []).map((rev: any, rIdx: number) => (
+                    <div key={rIdx} className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
+                      <div className="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                        {rIdx + 1}
+                      </div>
+                      <select
+                        value={rev.reviewer}
+                        onChange={(e) => {
+                          const list = [...newRequest.customReviewers];
+                          list[rIdx].reviewer = e.target.value;
+                          setNewRequest({ ...newRequest, customReviewers: list });
+                        }}
+                        className="flex-1 text-xs font-semibold bg-transparent border-none focus:outline-none cursor-pointer"
+                      >
+                        <option value="Quản lý trực tiếp">Quản lý trực tiếp (Lead/Manager)</option>
+                        <option value="Giám đốc Nhân sự">Giám đốc Nhân sự (HRD)</option>
+                        <option value="Kế toán trưởng">Kế toán trưởng (Chief Accountant)</option>
+                        <option value="Giám đốc Điều hành (CEO)">Giám đốc Điều hành (CEO)</option>
+                        <option value="Phòng Mua sắm">Phòng Mua sắm & Tài sản</option>
+                        <option value="Trần Thị B (IT)">Trần Thị B (Trưởng phòng CNTT)</option>
+                      </select>
+                      {newRequest.customReviewers.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const list = newRequest.customReviewers.filter((_: any, i: number) => i !== rIdx);
+                            list.forEach((item: any, idx: number) => { item.step = idx + 1; });
+                            setNewRequest({ ...newRequest, customReviewers: list });
+                          }}
+                          className="text-slate-400 hover:text-rose-600 p-1 transition-colors cursor-pointer"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Signature Authentication Card */}
+              <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2.5">
+                <div className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <PenTool className="w-3.5 h-3.5 text-blue-600" />
+                    Xác thực chữ ký người đề xuất
+                  </span>
+                  <div className="flex gap-1 text-[10px] font-bold">
+                    <button
+                      type="button"
+                      onClick={() => setSignatureMethod('company_ca')}
+                      className={cn(
+                        "px-2 py-0.5 rounded-lg transition-all cursor-pointer",
+                        signatureMethod === 'company_ca' 
+                          ? "bg-blue-600 text-white" 
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      )}
+                    >
+                      Ký số SSO
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSignatureMethod('personal_image')}
+                      className={cn(
+                        "px-2 py-0.5 rounded-lg transition-all cursor-pointer",
+                        signatureMethod === 'personal_image' 
+                          ? "bg-blue-600 text-white" 
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      )}
+                    >
+                      Ký tay cảm ứng
+                    </button>
+                  </div>
+                </div>
+
+                {signatureMethod === 'company_ca' ? (
+                  <div className="p-3 rounded-xl bg-blue-50/60 border border-blue-100 text-[11px] space-y-1">
+                    <div className="flex items-center gap-1.5 text-blue-900 font-bold">
+                      <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0" />
+                      Xác thực định danh bảo mật SHA-256
+                    </div>
+                    <p className="text-blue-700/80 leading-relaxed">
+                      Đề xuất sẽ tự động đính kèm chứng thư điện tử nội bộ của tài khoản <span className="font-bold text-blue-900">{user?.name || user?.email}</span> khi bấm gửi.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="relative border border-slate-300 rounded-xl bg-white overflow-hidden h-28 shadow-inner">
+                      <canvas
+                        ref={canvasRef}
+                        width={600}
+                        height={160}
+                        className="w-full h-full cursor-crosshair block touch-none"
+                        onMouseDown={startCanvasDrawing}
+                        onMouseMove={drawCanvas}
+                        onMouseUp={stopCanvasDrawing}
+                        onMouseLeave={stopCanvasDrawing}
+                        onTouchStart={startCanvasDrawing}
+                        onTouchMove={drawCanvas}
+                        onTouchEnd={stopCanvasDrawing}
+                      />
+                      {isCanvasEmpty && !drawnSignatureData && (
+                        <div className="absolute inset-0 flex items-center justify-center p-2 text-center pointer-events-none select-none">
+                          <p className="text-[10px] text-slate-400 font-medium">Vẽ chữ ký của bạn vào khung này...</p>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-center text-[10px]">
+                      <button
+                        type="button"
+                        onClick={clearCanvasSignature}
+                        className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1 border border-slate-200"
+                      >
+                        <X className="w-3 h-3 text-slate-500" /> Xóa nét vẽ
+                      </button>
+                      <span className="text-slate-400 italic">Lưu tự động vào phiếu in</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Modal Footer */}
+        <div className="px-6 py-4 border-t border-slate-200/80 bg-slate-50/80 backdrop-blur-md flex items-center justify-between shrink-0">
+          <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
+            Nhấn <kbd className="px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 text-[10px] font-mono">Esc</kbd> để đóng cửa sổ
+          </p>
+          <div className="flex items-center gap-3 ml-auto">
+            <button
+              type="button"
+              onClick={() => setShowAddModal(false)}
+              className="px-5 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 rounded-2xl transition-all cursor-pointer"
+            >
+              Hủy bỏ
+            </button>
+            <button
+              type="button"
+              onClick={handleAddRequest}
+              className="flex items-center gap-2 px-6 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 rounded-2xl shadow-lg shadow-emerald-500/25 transition-all cursor-pointer active:scale-95"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>Gửi Phê Duyệt Ngay</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   )}
-  </div>
-  ))}
-  </div>
-  </div>
-
-  {signatureMethod === 'personal_image' && (
-  <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
-   <div className="flex justify-between items-center text-xs">
-    <span className="font-bold text-slate-700 flex items-center gap-1.5 font-sans">
-     <PenTool className="w-4 h-4 text-blue-600 animate-pulse" /> Bàn vẽ chữ ký tay điện tử:
-    </span>
-    {drawnSignatureData && (
-     <span className="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded">
-      Đã thiết lập chữ ký
-     </span>
-    )}
-   </div>
-   <div className="relative border border-slate-300 rounded-xl bg-white overflow-hidden h-40 shadow-inner">
-    <canvas
-     ref={canvasRef}
-     width={600}
-     height={160}
-     className="w-full h-full cursor-crosshair rounded-xl block touch-none"
-     onMouseDown={startCanvasDrawing}
-     onMouseMove={drawCanvas}
-     onMouseUp={stopCanvasDrawing}
-     onMouseLeave={stopCanvasDrawing}
-     onTouchStart={startCanvasDrawing}
-     onTouchMove={drawCanvas}
-     onTouchEnd={stopCanvasDrawing}
-    />
-    {isCanvasEmpty && !drawnSignatureData && (
-     <div className="absolute inset-0 flex items-center justify-center p-4 text-center pointer-events-none select-none">
-      <p className="text-[11px] text-slate-400 font-medium">Sử dụng chuột, bút cảm ứng hoặc ngón tay để vẽ chữ ký của bạn vào đây...</p>
-     </div>
-    )}
-   </div>
-   <div className="flex justify-between items-center gap-4">
-    <button
-     type="button"
-     onClick={clearCanvasSignature}
-     className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 border border-slate-200"
-    >
-     <X className="w-3.5 h-3.5 text-slate-500" /> Xóa nét vẽ
-    </button>
-    <p className="text-[9px] text-slate-400 leading-snug font-medium text-right italic max-w-xs">Chữ ký tay sẽ được lưu tự động cục bộ và kết xuất trên văn bản trình in A4.</p>
-   </div>
-  </div>
-  )}
-  </div>
-  </div>
- <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 flex gap-3 justify-end">
- <button onClick={() => setShowAddModal(false)} className="px-5 py-2.5 text-[13px] font-bold text-slate-700 bg-white border border-slate-200 rounded-2xl hover:bg-slate-100 transition-colors shadow-sm">
- Hủy
- </button>
- <button 
- onClick={handleAddRequest}
- className="px-6 py-2.5 text-[13px] font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-600/30">
- Gửi đề xuất
- </button>
- </div>
- </div>
- </div>
- )}
  {showConfigModal && editingFormConfig && <FormConfigModal initialConfig={editingFormConfig} onClose={() => setShowConfigModal(false)} onSave={(c) => { const exists = formConfigs.find(f => f.id === editingFormConfig.id); if (exists) { setFormConfigs(formConfigs.map((f: any) => f.id === editingFormConfig.id ? c : f)); } else { setFormConfigs([...formConfigs, c]); } setShowConfigModal(false); }} />} {/* Removed hidden old inline modal */}
  
   {/* Selected Request Detail Slide-over Panel */}

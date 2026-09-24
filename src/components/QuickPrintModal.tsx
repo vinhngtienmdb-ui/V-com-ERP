@@ -147,12 +147,11 @@ export function QuickPrintModal({ order, onClose }: QuickPrintModalProps) {
 
             {/* Receipt Header */}
             <div className="text-center space-y-1 pb-4 border-b border-dashed border-slate-300">
-              <h4 className="font-extrabold text-sm uppercase tracking-tight leading-tight">iPOS OMNICHANNEL</h4>
-              <p className="text-[10px] text-slate-600 font-bold uppercase leading-tight">Hệ Thống Bán Lẻ & Giao Vận</p>
+              <h4 className="font-extrabold text-sm uppercase tracking-tight leading-tight">VCOMM ECOMMERCE PLATFORM</h4>
+              <p className="text-[10px] text-slate-600 font-bold uppercase leading-tight">Sàn Thương Mại Điện Tử VComm</p>
               <div className="text-[9px] text-slate-500 mt-1 space-y-0.5">
-                <p>CS1: 128 Trần Hưng Đạo, Q1, TPHCM</p>
-                <p>CS2: Lô C3-2, KCN Cát Lái, Q2, TPHCM</p>
-                <p>Hotline: 1900.6789 - ipos.com.vn</p>
+                <p>Tổng kho: Trung tâm Fulfillment VComm Logistics</p>
+                <p>Hotline: 1900.6868 - vcomm.vn</p>
               </div>
             </div>
 

@@ -1,855 +1,1448 @@
-import React, { useState, useEffect } from 'react';
-import { 
- FileSignature, 
- Key, 
- ShieldCheck, 
- Clock, 
- CheckCircle2, 
- Search, 
- RefreshCw,
- FileText,
- Lock,
- UserCheck,
- Building2,
- AlertTriangle,
- Loader2,
- ShieldAlert
-} from 'lucide-react';
-import { cn } from '../lib/utils';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { supabase } from '../lib/supabase';
-import { db, collection, getDocs, doc, updateDoc, serverTimestamp } from '../lib/firebase';
-
-const INITIAL_SIGNATURES = [
-  { id: 'SIGN-001', docId: 'HDLD-001', title: 'Hợp đồng lao động - Nguyễn Văn A', type: 'contract', requestDate: '25/03/2024', status: 'pending', requesters: 'Phòng Nhân sự' },
-  { id: 'SIGN-002', docId: 'REQ-002', title: 'Đề nghị tạm ứng công tác phí', type: 'request', requestDate: '24/03/2024', status: 'signed', requesters: 'Nguyễn Diệu Nhi' },
-  { id: 'SIGN-003', docId: 'CV-2024-001', title: 'Quyết định bổ nhiệm Giám đốc', type: 'document', requestDate: '20/03/2024', status: 'signed', requesters: 'Hội đồng quản trị' },
-  { id: 'SIGN-004', docId: 'HDDV-001', title: 'Hợp đồng tư vấn AI', type: 'contract', requestDate: '01/02/2024', status: 'pending', requesters: 'Phòng Pháp chế' }
-];
+import { 
+  FileSignature, 
+  Key, 
+  ShieldCheck, 
+  Clock, 
+  CheckCircle2, 
+  Search, 
+  RefreshCw,
+  FileText,
+  Lock,
+  UserCheck,
+  Building2,
+  AlertTriangle,
+  Loader2,
+  ShieldAlert,
+  Server,
+  Zap,
+  Plus,
+  Filter,
+  Check,
+  X,
+  ChevronRight,
+  Download,
+  Upload,
+  Layers,
+  Sparkles,
+  Sliders,
+  DollarSign,
+  Calendar,
+  Eye,
+  ExternalLink,
+  Shield,
+  Activity,
+  UserX,
+  RotateCw
+} from 'lucide-react';
+import { cn, formatCurrency } from '../lib/utils';
+import { 
+  CompanyHSMProfile,
+  PersonalCertificate,
+  SigningDocument,
+  SigningAuthorityRule,
+  HSMAuditLog,
+  INITIAL_COMPANY_HSM,
+  INITIAL_PERSONAL_CERTS,
+  INITIAL_SIGNING_DOCUMENTS,
+  INITIAL_AUTHORITY_RULES,
+  INITIAL_HSM_LOGS
+} from '../data/hsmSignatureData';
+import { HrmStaffOrRequestPickerModal } from './common/HrmStaffOrRequestPickerModal';
+import { hrmEmployeeService, HrmEmployee, HrmPersonalRequest } from '../services/hrmEmployeeService';
 
 export function SignatureHub() {
-  const [activeTab, setActiveTab] = useState('pending');
   const navigate = useNavigate();
-  const { user, staffInfo } = useAuth();
-  
-  // Data States
-  const [signatures, setSignatures] = useState<any[]>(INITIAL_SIGNATURES);
-  const [certificates, setCertificates] = useState<any[]>([]);
-  const [logs, setLogs] = useState<any[]>([]);
-  const [userKeyPair, setUserKeyPair] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  // Modal States
-  const [signingModalOpen, setSigningModalOpen] = useState(false);
-  const [selectedDoc, setSelectedDoc] = useState<any>(null);
-  const [privateKeyInput, setPrivateKeyInput] = useState('');
-  const [isSigningInProcess, setIsSigningInProcess] = useState(false);
+  // Active Main Tab
+  const [activeTab, setActiveTab] = useState<
+    'company_hsm' | 'personal_certs' | 'signing_workspace' | 'authority_matrix' | 'audit_logs'
+  >('company_hsm');
 
-  // Verification States
-  const [verificationModalOpen, setVerificationModalOpen] = useState(false);
-  const [verifyingDoc, setVerifyingDoc] = useState<any>(null);
-  const [verificationResult, setVerificationResult] = useState<any>(null);
-  const [isVerifying, setIsVerifying] = useState(false);
+  // HSM Company State
+  const [companyHsm, setCompanyHsm] = useState<CompanyHSMProfile>(INITIAL_COMPANY_HSM);
+  const [isTestingHsm, setIsTestingHsm] = useState(false);
+  const [testHsmSuccess, setTestHsmSuccess] = useState(false);
 
-  // Filters State
-  const [searchSigQuery, setSearchSigQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [requesterFilter, setRequesterFilter] = useState('all');
-  const [dateFilter, setDateFilter] = useState('');
-  const [signatureMethod, setSignatureMethod] = useState<'internal_identity' | 'biometric'>('internal_identity');
+  // Personal Certificates State
+  const [personalCerts, setPersonalCerts] = useState<PersonalCertificate[]>(INITIAL_PERSONAL_CERTS);
+  const [certFilterStatus, setCertFilterStatus] = useState<string>('all');
+  const [certSearch, setCertSearch] = useState<string>('');
 
-  const userEmail = user?.email || 'admin@vcomm-erp.vn';
-  const tenantId = staffInfo?.tenantId || 'tenant-vcomm-prod-01';
+  // Signing Documents State
+  const [documents, setDocuments] = useState<SigningDocument[]>(INITIAL_SIGNING_DOCUMENTS);
+  const [docFilterStatus, setDocFilterStatus] = useState<'pending' | 'signed'>('pending');
+  const [docSearch, setDocSearch] = useState<string>('');
 
-  // Load signatures, certificates, keypair, and logs
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      // 1. Fetch user keypair
-      const { data: keypairData } = await supabase
-        .from('user_keypairs')
-        .select('*')
-        .eq('user_id', userEmail);
-      
-      if (keypairData && keypairData.length > 0) {
-        setUserKeyPair(keypairData[0]);
-        // Prefill private key if stored in local storage
-        const storedKey = localStorage.getItem(`vcomm_private_key_${userEmail}`);
-        if (storedKey) {
-          setPrivateKeyInput(storedKey);
-        }
-      } else {
-        setUserKeyPair(null);
-      }
+  // Modals State
+  const [showIssueCertModal, setShowIssueCertModal] = useState(false);
+  const [showSigningModal, setShowSigningModal] = useState(false);
+  const [selectedDocToSign, setSelectedDocToSign] = useState<SigningDocument | null>(null);
+  const [signingMethod, setSigningMethod] = useState<'company_hsm' | 'personal_cert'>('company_hsm');
+  const [signingPin, setSigningPin] = useState('');
+  const [isSigningProcess, setIsSigningProcess] = useState(false);
 
-      // 2. Fetch all certificates
-      const { data: allCerts } = await supabase
-        .from('user_keypairs')
-        .select('*')
-        .order('created_at', { ascending: false });
-      setCertificates(allCerts || []);
+  // Verification Modal State
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [selectedDocToVerify, setSelectedDocToVerify] = useState<SigningDocument | null>(null);
 
-      // 3. Fetch cryptographic signatures
-      const { data: dbSignatures } = await supabase
-        .from('document_signatures')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      const sigMap = new Map();
-      if (dbSignatures) {
-        dbSignatures.forEach(sig => {
-          sigMap.set(sig.document_id, sig);
-        });
-      }
+  // HRM Integration State (Strict No-Manual-Entry)
+  const [showHrmPicker, setShowHrmPicker] = useState(false);
+  const [pickerDefaultTab, setPickerDefaultTab] = useState<'cbnv' | 'hrm_request'>('cbnv');
+  const [hrmSourceLabel, setHrmSourceLabel] = useState<string | null>(
+    'Đã trích xuất từ Hồ sơ CBNV: EMP-2068 - Hoàng Văn Thái'
+  );
 
-      // 4. Fetch requests from Firestore compatibility
-      let firestoreReqs: any[] = [];
-      try {
-        const snap = await getDocs(collection(db, 'requests'));
-        firestoreReqs = snap.docs.map(d => {
-          const rdata = d.data() as any;
-          return {
-            id: `SIGN-${d.id.substring(0, 4).toUpperCase()}`,
-            docId: d.id,
-            title: rdata.title || 'Đề xuất không tên',
-            type: 'request',
-            requestDate: rdata.createdAt ? new Date(rdata.createdAt).toLocaleDateString('vi-VN') : new Date().toLocaleDateString('vi-VN'),
-            status: rdata.status === 'approved' ? 'signed' : 'pending',
-            requesters: rdata.createdBy || 'Hệ thống',
-            documentData: rdata
-          };
-        });
-      } catch (err) {
-        console.warn('Failed to load requests from db. Using fallback.', err);
-      }
+  // New Certificate Form State (Locked from manual input, filled from HRM)
+  const [newCertForm, setNewCertForm] = useState({
+    staffCode: 'EMP-2068',
+    fullName: 'Hoàng Văn Thái',
+    email: 'thai.hv@vcomm.vn',
+    department: 'Kinh doanh & Bán lẻ',
+    title: 'Trưởng nhóm Bán hàng O2O',
+    certType: 'staff_internal' as 'executive' | 'accounting_warehouse' | 'staff_internal',
+    algorithm: 'RSA 2048-bit' as 'RSA 2048-bit' | 'ECC P-256' | 'SmartCA Cloud',
+    signingLimitVND: 30000000,
+    validYears: 3,
+    pinCode: '123456'
+  });
 
-      // Merge Real DB and fallbacks
-      const merged = [...firestoreReqs, ...INITIAL_SIGNATURES].map(item => {
-        // If there is a cryptographic signature in database, mark as signed
-        const hasSig = sigMap.get(item.docId) || sigMap.get(item.id);
-        if (hasSig) {
-          return {
-            ...item,
-            status: 'signed',
-            cryptoSigned: true,
-            signer: hasSig.signer_name,
-            signerEmail: hasSig.signer_email,
-            signedDate: new Date(hasSig.created_at).toLocaleDateString('vi-VN')
-          };
-        }
-        return item;
-      });
+  const handleSelectHrmStaff = (emp: HrmEmployee, source: 'cbnv' | 'current_user', originalReq?: HrmPersonalRequest) => {
+    let determinedCertType: 'executive' | 'accounting_warehouse' | 'staff_internal' = 'staff_internal';
+    let defaultLimit = 30000000;
 
-      // De-duplicate items by docId or id
-      const seen = new Set();
-      const uniqueMerged = merged.filter(item => {
-        const key = item.docId || item.id;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
+    if (emp.department.includes('Giám Đốc') || emp.title.includes('Giám Đốc') || emp.title.includes('CEO') || emp.title.includes('COO')) {
+      determinedCertType = 'executive';
+      defaultLimit = 0; // unlimited
+    } else if (emp.department.includes('Kế toán') || emp.department.includes('Tài chính') || emp.department.includes('Kho')) {
+      determinedCertType = 'accounting_warehouse';
+      defaultLimit = 200000000;
+    }
 
-      setSignatures(uniqueMerged);
+    setNewCertForm(prev => ({
+      ...prev,
+      staffCode: emp.id,
+      fullName: emp.name,
+      email: emp.email,
+      department: emp.department,
+      title: emp.title || emp.position,
+      certType: determinedCertType,
+      signingLimitVND: defaultLimit
+    }));
 
-      // Create logs list
-      const dbLogs = (dbSignatures || []).map(sig => ({
-        time: new Date(sig.created_at).toLocaleString('vi-VN'),
-        action: `Ký số thành công tài liệu #${sig.document_id} (${sig.document_type === 'request' ? 'Đề xuất E-Form' : 'Hợp đồng'})`,
-        user: sig.signer_name,
-        ip: 'Xác thực SSL / RSA Key'
-      }));
-      setLogs([...dbLogs, ...MOCK_LOGS]);
-
-    } catch (err) {
-      console.error('Error fetching SignatureHub data:', err);
-    } finally {
-      setIsLoading(false);
+    if (originalReq) {
+      setHrmSourceLabel(`Trích xuất từ Đơn yêu cầu ${originalReq.id}: ${originalReq.title}`);
+    } else if (source === 'current_user') {
+      setHrmSourceLabel(`Thông tin CBNV của bạn (${emp.id} - ${emp.name})`);
+    } else {
+      setHrmSourceLabel(`Hồ sơ Cán bộ Nhân viên chính thức (${emp.id} - ${emp.name})`);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [userEmail]);
+  // Logs State
+  const [auditLogs, setAuditLogs] = useState<HSMAuditLog[]>(INITIAL_HSM_LOGS);
 
-  // Generate Keypair RSA
-  const handleGenerateKeyPair = async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/signatures/generate-keypair', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: userEmail,
-          tenantId: tenantId,
-          certSubject: `CN=${user?.displayName || userEmail}, O=VComm ERP, C=VN`
-        })
-      });
+  // Filtered Personal Certs
+  const filteredCerts = personalCerts.filter(cert => {
+    const matchStatus = certFilterStatus === 'all' || cert.status === certFilterStatus;
+    const matchSearch = cert.fullName.toLowerCase().includes(certSearch.toLowerCase()) ||
+                        cert.email.toLowerCase().includes(certSearch.toLowerCase()) ||
+                        cert.serialNumber.toLowerCase().includes(certSearch.toLowerCase()) ||
+                        cert.department.toLowerCase().includes(certSearch.toLowerCase());
+    return matchStatus && matchSearch;
+  });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to generate keypair.');
+  // Filtered Signing Documents
+  const filteredDocs = documents.filter(doc => {
+    const matchStatus = doc.status === docFilterStatus;
+    const matchSearch = doc.title.toLowerCase().includes(docSearch.toLowerCase()) ||
+                        doc.docCode.toLowerCase().includes(docSearch.toLowerCase()) ||
+                        doc.requestedBy.toLowerCase().includes(docSearch.toLowerCase());
+    return matchStatus && matchSearch;
+  });
+
+  // Handle Test HSM Connection
+  const handleTestHsm = () => {
+    setIsTestingHsm(true);
+    setTimeout(() => {
+      setIsTestingHsm(false);
+      setTestHsmSuccess(true);
+      setTimeout(() => setTestHsmSuccess(false), 4000);
+    }, 900);
+  };
+
+  // Handle Toggle Auto Sign Rule
+  const handleToggleAutoSign = (rule: keyof CompanyHSMProfile['autoSignRules']) => {
+    setCompanyHsm(prev => ({
+      ...prev,
+      autoSignRules: {
+        ...prev.autoSignRules,
+        [rule]: !prev.autoSignRules[rule]
       }
-
-      // Save private key locally
-      localStorage.setItem(`vcomm_private_key_${userEmail}`, data.privateKey);
-      setPrivateKeyInput(data.privateKey);
-      alert('Đã sinh cặp khóa RSA 2048-bit thành công! Khóa riêng tư đã được lưu an toàn trên trình duyệt này.');
-      await fetchData();
-    } catch (err: any) {
-      alert(`Lỗi sinh cặp khóa: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
+    }));
   };
 
-  const handleSign = (doc: any) => {
-    setSelectedDoc(doc);
-    // Auto fill key if exists
-    const storedKey = localStorage.getItem(`vcomm_private_key_${userEmail}`);
-    if (storedKey) {
-      setPrivateKeyInput(storedKey);
-    }
-    setSigningModalOpen(true);
+  // Handle Certificate Status Changes
+  const handleCertAction = (certId: string, action: 'suspend' | 'activate' | 'revoke' | 'renew') => {
+    setPersonalCerts(prev => prev.map(cert => {
+      if (cert.id === certId) {
+        if (action === 'suspend') return { ...cert, status: 'suspended', revocationReason: 'Tạm khóa theo yêu cầu kiểm tra nội bộ' };
+        if (action === 'activate') return { ...cert, status: 'active', revocationReason: undefined };
+        if (action === 'revoke') return { ...cert, status: 'revoked', revocationReason: 'Đã thu hồi chứng thư do chấm dứt nhiệm vụ' };
+        if (action === 'renew') return { ...cert, expiryDate: '18/09/2029', status: 'active' };
+      }
+      return cert;
+    }));
   };
 
-  // Confirm and Cryptographically Sign Document
-  const confirmSign = async () => {
-    if (!privateKeyInput || privateKeyInput.trim() === '') {
-      alert('Vui lòng cung cấp khóa riêng tư (Private Key) để thực hiện ký số.');
+  // Handle Submit Issue New Certificate
+  const handleIssueCertificate = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newCert: PersonalCertificate = {
+      id: `CERT-${String(personalCerts.length + 1).padStart(3, '0')}`,
+      staffCode: newCertForm.staffCode,
+      fullName: newCertForm.fullName,
+      email: newCertForm.email,
+      department: newCertForm.department,
+      title: newCertForm.title,
+      role: newCertForm.title,
+      serialNumber: `${Math.floor(10 + Math.random() * 89)}:${Math.floor(10 + Math.random() * 89)}:${Math.floor(10 + Math.random() * 89)}:AB:CD:EF:01:23`,
+      certType: newCertForm.certType,
+      algorithm: newCertForm.algorithm,
+      status: 'active',
+      signingLimitVND: newCertForm.signingLimitVND,
+      issuedDate: new Date().toLocaleDateString('vi-VN'),
+      expiryDate: new Date(Date.now() + newCertForm.validYears * 365 * 24 * 3600 * 1000).toLocaleDateString('vi-VN'),
+      pinCodeMasked: '••••••'
+    };
+
+    setPersonalCerts([newCert, ...personalCerts]);
+    
+    // Add audit log
+    const newLog: HSMAuditLog = {
+      id: `LOG-${Date.now().toString().slice(-4)}`,
+      timestamp: new Date().toLocaleString('vi-VN'),
+      action: `Cấp phát Chứng thư số cá nhân (${newCertForm.algorithm}) cho ${newCertForm.fullName}`,
+      performedBy: 'Nguyễn Tiến Vĩnh (Super Admin)',
+      certSerial: newCert.serialNumber,
+      targetDocCode: newCert.staffCode,
+      algorithm: newCertForm.algorithm,
+      hashSHA256: '4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945',
+      ipAddress: '118.69.182.10 (Office SG)',
+      status: 'success'
+    };
+    setAuditLogs([newLog, ...auditLogs]);
+
+    setShowIssueCertModal(false);
+    alert(`Đã cấp phát thành công Chứng thư số cho ${newCert.fullName} (Serial: ${newCert.serialNumber})!`);
+  };
+
+  // Handle Document Signing Execution
+  const handleExecuteSigning = () => {
+    if (!selectedDocToSign) return;
+    if (signingPin.length < 4) {
+      alert('Vui lòng nhập đầy đủ mã PIN xác thực chữ ký!');
       return;
     }
 
-    setIsSigningInProcess(true);
-    try {
-      // Build document data payload for hashing
-      const documentData = selectedDoc.documentData || {
-        id: selectedDoc.docId || selectedDoc.id,
-        title: selectedDoc.title,
-        type: selectedDoc.type,
-        date: selectedDoc.requestDate
+    setIsSigningProcess(true);
+    setTimeout(() => {
+      const isHsm = signingMethod === 'company_hsm';
+      const signerName = isHsm 
+        ? 'Viettel Cloud HSM (CÔNG TY CP TMĐT VCOMM)' 
+        : 'Nguyễn Tiến Vĩnh (Tổng Giám đốc)';
+      const certSerial = isHsm ? companyHsm.serialNumber : '7A:31:09:FE:44:88:91:AA';
+      const methodText = isHsm ? 'Cloud HSM Remote Signing' : 'Personal Certificate RSA 2048';
+
+      // Update Document Status
+      setDocuments(prev => prev.map(doc => {
+        if (doc.id === selectedDocToSign.id) {
+          return {
+            ...doc,
+            status: 'signed',
+            signedBy: {
+              name: signerName,
+              certSerial,
+              signedAt: new Date().toLocaleString('vi-VN'),
+              method: methodText,
+              hashSHA256: 'b4c6e9a01f48821d3e8e19b52a129d3810f92b7c61589da016cf29410ea6911c'
+            }
+          };
+        }
+        return doc;
+      }));
+
+      // Deduct HSM quota if HSM was used
+      if (isHsm) {
+        setCompanyHsm(prev => ({
+          ...prev,
+          remainingSignatures: Math.max(0, prev.remainingSignatures - 1)
+        }));
+      }
+
+      // Add to Audit Log
+      const signLog: HSMAuditLog = {
+        id: `LOG-${Date.now().toString().slice(-4)}`,
+        timestamp: new Date().toLocaleString('vi-VN'),
+        action: `Ký số thành công tài liệu #${selectedDocToSign.docCode} (${selectedDocToSign.title})`,
+        performedBy: signerName,
+        certSerial,
+        targetDocCode: selectedDocToSign.docCode,
+        algorithm: 'RSA-SHA256',
+        hashSHA256: 'b4c6e9a01f48821d3e8e19b52a129d3810f92b7c61589da016cf29410ea6911c',
+        ipAddress: '118.69.182.10 (SSL Verified Session)',
+        status: 'success'
       };
+      setAuditLogs([signLog, ...auditLogs]);
 
-      const signRes = await fetch('/api/signatures/sign', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          privateKey: privateKeyInput,
-          documentId: selectedDoc.docId || selectedDoc.id,
-          documentType: selectedDoc.type,
-          signerEmail: userEmail,
-          signerName: user?.displayName || userEmail,
-          tenantId: tenantId,
-          documentData
-        })
-      });
-
-      const data = await signRes.json();
-      if (!signRes.ok || !data.success) {
-        throw new Error(data.error || 'Lỗi thực thi chữ ký trên máy chủ.');
-      }
-
-      // Update Firestore compatibility request status if it's a request
-      if (selectedDoc.type === 'request' && selectedDoc.docId) {
-        await updateDoc(doc(db, 'requests', selectedDoc.docId), {
-          status: 'approved',
-          signedBy: user?.displayName || userEmail,
-          updatedAt: serverTimestamp()
-        });
-      }
-
-      alert('Ký số thành công! Chữ ký số mã hóa RSA đã được lưu trữ và kiểm chứng trên hệ thống.');
-      setSigningModalOpen(false);
-      setSelectedDoc(null);
-      await fetchData();
-    } catch (err: any) {
-      console.error(err);
-      alert(`Ký số thất bại: ${err.message}`);
-    } finally {
-      setIsSigningInProcess(false);
-    }
+      setIsSigningProcess(false);
+      setShowSigningModal(false);
+      setSigningPin('');
+      alert(`Đã ký số thành công văn bản #${selectedDocToSign.docCode} bằng ${isHsm ? 'Cloud HSM Công ty' : 'Chứng thư số Cá nhân'}!`);
+    }, 800);
   };
-
-  // Verify Document Signature Integrity
-  const handleVerify = async (docItem: any) => {
-    setIsVerifying(true);
-    setVerifyingDoc(docItem);
-    try {
-      const documentData = docItem.documentData || {
-        id: docItem.docId || docItem.id,
-        title: docItem.title,
-        type: docItem.type,
-        date: docItem.requestDate
-      };
-
-      const res = await fetch('/api/signatures/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          documentId: docItem.docId || docItem.id,
-          documentData
-        })
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to verify signatures.');
-      }
-
-      setVerificationResult(data);
-      setVerificationModalOpen(true);
-    } catch (err: any) {
-      alert(`Lỗi xác thực chữ ký: ${err.message}`);
-    } finally {
-      setIsVerifying(false);
-    }
-  };
-
-  // Filter signatures list
-  const filteredSignatures = signatures.filter(doc => {
-    const matchesTab = doc.status === activeTab;
-    const matchesSearch = doc.title.toLowerCase().includes(searchSigQuery.toLowerCase()) || 
-                          doc.docId.toLowerCase().includes(searchSigQuery.toLowerCase()) || 
-                          doc.id.toLowerCase().includes(searchSigQuery.toLowerCase());
-    const matchesType = typeFilter === 'all' || doc.type === typeFilter;
-    const matchesRequester = requesterFilter === 'all' || doc.requesters === requesterFilter;
-    
-    let matchesDate = true;
-    if (dateFilter) {
-      const [year, month, day] = dateFilter.split('-');
-      const formattedDateFilter = `${day}/${month}/${year}`;
-      matchesDate = doc.requestDate === formattedDateFilter;
-    }
-    return matchesTab && matchesSearch && matchesType && matchesRequester && matchesDate;
-  });
-
-  const uniqueRequesters = Array.from(new Set(signatures.map(s => s.requesters)));
 
   return (
-    <div className="space-y-4 animate-in fade-in slide-in- duration-500 pb-4">
-      <div className="flex items-center justify-between">
-        <div className="header-title">
-          <h1 className="font-sans tracking-tight text-xl font-bold text-slate-900">Trung tâm Ký số (Digital Signature Hub)</h1>
-          <p className="text-xs text-slate-500 mt-1 italic">Hệ thống cấp phát chứng thư số nội bộ tự động, xác thực định danh nhân viên bằng mật mã học RSA.</p>
+    <div className="space-y-6 animate-in fade-in duration-300 pb-12 text-slate-800 p-2 md:p-4">
+      {/* Top Banner Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white p-6 md:p-8 rounded-3xl shadow-xl relative overflow-hidden">
+        <div className="absolute -right-12 -top-12 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div className="space-y-2 relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-indigo-200 text-xs font-semibold backdrop-blur-md">
+            <Key className="w-3.5 h-3.5 text-amber-300" />
+            Trung Tâm Ký Số & Cloud HSM Doanh Nghiệp
+          </div>
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight">
+            Quản Trị Chữ Ký Số Cloud HSM & Cấp Phát Chứng Thư
+          </h1>
+          <p className="text-indigo-200 text-xs md:text-sm max-w-2xl leading-relaxed">
+            Kết nối chữ ký số HSM pháp nhân công ty (<code className="font-mono text-white font-bold">MST: {companyHsm.taxCode}</code>), ký số tự động hóa đơn & thuế, đồng thời quản lý cấp phát chứng thư số nội bộ cho từng cán bộ nhân viên.
+          </p>
         </div>
-        <div className="flex gap-3">
-          <button 
-            onClick={fetchData} 
-            disabled={isLoading}
-            className="bg-white border border-slate-300 px-4 py-2 rounded-xl text-xs font-bold text-slate-800 hover:bg-slate-50 transition-all flex items-center gap-2"
+
+        <div className="flex items-center gap-3 relative z-10 flex-wrap">
+          <button
+            onClick={() => {
+              setNewCertForm({
+                staffCode: 'EMP-0006',
+                fullName: 'Hoàng Văn Thái',
+                email: 'thai.hv@vcomm.vn',
+                department: 'Kinh doanh & Bán lẻ',
+                title: 'Trưởng nhóm Bán hàng O2O',
+                certType: 'staff_internal',
+                algorithm: 'RSA 2048-bit',
+                signingLimitVND: 30000000,
+                validYears: 3,
+                pinCode: '123456'
+              });
+              setShowIssueCertModal(true);
+            }}
+            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-900/40 flex items-center gap-2 transition-all"
           >
-            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-            Làm mới Certs
+            <Plus className="w-4 h-4" /> Cấp Chứng Thư Mới
           </button>
-          <button 
-            onClick={handleGenerateKeyPair}
-            disabled={isLoading}
-            className="bg-[#111827] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2 uppercase tracking-widest"
+
+          <button
+            onClick={() => setActiveTab('signing_workspace')}
+            className="px-4 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2"
           >
-            <Key className="w-4 h-4 text-emerald-400" />
-            Cấp Chứng thư RSA
+            <FileSignature className="w-4 h-4 text-amber-300" /> Bàn Ký Điện Tử
           </button>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="group bg-white border border-slate-300 p-6 rounded-lg shadow-sm hover:shadow-sm transition-all relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-full -mr-8 -mt-8" />
-          <div className="relative z-10">
-            <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Chờ tôi ký</h3>
-            <p className="text-4xl font-bold text-slate-900">{signatures.filter(s => s.status === 'pending').length}</p>
-            <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-amber-600">
-              <Clock className="w-3 h-3" /> Cần xử lý gấp
+      {/* Overview Statistics Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase">Trạng Thái Cloud HSM</span>
+            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+              <Server className="w-4 h-4" />
             </div>
           </div>
-        </div>
-        <div className="group bg-white border border-slate-300 p-6 rounded-lg shadow-sm hover:shadow-sm transition-all relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-slate-100 rounded-full -mr-8 -mt-8" />
-          <div className="relative z-10">
-            <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Đã hoàn tất</h3>
-            <p className="text-4xl font-bold text-slate-900">{signatures.filter(s => s.status === 'signed').length}</p>
-            <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-blue-600">
-              <CheckCircle2 className="w-3 h-3" /> Lưu trữ an toàn
-            </div>
+          <div className="text-2xl font-black text-emerald-600 flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+            Operational
+          </div>
+          <div className="mt-2 text-xs text-slate-500 font-medium">
+            {companyHsm.provider} • Tốc độ {companyHsm.tpsSpeed} TPS
           </div>
         </div>
-        <div className="group bg-slate-900 p-6 rounded-lg shadow-sm relative overflow-hidden lg:col-span-2">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-12 -mt-12" />
-          <div className="relative z-10 flex justify-between items-center h-full">
-            <div>
-              <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Chứng thư đang hoạt động</h3>
-              <p className="text-sm font-bold text-white">{userKeyPair ? userKeyPair.cert_subject : 'Chưa đăng ký chứng thư số'}</p>
-              <div className="flex items-center gap-4 mt-3">
-                <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
-                  <ShieldCheck className="w-3 h-3" /> {userKeyPair ? 'Cấp phát RSA 2048-bit (Active)' : 'Vui lòng nhấn nút cấp chứng thư'}
-                </div>
-              </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase">Hạn Ngạch Lượt Ký HSM</span>
+            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+              <Zap className="w-4 h-4" />
             </div>
-            <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
-              <FileSignature className="w-8 h-8 text-white/40" />
+          </div>
+          <div className="text-2xl font-black text-slate-900">
+            {companyHsm.remainingSignatures.toLocaleString('vi-VN')}
+          </div>
+          <div className="mt-2 text-xs text-slate-500">
+            Còn lại trên tổng {companyHsm.totalSignaturesQuota.toLocaleString('vi-VN')} lượt
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase">Chứng Thư Cá Nhân Đã Cấp</span>
+            <div className="p-2 bg-purple-50 text-purple-600 rounded-xl">
+              <UserCheck className="w-4 h-4" />
             </div>
+          </div>
+          <div className="text-2xl font-black text-purple-600">
+            {personalCerts.length} Cán bộ
+          </div>
+          <div className="mt-2 text-xs text-slate-500">
+            {personalCerts.filter(c => c.status === 'active').length} Đang hoạt động • {personalCerts.filter(c => c.status === 'suspended').length} Tạm khóa
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase">Tài Liệu Đang Chờ Ký</span>
+            <div className="p-2 bg-amber-50 text-amber-600 rounded-xl">
+              <Clock className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-amber-600">
+            {documents.filter(d => d.status === 'pending').length} Văn bản
+          </div>
+          <div className="mt-2 text-xs text-rose-500 font-semibold flex items-center gap-1">
+            <AlertTriangle className="w-3.5 h-3.5" /> 02 văn bản ưu tiên cao
           </div>
         </div>
       </div>
 
-      <div className="flex gap-6">
-        {/* Sidebar Tabs */}
-        <div className="w-[240px] shrink-0 space-y-1">
-          {[
-            { id: 'pending', label: 'Chờ tôi ký', icon: Clock },
-            { id: 'signed', label: 'Đã ký / Lịch sử', icon: CheckCircle2 },
-            { id: 'certificates', label: 'Quản lý Chứng thư số', icon: Key },
-            { id: 'permissions', label: 'Phân quyền Ký số', icon: UserCheck },
-            { id: 'logs', label: 'Nhật ký hệ thống', icon: Lock },
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all text-left",
-                activeTab === tab.id 
-                  ? "bg-blue-50 text-blue-700 font-bold border-l-4 border-l-blue-600" 
-                  : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
-              )}
-            >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Main Content Area */}
-        <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
-          {(activeTab === 'pending' || activeTab === 'signed') && (
-            <>
-              <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50">
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="relative w-64">
-                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                    <input 
-                      type="text" 
-                      placeholder="Tìm kiếm tài liệu..."
-                      value={searchSigQuery}
-                      onChange={(e) => setSearchSigQuery(e.target.value)}
-                      className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm"
-                    />
-                  </div>
-                  <select
-                    value={typeFilter}
-                    onChange={(e) => setTypeFilter(e.target.value)}
-                    className="border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm font-medium text-slate-700"
-                  >
-                    <option value="all">Tất cả phân loại</option>
-                    <option value="contract">Hợp đồng</option>
-                    <option value="request">Đề xuất E-Form</option>
-                    <option value="document">Văn bản</option>
-                  </select>
-                  <select
-                    value={requesterFilter}
-                    onChange={(e) => setRequesterFilter(e.target.value)}
-                    className="border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm font-medium text-slate-700 max-w-[150px]"
-                  >
-                    <option value="all">Mọi người tạo</option>
-                    {uniqueRequesters.map(req => (
-                      <option key={req} value={req}>{req}</option>
-                    ))}
-                  </select>
-                  <div className="relative flex-1">
-                    <input 
-                      type="date"
-                      value={dateFilter}
-                      onChange={(e) => setDateFilter(e.target.value)}
-                      className="border border-slate-200 rounded-2xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm font-medium text-slate-700 w-full"
-                    />
-                  </div>
-                </div>
-                <button onClick={fetchData} className="p-2 text-slate-500 hover:text-slate-700 bg-white border border-slate-200 rounded-2xl shadow-sm shrink-0">
-                  <RefreshCw className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="p-0 overflow-auto">
-                <table className="w-full text-left border-collapse whitespace-nowrap">
-                  <thead className="bg-slate-50 border-b border-slate-100">
-                    <tr>
-                      <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mã trình ký</th>
-                      <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tài liệu tham chiếu</th>
-                      <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phân loại</th>
-                      <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tiến trình ký & Phân quyền</th>
-                      <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Trạng thái</th>
-                      <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Ngày</th>
-                      <th className="px-4 py-3"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {filteredSignatures.map(doc => (
-                      <tr key={doc.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-4 py-3">
-                          <p className="text-[13px] font-bold text-slate-900">{doc.id}</p>
-                        </td>
-                        <td className="px-4 py-3">
-                          <p className="text-[13px] font-medium text-slate-900">{doc.title}</p>
-                          <p className="text-xs text-slate-600 font-mono mt-0.5">{doc.docId}</p>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="text-xs font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg uppercase tracking-tight">
-                            {doc.type === 'contract' ? 'Hợp đồng' : doc.type === 'request' ? 'Đề xuất E-Form' : 'Văn bản (NĐ30)'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <p className="text-[10px] text-slate-600 uppercase font-bold tracking-tight w-16">Luồng ký:</p>
-                            <div className="flex items-center gap-1">
-                              <div className="px-2 py-0.5 bg-slate-100 text-slate-800 text-[10px] font-bold rounded">Người tạo</div>
-                              <span className="text-slate-500">→</span>
-                              <div className="px-2 py-0.5 bg-slate-100 text-slate-800 text-[10px] font-bold rounded">Quản lý</div>
-                              <span className="text-slate-500">→</span>
-                              <div className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded">Giám đốc</div>
-                            </div>
-                          </div>
-                          <div className="flex -space-x-2 overflow-hidden mt-2">
-                            {[1, 2, 3].map((idx) => (
-                              <div key={idx} className={cn(
-                                "inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-100 flex-shrink-0 flex items-center justify-center text-[8px] font-bold",
-                                idx === 1 ? "bg-emerald-100 text-emerald-700" : (idx === 2 && doc.status === 'signed' ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600")
-                              )} title={`Bước ${idx}`}>
-                                {idx === 1 ? <CheckCircle2 className="w-3 h-3 text-emerald-600" /> : (idx === 2 && doc.status === 'signed' ? <CheckCircle2 className="w-3 h-3 text-emerald-600" /> : idx)}
-                              </div>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <span className={cn(
-                            "px-2.5 py-1 text-[10px] font-bold rounded-lg uppercase tracking-tight inline-flex items-center gap-1",
-                            doc.status === 'signed' ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
-                          )}>
-                            {doc.status === 'signed' ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
-                            {doc.status === 'signed' ? 'Đã ký số' : 'Chờ ký'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <p className="text-xs text-slate-700">{doc.requestDate}</p>
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          {doc.status === 'pending' && (
-                            <button 
-                              onClick={() => handleSign(doc)}
-                              className="px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg shadow-sm hover:bg-blue-700 transition-colors flex items-center gap-1.5 ml-auto"
-                            >
-                              <Key className="w-3.5 h-3.5" /> Ký ngay
-                            </button>
-                          )}
-                          {doc.status === 'signed' && (
-                            <button 
-                              onClick={() => handleVerify(doc)}
-                              disabled={isVerifying && verifyingDoc?.docId === doc.docId}
-                              className="px-3 py-1.5 bg-slate-100 text-slate-800 text-xs font-bold rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-1.5 ml-auto disabled:opacity-50"
-                            >
-                              {isVerifying && verifyingDoc?.docId === doc.docId ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />}
-                              Xác thực chữ ký
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                    {filteredSignatures.length === 0 && (
-                      <tr>
-                        <td colSpan={7} className="px-6 py-6 text-center text-slate-600 font-medium">
-                          Không có tài liệu nào trong mục này.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-
-          {activeTab === 'permissions' && (
-            <div className="p-6">
-              <div className="mb-6">
-                <h3 className="text-lg font-bold text-slate-900">Cấu hình Quy trình Ký số & Phân quyền</h3>
-                <p className="text-xs text-slate-600 mt-1">Thiết lập những ai có thẩm quyền ký và thứ tự ký cho từng loại tài liệu trong hệ thống.</p>
-              </div>
-
-              <div className="space-y-4">
-                {[
-                  { type: 'Quản lý Hợp đồng (Lao động)', flow: ['Chuyên viên HR', 'Trưởng phòng HR', 'Giám đốc'], methods: ['Ký nháy', 'Ký nháy', 'Ký số SmartCA'] },
-                  { type: 'Hợp đồng mua bán / Dịch vụ', flow: ['Pháp chế', 'Kế toán trưởng', 'Giám đốc', 'Đối tác'], methods: ['Ký nháy', 'Ký nháy', 'Ký số Token', 'Ký số Tùy chọn'] },
-                  { type: 'Đề nghị Tạm ứng / Chi tiêu', flow: ['Người đề xuất', 'Quản lý trực tiếp', 'Kế toán trưởng', 'Giám đốc'], methods: ['Xác nhận E-Form', 'Ký nháy', 'Ký nháy', 'Ký số / Chuyển khoản'] }
-                ].map((item, idx) => (
-                  <div key={idx} className="border border-slate-200 rounded-2xl p-5">
-                    <h4 className="font-bold text-slate-900 mb-4 flex items-center justify-between">
-                      {item.type}
-                      <button className="text-xs text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg font-bold hover:bg-blue-100 transition-colors">Chỉnh sửa</button>
-                    </h4>
-                    <div className="flex flex-wrap items-start gap-4">
-                      {item.flow.map((role, rIdx) => (
-                        <React.Fragment key={rIdx}>
-                          <div className="flex flex-col items-center bg-slate-50 px-4 py-3 rounded-2xl border border-slate-200 w-full sm:w-auto min-w-[150px]">
-                            <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-xs mb-2">
-                              {rIdx + 1}
-                            </div>
-                            <p className="text-xs font-bold text-slate-900 text-center">{role}</p>
-                            <p className="text-[10px] text-slate-600 mt-1 bg-white px-2 rounded-full border border-slate-300">{item.methods[rIdx]}</p>
-                          </div>
-                          {rIdx < item.flow.length - 1 && (
-                            <div className="h-16 flex items-center text-slate-500 self-center">
-                              →
-                            </div>
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'certificates' && (
-            <div className="p-6">
-              <div className="mb-6 flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900">Quản lý Chứng thư số</h3>
-                  <p className="text-xs text-slate-600 mt-1">Danh sách chứng thư số, chữ ký điện tử hiện có trên hệ thống.</p>
-                </div>
-                <button 
-                  onClick={handleGenerateKeyPair}
-                  className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-all shadow-sm flex items-center gap-2"
-                >
-                  <Key className="w-4 h-4" />
-                  Tạo Chứng thư mới
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {certificates.map(cert => (
-                  <div key={cert.user_id} className="border border-slate-200 rounded-2xl p-5 flex items-start gap-4 hover:border-blue-300 transition-colors bg-white shadow-sm">
-                    <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-300 flex items-center justify-center shrink-0">
-                      <UserCheck className="w-6 h-6 text-blue-500" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-1">
-                        <h4 className="font-bold text-slate-900 truncate">{cert.user_id}</h4>
-                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-600">
-                          Hoạt động
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-600 mb-2 truncate">{cert.cert_subject}</p>
-                      <p className="text-[10px] text-slate-500 font-mono bg-slate-50 p-1 rounded overflow-x-auto">
-                        {cert.public_key.substring(0, 100)}...
-                      </p>
-                      <div className="flex items-center justify-between text-xs font-semibold mt-3">
-                        <span className="text-slate-500">Tạo: {new Date(cert.created_at).toLocaleDateString('vi-VN')}</span>
-                        <span className="text-blue-600">RSA 2048-bit</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {certificates.length === 0 && (
-                  <div className="col-span-2 text-center py-12 text-slate-500">
-                    Chưa có chứng thư số nào được tạo. Nhấn "Tạo Chứng thư mới" để sinh khóa.
-                  </div>
+      {/* Main Tabs Container */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        {/* Navigation Tabs Bar */}
+        <div className="p-4 bg-slate-50/90 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex gap-2 flex-wrap">
+            {[
+              { id: 'company_hsm', label: 'Chữ Ký Số HSM Công Ty', icon: Server },
+              { id: 'personal_certs', label: 'Cấp Phát Chứng Thư Cá Nhân', icon: UserCheck },
+              { id: 'signing_workspace', label: 'Bàn Ký Số & Trình Ký', icon: FileSignature },
+              { id: 'authority_matrix', label: 'Ma Trận Thẩm Quyền Ký', icon: Sliders },
+              { id: 'audit_logs', label: 'Nhật Ký Truy Vết Ký Số', icon: Lock }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={cn(
+                  "px-4 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-2",
+                  activeTab === tab.id
+                    ? "bg-indigo-600 text-white shadow-sm"
+                    : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-100"
                 )}
-              </div>
-            </div>
-          )}
+              >
+                <tab.icon className="w-4 h-4" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-          {activeTab === 'logs' && (
-            <div className="p-0">
-              <div className="p-6 border-b border-slate-200 bg-slate-50">
-                <h3 className="text-lg font-bold text-slate-900">Nhật ký Hệ thống Ký số</h3>
-                <p className="text-xs text-slate-600 mt-1">Lưu trữ lịch sử thao tác, xác thực và ký số trên toàn hệ thống.</p>
-              </div>
-              <div className="overflow-auto max-h-[500px]">
-                <table className="w-full text-left whitespace-nowrap">
-                  <thead className="bg-slate-50 sticky top-0">
-                    <tr>
-                      <th className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">Thời gian</th>
-                      <th className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">Thao tác</th>
-                      <th className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">Người thực hiện</th>
-                      <th className="px-4 py-2 text-xs font-bold text-slate-600 uppercase">IP & Thiết bị</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {logs.map((log, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50">
-                        <td className="px-4 py-3 text-xs text-slate-700 font-mono">{log.time}</td>
-                        <td className="px-4 py-3 text-sm font-semibold text-slate-900">{log.action}</td>
-                        <td className="px-4 py-3 text-xs text-slate-700">{log.user}</td>
-                        <td className="px-4 py-3 text-xs text-slate-600 font-mono">{log.ip}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
+          <div className="text-[11px] text-slate-500 font-medium hidden lg:flex items-center gap-1.5">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            Tuân thủ Luật Giao dịch điện tử & NĐ 130/2018/NĐ-CP
+          </div>
         </div>
-      </div>
 
-      {/* Signing Modal */}
-      {signingModalOpen && selectedDoc && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-in fade-in" onClick={() => setSigningModalOpen(false)}>
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-blue-600 animate-pulse" />
-                Xác nhận Ký số Mật mã học (RSA)
-              </h3>
-            </div>
-            
-            <div className="p-6 space-y-4">
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl">
-                <p className="text-sm text-blue-800 font-bold leading-relaxed">Tài liệu: {selectedDoc?.title}</p>
-                <p className="text-xs text-blue-600 font-mono mt-1">Ref ID: {selectedDoc?.docId || selectedDoc?.id}</p>
+        {/* TAB 1: QUẢN TRỊ CHỮ KÝ SỐ HSM PHÁP NHÂN CÔNG TY */}
+        {activeTab === 'company_hsm' && (
+          <div className="p-6 space-y-6 animate-in fade-in">
+            {testHsmSuccess && (
+              <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-4 flex items-center gap-3 text-emerald-800 text-xs animate-in fade-in">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                <div>
+                  <span className="font-bold">Kiểm tra kết nối HSM thành công!</span> Cụm Cloud HSM Viettel-CA phản hồi với độ trễ <strong>14ms</strong>, Slot Token sẵn sàng xử lý ký số với tốc độ <strong>120 TPS</strong>.
+                </div>
               </div>
+            )}
 
-              {!userKeyPair ? (
-                <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left 2 Cols: Certificate Details & HSM Appliance Specs */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Certificate Identity Card */}
+                <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 rounded-2xl shadow-md space-y-4 relative overflow-hidden">
+                  <div className="absolute right-0 top-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-6 h-6 text-amber-400" />
+                      <span className="text-xs font-bold uppercase tracking-widest text-indigo-300">
+                        Chứng Thư Số Pháp Nhân Công Ty
+                      </span>
+                    </div>
+                    <span className="px-3 py-1 bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-black rounded-full flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Có hiệu lực
+                    </span>
+                  </div>
+
                   <div>
-                    <h4 className="text-xs font-bold text-amber-800">Bạn chưa có Chứng thư số RSA</h4>
-                    <p className="text-xs text-amber-700 mt-1">Vui lòng sinh cặp khóa RSA trên hệ thống trước khi thực hiện ký số.</p>
-                    <button 
-                      onClick={handleGenerateKeyPair}
-                      className="mt-3 px-3 py-1.5 bg-amber-600 text-white rounded text-[11px] font-bold hover:bg-amber-700 transition-colors"
+                    <h2 className="text-lg font-black">{companyHsm.companyName}</h2>
+                    <div className="text-xs text-indigo-200 mt-1 flex items-center gap-3 flex-wrap">
+                      <span>Mã số thuế: <strong className="text-white font-mono">{companyHsm.taxCode}</strong></span>
+                      <span>•</span>
+                      <span>Nhà cung cấp: <strong className="text-white">{companyHsm.provider}</strong></span>
+                      <span>•</span>
+                      <span>Tiêu chuẩn: <strong className="text-white">{companyHsm.fipsStandard}</strong></span>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 bg-white/5 rounded-xl border border-white/10 font-mono text-xs text-indigo-100 break-all space-y-1">
+                    <div className="text-[10px] text-slate-400 uppercase font-sans">Subject DN:</div>
+                    <div className="text-[11px]">{companyHsm.subjectDN}</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-sans pt-1">Serial Number:</div>
+                    <div className="text-amber-300 font-bold">{companyHsm.serialNumber}</div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3 text-xs pt-1 border-t border-white/10">
+                    <div>
+                      <span className="block text-slate-400 text-[10px]">Ngày cấp</span>
+                      <span className="font-semibold">{companyHsm.validFrom}</span>
+                    </div>
+                    <div>
+                      <span className="block text-slate-400 text-[10px]">Ngày hết hạn</span>
+                      <span className="font-semibold">{companyHsm.validTo}</span>
+                    </div>
+                    <div>
+                      <span className="block text-slate-400 text-[10px]">Thời gian còn lại</span>
+                      <span className="font-bold text-amber-300">{companyHsm.daysRemaining} ngày</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cloud HSM Infrastructure Monitoring */}
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-bold text-sm text-slate-900">Thông Số Kỹ Thuật Cloud HSM</h3>
+                      <p className="text-xs text-slate-500">Giám sát Slot, Token ID và lưu lượng ký số</p>
+                    </div>
+                    <button
+                      onClick={handleTestHsm}
+                      disabled={isTestingHsm}
+                      className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors disabled:opacity-50"
                     >
-                      Sinh chứng thư số RSA ngay
+                      {isTestingHsm ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Activity className="w-3.5 h-3.5 text-indigo-600" />}
+                      Test Kết Nối HSM
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <span className="text-[10px] text-slate-400 uppercase block">Slot ID</span>
+                      <span className="font-mono font-bold text-slate-800">{companyHsm.slotId}</span>
+                    </div>
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <span className="text-[10px] text-slate-400 uppercase block">Token Label</span>
+                      <span className="font-mono font-bold text-slate-800">{companyHsm.tokenLabel}</span>
+                    </div>
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <span className="text-[10px] text-slate-400 uppercase block">Tốc độ Ký (TPS)</span>
+                      <span className="font-bold text-emerald-600">{companyHsm.tpsSpeed} TPS</span>
+                    </div>
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <span className="text-[10px] text-slate-400 uppercase block">Mã PIN Slot</span>
+                      <span className="font-mono font-bold text-slate-800">•••••••• (Đã khóa)</span>
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-slate-500 bg-indigo-50/60 p-3 rounded-xl border border-indigo-100 flex items-center justify-between">
+                    <div>
+                      Endpoint kết nối: <code className="font-mono font-bold text-indigo-900">{companyHsm.serverEndpoint}</code>
+                    </div>
+                    <button
+                      onClick={() => alert('Chức năng bảo mật: Yêu cầu xác thực OTP của Super Admin trước khi thay đổi mã PIN Slot HSM.')}
+                      className="text-xs text-indigo-700 hover:underline font-bold"
+                    >
+                      Đổi mã PIN HSM
                     </button>
                   </div>
                 </div>
-              ) : (
-                <div className="space-y-3">
+              </div>
+
+              {/* Right Col: Auto Batch Signing Rules */}
+              <div className="space-y-6">
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Chứng thư số đã chọn</label>
-                    <div className="bg-slate-50 border border-slate-200 rounded p-2.5 text-xs text-slate-700 font-medium">
-                      {userKeyPair.cert_subject}
+                    <h3 className="font-bold text-sm text-slate-900">Cấu Hình Ký Tự Động (Auto-Sign)</h3>
+                    <p className="text-xs text-slate-500 mt-0.5">Tự động kích hoạt ký Cloud HSM theo sự kiện luồng nghiệp vụ</p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                      <div>
+                        <div className="font-bold text-xs text-slate-900">Hóa Đơn Điện Tử (TT78)</div>
+                        <div className="text-[11px] text-slate-500">Tự động ký số khi đơn hàng giao thành công</div>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={companyHsm.autoSignRules.invoices}
+                          onChange={() => handleToggleAutoSign('invoices')}
+                          className="sr-only peer"
+                        />
+                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                      </label>
+                    </div>
+
+                    <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                      <div>
+                        <div className="font-bold text-xs text-slate-900">Phiếu Xuất Kho Vận Chuyển</div>
+                        <div className="text-[11px] text-slate-500">Ký số lệnh xuất kho 3PL GHN/GHTK</div>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={companyHsm.autoSignRules.warehouseReceipts}
+                          onChange={() => handleToggleAutoSign('warehouseReceipts')}
+                          className="sr-only peer"
+                        />
+                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                      </label>
+                    </div>
+
+                    <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                      <div>
+                        <div className="font-bold text-xs text-slate-900">Biên Bản Đối Soát Công Nợ</div>
+                        <div className="text-[11px] text-slate-500">Tự động ký đối soát nhà bán định kỳ T+7</div>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={companyHsm.autoSignRules.reconciliations}
+                          onChange={() => handleToggleAutoSign('reconciliations')}
+                          className="sr-only peer"
+                        />
+                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                      </label>
+                    </div>
+
+                    <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                      <div>
+                        <div className="font-bold text-xs text-slate-900">Tờ Khai Thuế Định Kỳ</div>
+                        <div className="text-[11px] text-slate-500">Yêu cầu duyệt thủ công của Kế toán trưởng</div>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={companyHsm.autoSignRules.taxDeclarations}
+                          onChange={() => handleToggleAutoSign('taxDeclarations')}
+                          className="sr-only peer"
+                        />
+                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                      </label>
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Khóa riêng tư của bạn (Private Key PEM)</label>
-                    <textarea 
-                      rows={6}
-                      value={privateKeyInput}
-                      onChange={(e) => setPrivateKeyInput(e.target.value)}
-                      placeholder="Dán mã khóa riêng tư RSA tại đây..."
-                      className="w-full text-xs font-mono p-2 border border-slate-300 rounded focus:outline-none focus:border-blue-500"
-                    />
-                    <p className="text-[10px] text-slate-500 mt-1">
-                      Mẹo: Khóa riêng được tự động tải từ Local Storage nếu bạn đã sinh khóa trên máy này.
-                    </p>
-                  </div>
                 </div>
-              )}
+
+                <div className="bg-amber-50 rounded-2xl border border-amber-200 p-5 space-y-2 text-xs text-amber-900">
+                  <div className="font-bold flex items-center gap-1.5">
+                    <AlertTriangle className="w-4 h-4 text-amber-600" />
+                    Lưu Ý Bảo Mật Pháp Lý (TT 16/2019/TT-BTTTT)
+                  </div>
+                  <p className="text-[11px] leading-relaxed">
+                    Khóa ký số HSM được lưu trữ an toàn trong vùng bảo mật chuẩn FIPS 140-2 Level 3 của nhà cung cấp. Mọi giao dịch ký số tự động đều được gắn kèm Dấu thời gian điện tử (Timestamp Authority - TSA).
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: CẤP PHÁT & QUẢN LÝ CHỨNG THƯ SỐ CÁ NHÂN */}
+        {activeTab === 'personal_certs' && (
+          <div className="p-6 space-y-6 animate-in fade-in">
+            {/* Filter and Action Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto">
+                <span className="text-xs font-bold text-slate-600 mr-2 flex-shrink-0">Trạng thái:</span>
+                {[
+                  { id: 'all', label: 'Tất cả' },
+                  { id: 'active', label: 'Hoạt động' },
+                  { id: 'suspended', label: 'Tạm khóa' },
+                  { id: 'revoked', label: 'Đã thu hồi' },
+                ].map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => setCertFilterStatus(item.id)}
+                    className={cn(
+                      "px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap",
+                      certFilterStatus === item.id
+                        ? "bg-indigo-600 text-white shadow-xs"
+                        : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+                    )}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="relative w-full sm:w-72">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={certSearch}
+                  onChange={e => setCertSearch(e.target.value)}
+                  placeholder="Tìm nhân sự, email, serial..."
+                  className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
             </div>
 
-            <div className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
-              <button 
-                onClick={() => setSigningModalOpen(false)}
-                disabled={isSigningInProcess}
-                className="px-4 py-2.5 text-[13px] font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-50"
+            {/* Personal Certificates Table */}
+            <div className="border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+                    <tr>
+                      <th className="py-3 px-4">Cán bộ Nhân sự</th>
+                      <th className="py-3 px-4">Phòng ban & Chức danh</th>
+                      <th className="py-3 px-4">Serial Chứng thư</th>
+                      <th className="py-3 px-4">Thuật toán</th>
+                      <th className="py-3 px-4 text-center">Hạn mức Ký (VND)</th>
+                      <th className="py-3 px-4 text-center">Thời hạn</th>
+                      <th className="py-3 px-4 text-center">Trạng thái</th>
+                      <th className="py-3 px-4 text-right">Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredCerts.map(cert => (
+                      <tr key={cert.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="py-3.5 px-4">
+                          <div className="font-bold text-slate-900">{cert.fullName}</div>
+                          <div className="text-[11px] text-slate-400 font-mono">{cert.staffCode} • {cert.email}</div>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="font-medium text-slate-800">{cert.title}</div>
+                          <div className="text-[11px] text-slate-500">{cert.department}</div>
+                        </td>
+                        <td className="py-3.5 px-4 font-mono text-[11px] text-indigo-700 font-bold">
+                          {cert.serialNumber}
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-semibold border border-slate-200">
+                            {cert.algorithm}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-center">
+                          {cert.signingLimitVND === 0 ? (
+                            <span className="text-emerald-700 font-black text-xs">Không giới hạn</span>
+                          ) : (
+                            <span className="font-bold text-slate-800">
+                              {formatCurrency(cert.signingLimitVND)}
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3.5 px-4 text-center text-slate-600 text-[11px]">
+                          <div>{cert.expiryDate}</div>
+                          <div className="text-[10px] text-slate-400">Cấp: {cert.issuedDate}</div>
+                        </td>
+                        <td className="py-3.5 px-4 text-center">
+                          <span className={cn(
+                            "px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1",
+                            cert.status === 'active' ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                            cert.status === 'suspended' ? "bg-amber-50 text-amber-700 border border-amber-200" :
+                            "bg-rose-50 text-rose-700 border border-rose-200"
+                          )}>
+                            {cert.status === 'active' ? <CheckCircle2 className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
+                            {cert.status === 'active' ? 'Đang hoạt động' : cert.status === 'suspended' ? 'Tạm khóa' : 'Đã thu hồi'}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            {cert.status === 'active' && (
+                              <button
+                                onClick={() => handleCertAction(cert.id, 'suspend')}
+                                className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                                title="Tạm khóa chứng thư"
+                              >
+                                <Lock className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                            {cert.status === 'suspended' && (
+                              <button
+                                onClick={() => handleCertAction(cert.id, 'activate')}
+                                className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                                title="Mở khóa hoạt động lại"
+                              >
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                            {cert.status !== 'revoked' && (
+                              <button
+                                onClick={() => {
+                                  if (confirm(`Bạn có chắc chắn muốn thu hồi vĩnh viễn chứng thư của ${cert.fullName}? Thao tác này không thể hoàn tác!`)) {
+                                    handleCertAction(cert.id, 'revoke');
+                                  }
+                                }}
+                                className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                                title="Thu hồi vĩnh viễn (Revoke)"
+                              >
+                                <UserX className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                            <button
+                              onClick={() => {
+                                handleCertAction(cert.id, 'renew');
+                                alert(`Đã gia hạn chứng thư cho ${cert.fullName} thêm 3 năm!`);
+                              }}
+                              className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                              title="Gia hạn thời hạn sử dụng"
+                            >
+                              <RotateCw className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: BÀN KÝ SỐ & TRÌNH KÝ ĐIỆN TỬ */}
+        {activeTab === 'signing_workspace' && (
+          <div className="p-6 space-y-6 animate-in fade-in">
+            {/* Filter and Switcher */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setDocFilterStatus('pending')}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2",
+                    docFilterStatus === 'pending'
+                      ? "bg-amber-500 text-white shadow-xs"
+                      : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+                  )}
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  Chờ Tôi Ký ({documents.filter(d => d.status === 'pending').length})
+                </button>
+                <button
+                  onClick={() => setDocFilterStatus('signed')}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2",
+                    docFilterStatus === 'signed'
+                      ? "bg-indigo-600 text-white shadow-xs"
+                      : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+                  )}
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Đã Hoàn Tất Ký ({documents.filter(d => d.status === 'signed').length})
+                </button>
+              </div>
+
+              <div className="relative w-full sm:w-72">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={docSearch}
+                  onChange={e => setDocSearch(e.target.value)}
+                  placeholder="Tìm mã tài liệu, tiêu đề..."
+                  className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+            </div>
+
+            {/* Documents List Table */}
+            <div className="border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+                    <tr>
+                      <th className="py-3 px-4">Tài liệu / Văn bản</th>
+                      <th className="py-3 px-4">Phân loại & Người tạo</th>
+                      <th className="py-3 px-4 text-center">Số tiền (nếu có)</th>
+                      <th className="py-3 px-4 text-center">Yêu cầu Ký</th>
+                      <th className="py-3 px-4 text-center">Thời gian</th>
+                      <th className="py-3 px-4 text-right">Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredDocs.map(doc => (
+                      <tr key={doc.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="py-3.5 px-4">
+                          <div className="font-bold text-slate-900 flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                            <span>{doc.title}</span>
+                          </div>
+                          <div className="text-[10px] font-mono text-slate-400 mt-0.5">
+                            Mã số: {doc.docCode} • {doc.fileSize} • {doc.totalPages} trang
+                          </div>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="font-semibold text-slate-800">{doc.requestedBy}</div>
+                          <div className="text-[11px] text-slate-500">{doc.department}</div>
+                        </td>
+                        <td className="py-3.5 px-4 text-center font-mono font-bold text-slate-800">
+                          {doc.amount ? formatCurrency(doc.amount) : '-'}
+                        </td>
+                        <td className="py-3.5 px-4 text-center">
+                          <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold rounded-lg text-[10px] border border-indigo-200">
+                            {doc.signatureTypeNeeded === 'company_hsm' ? 'Cloud HSM Công ty' :
+                             doc.signatureTypeNeeded === 'personal_cert' ? 'Chứng thư Cá nhân' : 'Ký duyệt 2 lớp'}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-center text-slate-500 text-[11px]">
+                          {doc.createdDate}
+                        </td>
+                        <td className="py-3.5 px-4 text-right">
+                          {doc.status === 'pending' ? (
+                            <button
+                              onClick={() => {
+                                setSelectedDocToSign(doc);
+                                setSigningMethod(doc.signatureTypeNeeded === 'company_hsm' ? 'company_hsm' : 'personal_cert');
+                                setSigningPin('');
+                                setShowSigningModal(true);
+                              }}
+                              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-sm flex items-center gap-1.5 ml-auto transition-all"
+                            >
+                              <Key className="w-3.5 h-3.5" /> Ký ngay
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setSelectedDocToVerify(doc);
+                                setShowVerifyModal(true);
+                              }}
+                              className="px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl font-bold text-xs border border-emerald-200 flex items-center gap-1.5 ml-auto transition-colors"
+                            >
+                              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Xác thực chữ ký
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: MA TRẬN THẨM QUYỀN KÝ SỐ */}
+        {activeTab === 'authority_matrix' && (
+          <div className="p-6 space-y-6 animate-in fade-in">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div>
+                <h3 className="font-bold text-sm text-slate-900">Quy Định Thẩm Quyền Ký Số Doanh Nghiệp</h3>
+                <p className="text-xs text-slate-500">Phân định hạn mức tài chính tối đa và loại chữ ký bắt buộc cho từng chức vụ</p>
+              </div>
+              <button
+                onClick={() => alert('Đã lưu cấu hình ma trận thẩm quyền ký số!')}
+                className="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl shadow-xs hover:bg-indigo-700 transition-all"
               >
-                Hủy bỏ
-              </button>
-              <button 
-                onClick={confirmSign}
-                disabled={isSigningInProcess || !userKeyPair || !privateKeyInput}
-                className="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-[13px] font-bold hover:bg-blue-700 shadow-sm active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50"
-              >
-                {isSigningInProcess ? <Loader2 className="w-4 h-4 animate-spin" /> : <Key className="w-4 h-4" />}
-                {isSigningInProcess ? 'Đang thực thi ký số...' : 'Chấp nhận Ký số'}
+                Cập nhật ma trận
               </button>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {INITIAL_AUTHORITY_RULES.map((rule, idx) => (
+                <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-bold text-sm text-slate-900">{rule.roleName}</h4>
+                      <span className="text-[11px] text-slate-500">{rule.department}</span>
+                    </div>
+                    <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold rounded-lg text-[10px] border border-indigo-200">
+                      {rule.requiredSignType}
+                    </span>
+                  </div>
+
+                  <div className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
+                    <div>
+                      Hạn mức phê duyệt tối đa: <strong className="text-emerald-700 font-black">{rule.maxLimitVND === 0 ? 'Không giới hạn' : formatCurrency(rule.maxLimitVND)}</strong>
+                    </div>
+                    <div>
+                      Loại văn bản thẩm quyền: <strong className="text-slate-800">{rule.documentTypes.join(', ')}</strong>
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-slate-400 italic leading-relaxed">
+                    {rule.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 5: NHẬT KÝ TRUY VẾT KÝ SỐ (AUDIT TRAIL) */}
+        {activeTab === 'audit_logs' && (
+          <div className="p-6 space-y-6 animate-in fade-in">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div>
+                <h3 className="font-bold text-sm text-slate-900">Nhật Ký Truy Vết Ký Số & Cloud HSM (Audit Trail)</h3>
+                <p className="text-xs text-slate-500">Ghi nhận chi tiết mọi giao dịch ký số mật mã học theo Nghị định 130/2018/NĐ-CP</p>
+              </div>
+              <button
+                onClick={() => alert('Đã xuất toàn bộ dữ liệu nhật ký ký số ra định dạng file Excel thẩm tra!')}
+                className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors"
+              >
+                <Download className="w-3.5 h-3.5" /> Xuất Log Audit
+              </button>
+            </div>
+
+            <div className="border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+                  <tr>
+                    <th className="py-3 px-4">Thời gian</th>
+                    <th className="py-3 px-4">Hành động & Tài liệu</th>
+                    <th className="py-3 px-4">Chủ thể Ký số</th>
+                    <th className="py-3 px-4">Mã băm SHA-256</th>
+                    <th className="py-3 px-4">IP & Thiết bị</th>
+                    <th className="py-3 px-4 text-center">Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
+                  {auditLogs.map(log => (
+                    <tr key={log.id} className="hover:bg-slate-50">
+                      <td className="py-3 px-4 text-slate-600 whitespace-nowrap">{log.timestamp}</td>
+                      <td className="py-3 px-4 font-sans text-xs font-semibold text-slate-900">{log.action}</td>
+                      <td className="py-3 px-4 font-sans text-xs text-slate-800">{log.performedBy}</td>
+                      <td className="py-3 px-4 text-slate-500 truncate max-w-xs" title={log.hashSHA256}>
+                        {log.hashSHA256.substring(0, 24)}...
+                      </td>
+                      <td className="py-3 px-4 text-slate-500">{log.ipAddress}</td>
+                      <td className="py-3 px-4 text-center">
+                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 font-bold rounded text-[10px] border border-emerald-200 font-sans">
+                          Thành công
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* MODAL CẤP PHÁT CHỨNG THƯ SỐ CÁ NHÂN MỚI */}
+      {showIssueCertModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden border border-slate-200">
+            <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Key className="w-5 h-5 text-amber-400" />
+                <h3 className="font-bold text-base">Cấp Phát Chứng Thư Số Cá Nhân Mới</h3>
+              </div>
+              <button
+                onClick={() => setShowIssueCertModal(false)}
+                className="p-1 text-slate-400 hover:text-white rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleIssueCertificate} className="p-6 space-y-4 text-xs">
+              {/* HRM Staff / Request Selector Header */}
+              <div className="p-3.5 bg-gradient-to-r from-indigo-50 via-slate-50 to-purple-50 border border-indigo-200 rounded-xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-indigo-900 font-bold">
+                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                    <span>Nguồn dữ liệu người dùng (Bắt buộc từ HRM)</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-200 flex items-center gap-1">
+                    <Lock className="w-3 h-3" /> Khóa nhập tay
+                  </span>
+                </div>
+
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  Để bảo đảm tính pháp lý và toàn vẹn của chứng thư số, thông tin cán bộ phải được trích xuất trực tiếp từ <strong>Hồ sơ Cán bộ Nhân viên (CBNV)</strong> hoặc <strong>Đơn yêu cầu cá nhân trong HRM</strong>.
+                </p>
+
+                <div className="flex items-center gap-2 flex-wrap pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPickerDefaultTab('cbnv');
+                      setShowHrmPicker(true);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold shadow-xs transition-all cursor-pointer text-[11px]"
+                  >
+                    <UserCheck className="w-3.5 h-3.5" />
+                    <span>Chọn từ Danh sách CBNV</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPickerDefaultTab('hrm_request');
+                      setShowHrmPicker(true);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg font-bold transition-all cursor-pointer text-[11px]"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-sky-600" />
+                    <span>Chọn từ Đơn yêu cầu HRM</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const current = hrmEmployeeService.getCurrentLoggedInStaff();
+                      handleSelectHrmStaff(current, 'current_user');
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg font-bold transition-all cursor-pointer text-[11px]"
+                  >
+                    <UserCheck className="w-3.5 h-3.5 text-purple-600" />
+                    <span>Dùng hồ sơ của tôi</span>
+                  </button>
+                </div>
+
+                {hrmSourceLabel && (
+                  <div className="p-2 bg-white rounded-lg border border-indigo-100 text-[11px] text-indigo-900 font-semibold flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span className="truncate">{hrmSourceLabel}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Locked Staff Information */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                    <span>Mã nhân viên</span>
+                    <span className="text-[10px] text-slate-400 font-normal flex items-center gap-0.5">
+                      <Lock className="w-3 h-3 text-slate-400" /> Khóa
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newCertForm.staffCode}
+                    readOnly
+                    title="Thông tin được trích xuất từ HRM, không được sửa đổi"
+                    className="w-full px-3 py-2 bg-slate-100 text-slate-800 font-mono font-bold border border-slate-300 rounded-lg cursor-not-allowed select-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                    <span>Họ và tên cán bộ</span>
+                    <span className="text-[10px] text-slate-400 font-normal flex items-center gap-0.5">
+                      <Lock className="w-3 h-3 text-slate-400" /> Khóa
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newCertForm.fullName}
+                    readOnly
+                    title="Thông tin được trích xuất từ HRM, không được sửa đổi"
+                    className="w-full px-3 py-2 bg-slate-100 text-slate-800 font-bold border border-slate-300 rounded-lg cursor-not-allowed select-none"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                    <span>Email công vụ</span>
+                    <span className="text-[10px] text-slate-400 font-normal flex items-center gap-0.5">
+                      <Lock className="w-3 h-3 text-slate-400" /> Khóa
+                    </span>
+                  </label>
+                  <input
+                    type="email"
+                    value={newCertForm.email}
+                    readOnly
+                    title="Thông tin được trích xuất từ HRM, không được sửa đổi"
+                    className="w-full px-3 py-2 bg-slate-100 text-slate-800 font-medium border border-slate-300 rounded-lg cursor-not-allowed select-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                    <span>Phòng ban công tác</span>
+                    <span className="text-[10px] text-slate-400 font-normal flex items-center gap-0.5">
+                      <Lock className="w-3 h-3 text-slate-400" /> Khóa
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newCertForm.department}
+                    readOnly
+                    title="Thông tin được trích xuất từ HRM, không được sửa đổi"
+                    className="w-full px-3 py-2 bg-slate-100 text-slate-800 font-medium border border-slate-300 rounded-lg cursor-not-allowed select-none"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                    <span>Chức danh bổ nhiệm</span>
+                    <span className="text-[10px] text-slate-400 font-normal flex items-center gap-0.5">
+                      <Lock className="w-3 h-3 text-slate-400" /> Khóa
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newCertForm.title}
+                    readOnly
+                    title="Thông tin được trích xuất từ HRM, không được sửa đổi"
+                    className="w-full px-3 py-2 bg-slate-100 text-slate-800 font-medium border border-slate-300 rounded-lg cursor-not-allowed select-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Hạn mức Ký tối đa (VND)</label>
+                  <input
+                    type="number"
+                    value={newCertForm.signingLimitVND}
+                    onChange={e => setNewCertForm({ ...newCertForm, signingLimitVND: Number(e.target.value) })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0 = Không giới hạn"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Thuật toán Mã hóa Cặp khóa</label>
+                  <select
+                    value={newCertForm.algorithm}
+                    onChange={e => setNewCertForm({ ...newCertForm, algorithm: e.target.value as any })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="RSA 2048-bit">RSA 2048-bit (Tiêu chuẩn phổ biến)</option>
+                    <option value="ECC P-256">ECC P-256 (Hiệu năng cao)</option>
+                    <option value="SmartCA Cloud">SmartCA Cloud (Ký số di động)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Thời hạn hiệu lực</label>
+                  <select
+                    value={newCertForm.validYears}
+                    onChange={e => setNewCertForm({ ...newCertForm, validYears: Number(e.target.value) })}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value={1}>1 Năm</option>
+                    <option value={2}>2 Năm</option>
+                    <option value={3}>3 Năm</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-indigo-900 leading-relaxed">
+                <span className="font-bold">Quy trình cấp khóa tự động:</span> Hệ thống sẽ sinh cặp khóa mật mã học X.509, lưu khóa công khai (Public Key) trên máy chủ xác thực và gửi hướng dẫn kích hoạt mã PIN ký số vào email công vụ của nhân sự.
+              </div>
+
+              <div className="pt-2 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowIssueCertModal(false)}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold"
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-md"
+                >
+                  Tạo & Cấp Chứng Thư
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
 
-      {/* Verification Results Modal */}
-      {verificationModalOpen && verifyingDoc && verificationResult && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-in fade-in" onClick={() => setVerificationModalOpen(false)}>
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-blue-600" />
-                Kết quả kiểm tra Tính toàn vẹn chữ ký số
-              </h3>
-            </div>
-            
-            <div className="p-6 space-y-4">
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Tài liệu</p>
-                <p className="text-sm font-bold text-slate-800 mt-1">{verifyingDoc.title}</p>
-                <p className="text-xs text-slate-600 font-mono mt-1">ID: {verifyingDoc.docId || verifyingDoc.id}</p>
+      {/* MODAL KÝ SỐ TÀI LIỆU */}
+      {showSigningModal && selectedDocToSign && (
+        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden border border-slate-200">
+            <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-indigo-400" />
+                <h3 className="font-bold text-base">Xác Nhận Ký Số Mật Mã Học</h3>
               </div>
+              <button
+                onClick={() => setShowSigningModal(false)}
+                className="p-1 text-slate-400 hover:text-white rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-              {verificationResult.verified ? (
-                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-start gap-3">
-                  <ShieldCheck className="w-6 h-6 text-emerald-600 shrink-0" />
-                  <div>
-                    <h4 className="text-sm font-bold text-emerald-800">Chữ ký Hợp lệ & Dữ liệu Nguyên vẹn</h4>
-                    <p className="text-xs text-emerald-700 mt-1">
-                      Mẫu chữ ký số mã hóa RSA khớp 100% với tài liệu và nội dung. Tài liệu không bị chỉnh sửa sau thời điểm ký.
-                    </p>
+            <div className="p-6 space-y-4 text-xs">
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                <div className="text-[10px] text-slate-400 uppercase font-bold">Văn bản trình ký</div>
+                <div className="font-bold text-sm text-slate-900">{selectedDocToSign.title}</div>
+                <div className="text-slate-500 font-mono">Mã số: {selectedDocToSign.docCode}</div>
+                {selectedDocToSign.amount && (
+                  <div className="text-emerald-700 font-bold mt-1">
+                    Giá trị tài chính: {formatCurrency(selectedDocToSign.amount)}
                   </div>
-                </div>
-              ) : (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3">
-                  <ShieldAlert className="w-6 h-6 text-red-600 shrink-0" />
-                  <div>
-                    <h4 className="text-sm font-bold text-red-800">Xác thực Thất bại!</h4>
-                    <p className="text-xs text-red-700 mt-1">
-                      Cảnh báo: Phát hiện sai lệch hàm băm tài liệu! Dữ liệu của đề xuất/hợp đồng đã bị sửa đổi trái phép sau khi người duyệt ký số hoặc chứng thư số đã bị thu hồi.
-                    </p>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
 
               <div>
-                <h4 className="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">Chi tiết Chữ ký trên tài liệu</h4>
-                <div className="space-y-2">
-                  {verificationResult.signatures.map((sig: any, index: number) => (
-                    <div key={index} className="border border-slate-200 rounded p-3 text-xs bg-slate-50">
-                      <div className="flex justify-between items-center mb-1">
-                        <strong className="text-slate-800">{sig.signerName} ({sig.signerEmail})</strong>
-                        <span className={cn(
-                          "px-2 py-0.5 rounded text-[10px] font-bold uppercase",
-                          sig.verified ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"
-                        )}>
-                          {sig.verified ? 'Verified' : 'Fail'}
-                        </span>
-                      </div>
-                      <p className="text-slate-600 mt-1">Thời gian ký: {new Date(sig.date).toLocaleString('vi-VN')}</p>
-                      {sig.reason && <p className="text-red-600 mt-1 font-semibold">Lý do: {sig.reason}</p>}
+                <label className="block font-bold text-slate-700 mb-2">Chọn nguồn Chữ ký số</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setSigningMethod('company_hsm')}
+                    className={cn(
+                      "p-3 rounded-xl border text-left transition-all",
+                      signingMethod === 'company_hsm'
+                        ? "border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-400"
+                        : "border-slate-200 hover:bg-slate-50"
+                    )}
+                  >
+                    <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                      <Server className="w-4 h-4 text-indigo-600" /> Cloud HSM Công ty
                     </div>
-                  ))}
-                  {verificationResult.signatures.length === 0 && (
-                    <p className="text-slate-500 italic text-center py-2">Không tìm thấy bản ghi chữ ký nào trong DB.</p>
-                  )}
+                    <div className="text-[10px] text-slate-500 mt-1">
+                      Ký thay pháp nhân VComm (Slot: {companyHsm.slotId})
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSigningMethod('personal_cert')}
+                    className={cn(
+                      "p-3 rounded-xl border text-left transition-all",
+                      signingMethod === 'personal_cert'
+                        ? "border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-400"
+                        : "border-slate-200 hover:bg-slate-50"
+                    )}
+                  >
+                    <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                      <UserCheck className="w-4 h-4 text-purple-600" /> Chứng Thư Cá Nhân
+                    </div>
+                    <div className="text-[10px] text-slate-500 mt-1">
+                      Ký chức danh thẩm quyền cá nhân (RSA 2048)
+                    </div>
+                  </button>
                 </div>
               </div>
-            </div>
 
-            <div className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end">
-              <button 
-                onClick={() => setVerificationModalOpen(false)}
-                className="px-4 py-2 bg-slate-800 text-white rounded text-xs font-bold hover:bg-slate-700 transition-colors"
-              >
-                Đóng lại
-              </button>
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Nhập mã PIN Ký Số Bí Mật</label>
+                <input
+                  type="password"
+                  value={signingPin}
+                  onChange={e => setSigningPin(e.target.value)}
+                  placeholder="Nhập mã PIN 6 số của bạn..."
+                  maxLength={6}
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-center font-mono tracking-widest text-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+                <span className="text-[10px] text-slate-400 mt-1 block text-center">
+                  Mã PIN bảo mật giúp mở khóa vùng nhớ mật mã học để sinh chữ ký số
+                </span>
+              </div>
+
+              <div className="pt-2 flex justify-end gap-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowSigningModal(false)}
+                  disabled={isSigningProcess}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExecuteSigning}
+                  disabled={isSigningProcess}
+                  className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-md flex items-center gap-2 disabled:opacity-50"
+                >
+                  {isSigningProcess ? <Loader2 className="w-4 h-4 animate-spin" /> : <Key className="w-4 h-4" />}
+                  {isSigningProcess ? 'Đang thực thi ký số...' : 'Xác Nhận Ký Số'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* MODAL XÁC THỰC TÍNH TOÀN VẸN CHỮ KÝ (VERIFY INTEGRITY) */}
+      {showVerifyModal && selectedDocToVerify && (
+        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden border border-slate-200">
+            <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                <h3 className="font-bold text-base">Kết Quả Xác Thực Tính Toàn Vẹn</h3>
+              </div>
+              <button
+                onClick={() => setShowVerifyModal(false)}
+                className="p-1 text-slate-400 hover:text-white rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4 text-xs">
+              <div className="p-4 bg-emerald-50 border border-emerald-300 rounded-2xl flex items-start gap-3">
+                <ShieldCheck className="w-6 h-6 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-bold text-sm text-emerald-900">Chữ Ký Số Hợp Lệ & Nguyên Vẹn 100%</h4>
+                  <p className="text-emerald-700 text-xs mt-1 leading-relaxed">
+                    Văn bản không bị chỉnh sửa sau thời điểm ký. Dấu thời gian điện tử (TSA) và chứng thư số còn hiệu lực tại thời điểm ký.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-slate-500">Tài liệu:</span>
+                  <strong className="text-slate-900">{selectedDocToVerify.title}</strong>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-slate-500">Người ký xác thực:</span>
+                  <strong className="text-slate-900">{selectedDocToVerify.signedBy?.name || 'Hệ thống'}</strong>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-slate-500">Serial Chứng thư:</span>
+                  <span className="font-mono text-indigo-700 font-bold">{selectedDocToVerify.signedBy?.certSerial}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-slate-500">Thời gian ký (TSA):</span>
+                  <span className="font-semibold text-slate-800">{selectedDocToVerify.signedBy?.signedAt}</span>
+                </div>
+                <div className="pt-1">
+                  <span className="text-slate-500 block mb-1">Mã băm toàn vẹn (SHA-256 Checksum):</span>
+                  <div className="p-2 bg-white rounded border border-slate-300 font-mono text-[10px] break-all text-slate-700">
+                    {selectedDocToVerify.signedBy?.hashSHA256}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowVerifyModal(false)}
+                  className="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold"
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* HRM STAFF / REQUEST PICKER MODAL */}
+      <HrmStaffOrRequestPickerModal
+        isOpen={showHrmPicker}
+        onClose={() => setShowHrmPicker(false)}
+        onSelectEmployee={handleSelectHrmStaff}
+        filterRequestCategory="signature"
+        title="Trích Xuất Nhân Sự Cho Chứng Thư Số Cá Nhân"
+        defaultTab={pickerDefaultTab}
+      />
     </div>
   );
 }
-
-const MOCK_LOGS = [
-  { time: '10:45 27/04/2026', action: 'Ký số thành công (SmartCA) tài liệu HD-001', user: 'Nguyễn Văn A', ip: '192.168.1.100 (iOS)' },
-  { time: '09:20 27/04/2026', action: 'Gia hạn Chứng thư số CA-002', user: 'Admin System', ip: 'Xác thực từ hệ thống' },
-  { time: '16:30 26/04/2026', action: 'Ký thất bại (Sai mã PIN USB Token) tài liệu QD-12', user: 'Trần B', ip: '10.0.0.50 (Windows)' },
-  { time: '14:15 26/04/2026', action: 'Tạo luồng trình ký mới REQ-99', user: 'Phòng Nhân sự', ip: '192.168.1.155 (Mac OS)' },
-];

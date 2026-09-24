@@ -57,11 +57,11 @@ export function Header() {
   <header className="h-20 px-4 md:px-6 flex items-center justify-between sticky top-0 z-50 bg-[#F9FAFB]/95 backdrop-blur-md border-b border-slate-300/50">
   <div className="header-title">
     <div>
-      <h1 className="font-serif tracking-tight text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
-      {'Chào buổi sáng'}, {staffInfo?.name || ('Quản trị hệ thống')}
+      <h1 className="font-sans tracking-tight text-xl md:text-2xl font-black text-slate-900">
+        {'Chào buổi sáng'}, {staffInfo?.name || ('Quản trị hệ thống')}
       </h1>
-      <p className="text-[11px] md:text-xs text-slate-600 font-medium mt-1">
-      {`Hệ thống vận hành ổn định. Có ${unreadCount} thông báo mới.`}
+      <p className="text-[11px] md:text-xs text-slate-600 font-medium mt-0.5">
+        {`Hệ thống vận hành ổn định. Có ${unreadCount} thông báo mới.`}
       </p>
     </div>
   </div>

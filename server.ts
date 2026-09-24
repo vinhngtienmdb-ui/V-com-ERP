@@ -1,4 +1,5 @@
 import express from 'express';
+import http from 'http';
 import fs from 'fs';
 import crypto from 'crypto';
 import { createServer as createViteServer } from 'vite';
@@ -11,6 +12,7 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, getDocs, limit, query, where, updateDoc, doc } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { createClient } from '@supabase/supabase-js';
+import { coreGatewayRouter } from './src/routes/coreGateway';
 
 dotenv.config();
 
@@ -162,6 +164,9 @@ async function startServer() {
     }
     next();
   });
+
+  // VComm Core API Gateway (3PL Shipping, Dynamic VietQR, V-Xu Reimbursement Engine)
+  app.use('/api/v1', coreGatewayRouter);
 
   // Webhook memory store for client polling
   let sepayWebhookEvents: any[] = [];
@@ -3561,11 +3566,19 @@ ${summaryText}`;
     }
   });
 
+  // HTTP server wrapping express app
+  const server = http.createServer(app);
+
   // Vite middleware for development
   let vite: any;
   if (process.env.NODE_ENV !== 'production') {
     vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: { 
+        middlewareMode: true,
+        hmr: {
+          server
+        }
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);
@@ -3577,15 +3590,9 @@ ${summaryText}`;
     });
   }
 
-  const server = app.listen(PORT, '0.0.0.0', () => {
+  server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
-
-  if (vite) {
-    server.on('upgrade', (req, socket, head) => {
-      vite.ws.handleUpgrade(req, socket, head);
-    });
-  }
 }
 
 startServer();
