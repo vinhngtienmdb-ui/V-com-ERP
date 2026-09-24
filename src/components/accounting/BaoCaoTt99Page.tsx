@@ -23,7 +23,7 @@ import {
   DongChungTuReport,
   SoDuDauKyItem
 } from '../../lib/keToan/financialReports';
-import { formatDateVN } from '../../lib/keToan/dateUtils';
+import { formatDateVN, formatMonthVN } from '../../lib/keToan/dateUtils';
 import { BaoCaoPrintExportModal } from './BaoCaoPrintExportModal';
 import { ThietLapCongTy } from './ThietLapCongTyModal';
 
@@ -174,9 +174,9 @@ export function BaoCaoTt99Page({ companyInfo }: { companyInfo?: ThietLapCongTy }
           {/* Presets */}
           <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
             <span className="text-[10px] text-slate-400 px-1 font-semibold">Kỳ nhanh:</span>
-            <button onClick={() => applyPeriodPreset('T01')} className="px-2 py-0.5 rounded text-[11px] font-medium hover:bg-white dark:hover:bg-slate-700">T1</button>
-            <button onClick={() => applyPeriodPreset('T02')} className="px-2 py-0.5 rounded text-[11px] font-medium hover:bg-white dark:hover:bg-slate-700">T2</button>
-            <button onClick={() => applyPeriodPreset('T03')} className="px-2 py-0.5 rounded text-[11px] font-medium hover:bg-white dark:hover:bg-slate-700">T3</button>
+            <button onClick={() => applyPeriodPreset('T01')} className="px-2 py-0.5 rounded text-[11px] font-medium hover:bg-white dark:hover:bg-slate-700 tabular-nums">01/2026</button>
+            <button onClick={() => applyPeriodPreset('T02')} className="px-2 py-0.5 rounded text-[11px] font-medium hover:bg-white dark:hover:bg-slate-700 tabular-nums">02/2026</button>
+            <button onClick={() => applyPeriodPreset('T03')} className="px-2 py-0.5 rounded text-[11px] font-medium hover:bg-white dark:hover:bg-slate-700 tabular-nums">03/2026</button>
             <button onClick={() => applyPeriodPreset('Q1')} className="px-2 py-0.5 rounded text-[11px] font-bold text-blue-600 hover:bg-white dark:hover:bg-slate-700">Quý 1</button>
             <button onClick={() => applyPeriodPreset('YEAR')} className="px-2 py-0.5 rounded text-[11px] font-medium hover:bg-white dark:hover:bg-slate-700">Cả năm</button>
           </div>

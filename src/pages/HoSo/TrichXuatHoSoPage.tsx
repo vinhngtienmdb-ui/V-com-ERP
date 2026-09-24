@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Download, FileSpreadsheet, FileArchive, Search, Filter, Calendar, FolderTree, ChevronRight, CheckCircle2, AlertTriangle, Layers } from 'lucide-react';
+import { formatDateVN, formatMonthVN } from '../../lib/keToan/dateUtils';
 
 export type MucThoiGian = 'NGAY' | 'TUAN' | 'THANG' | 'QUY' | 'BAN_NIEN' | 'NAM';
 
@@ -248,8 +249,12 @@ export const TrichXuatHoSoPage: React.FC = () => {
                     selectedRow?.mucThoiGian === row.mucThoiGian ? 'bg-indigo-50/70 font-semibold' : ''
                   }`}
                 >
-                  <td className="p-3 font-mono font-bold text-indigo-900">
-                    {row.mucThoiGian}
+                  <td className="p-3 font-mono font-bold text-indigo-900 tabular-nums">
+                    {mucThoiGian === 'THANG'
+                      ? formatMonthVN(row.mucThoiGian)
+                      : mucThoiGian === 'NGAY'
+                      ? formatDateVN(row.mucThoiGian)
+                      : row.mucThoiGian}
                   </td>
                   <td className="p-3 text-slate-700">
                     <span className="font-mono text-slate-400 font-bold mr-1">{row.maLoai}</span>

@@ -5,6 +5,7 @@
 
 import { ChungTuNhatKyChung } from './types';
 import { BoHoSoItem, ThanhPhanHoSoItem, DANH_MUC_18_PHAN, SAMPLE_BO_HO_SO } from '../../data/danhMucHoSoData';
+import { formatMonthVN } from './dateUtils';
 
 export const HO_SO_STORAGE_KEY = 'vcomm_ho_so_archive_list';
 export const HO_SO_SYNC_EVENT = 'vcomm_ho_so_archive_updated';
@@ -114,7 +115,7 @@ export function chuyenChungTuSangHoSo(ct: ChungTuNhatKyChung): BoHoSoItem {
     tenHoSo: `Hồ sơ ${ct.soCt} • ${ct.dienGiai || 'Chứng từ phát sinh'}`,
     maLoaiHoSo: maLoai,
     phanLoai: tenPhan,
-    kyKeToan: ct.kyKeToan || `${nam}-${String(thang).padStart(2, '0')}`,
+    kyKeToan: formatMonthVN(ct.kyKeToan || `${nam}-${String(thang).padStart(2, '0')}`),
     thang,
     nam,
     ngayPhatSinh: ct.ngayHachToan || new Date().toISOString().substring(0, 10),

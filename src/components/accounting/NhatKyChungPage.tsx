@@ -3,7 +3,7 @@ import { Plus, Search, Filter, FileSpreadsheet, Eye, CheckCircle2, Clock, Lock, 
 import { ChungTuNhatKyChung, LoaiChungTu, TrangThaiChungTu } from '../../lib/keToan/types';
 import { ChungTuEditor } from './ChungTuEditor';
 import { formatCurrency, cn } from '../../lib/utils';
-import { formatDateVN } from '../../lib/keToan/dateUtils';
+import { formatDateVN, formatMonthVN } from '../../lib/keToan/dateUtils';
 import { tuDongLuuTruMotChungTu, dongBoTatCaChungTuVaoHoSo } from '../../lib/keToan/autoArchiveService';
 
 // Mock initial data for immediate interactive viewing
@@ -244,7 +244,7 @@ export const NhatKyChungPage: React.FC<NhatKyChungPageProps> = ({ forceCreateTri
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
               <div>
-                <span className="text-xs text-slate-500 font-medium">Tổng phát sinh kỳ này:</span>
+                <span className="text-xs text-slate-500 font-medium">Tổng phát sinh kỳ {formatMonthVN('2026-03')}:</span>
                 <p className="text-base font-extrabold text-blue-600 dark:text-blue-400 tabular-nums mt-0.5">
                   {formatCurrency(stats.tongPhatSinh)}
                 </p>

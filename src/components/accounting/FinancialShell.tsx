@@ -27,6 +27,7 @@ import {
   Shrink
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { formatMonthVN } from '../../lib/keToan/dateUtils';
 import { ThietLapCongTyModal, ThietLapCongTy } from './ThietLapCongTyModal';
 import { NhatKyChungPage } from './NhatKyChungPage';
 import { BaoCaoTt99Page } from './BaoCaoTt99Page';
@@ -192,7 +193,7 @@ export const FinancialShell: React.FC<FinancialShellProps> = ({
               <div className="flex items-center gap-2 text-[11px] text-slate-500">
                 <span className="flex items-center gap-1 font-semibold text-emerald-600">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Năm tài chính {companyInfo.namTaiChinh} • Kỳ T03/2026 [ĐANG MỞ]
+                  Năm tài chính {companyInfo.namTaiChinh} • Kỳ {formatMonthVN('2026-03')} [ĐANG MỞ]
                 </span>
                 <span>•</span>
                 <span className="font-medium text-slate-400">Chuẩn mực TT99/2025/TT-BTC</span>

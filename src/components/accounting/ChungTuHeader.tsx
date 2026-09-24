@@ -1,7 +1,7 @@
 import React from 'react';
 import { LoaiChungTu, TrangThaiChungTu, ChungTuNhatKyChung } from '../../lib/keToan/types';
 import { Calendar, FileCode, Tag, CheckCircle2, Clock, Lock, Ban } from 'lucide-react';
-import { formatDateVN } from '../../lib/keToan/dateUtils';
+import { formatDateVN, formatMonthVN } from '../../lib/keToan/dateUtils';
 
 interface ChungTuHeaderProps {
   data?: ChungTuNhatKyChung;
@@ -134,7 +134,9 @@ export const ChungTuHeader: React.FC<ChungTuHeaderProps> = ({
         <div>
           <label className="block font-bold text-slate-700 mb-1 flex items-center justify-between">
             <span>Ngày hạch toán</span>
-            <span className="text-[11px] text-blue-600 font-semibold tabular-nums">{formatDateVN(currentData.ngayHachToan || '')}</span>
+            <span className="text-[11px] text-blue-600 font-semibold tabular-nums">
+              {formatDateVN(currentData.ngayHachToan || '')} (Kỳ {formatMonthVN(currentData.kyKeToan || currentData.ngayHachToan || '')})
+            </span>
           </label>
           <div className="relative">
             <input

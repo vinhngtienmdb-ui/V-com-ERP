@@ -5,6 +5,7 @@ import {
   Trash2, Plus, ExternalLink, Calendar, User, Eye
 } from 'lucide-react';
 import { SAMPLE_BO_HO_SO, BoHoSoItem, ThanhPhanHoSoItem, LichSuHoSoItem } from '../../data/danhMucHoSoData';
+import { formatDateVN, formatMonthVN } from '../../lib/keToan/dateUtils';
 
 interface Props {
   hoSoId: string;
@@ -206,7 +207,8 @@ export const ChiTietHoSoPage: React.FC<Props> = ({ hoSoId, onBack }) => {
               </div>
               <div className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-3">
                 <span>Đối tượng: <strong className="text-slate-700">{hoSo.doiTuongTen}</strong></span>
-                <span>Ngày PS: <strong className="text-slate-700">{hoSo.ngayPhatSinh}</strong></span>
+                <span>Kỳ: <strong className="text-indigo-600 tabular-nums">{formatMonthVN(hoSo.kyKeToan || `${hoSo.nam}-${hoSo.thang}`)}</strong></span>
+                <span>Ngày PS: <strong className="text-slate-700 tabular-nums">{formatDateVN(hoSo.ngayPhatSinh)}</strong></span>
                 <span>Hình thức: <strong className="text-slate-700">{hoSo.hinhThucLuuTru}</strong></span>
                 <span>Hạn lưu: <strong className="text-indigo-600">{hoSo.thoiHanLuuTru === 'VINH_VIEN' ? 'VĨNH VIỄN' : hoSo.thoiHanLuuTru === 'NAM_10' ? '10 Năm' : '5 Năm'}</strong></span>
               </div>

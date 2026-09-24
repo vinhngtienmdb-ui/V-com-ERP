@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { SAMPLE_BO_HO_SO, BoHoSoItem, DANH_MUC_18_PHAN } from '../../data/danhMucHoSoData';
 import { layDanhSachHoSoLuuTru, dongBoTatCaChungTuVaoHoSo, HO_SO_SYNC_EVENT } from '../../lib/keToan/autoArchiveService';
+import { formatDateVN, formatMonthVN } from '../../lib/keToan/dateUtils';
 
 interface Props {
   onSelectHoSo: (hoSoId: string) => void;
@@ -308,7 +309,7 @@ export const DanhSachHoSoPage: React.FC<Props> = ({ onSelectHoSo }) => {
             >
               <option value="ALL">Tất cả tháng</option>
               {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-                <option key={m} value={m.toString()}>Tháng {m < 10 ? `0${m}` : m}</option>
+                <option key={m} value={m.toString()}>Tháng {String(m).padStart(2, '0')}/{selectedNam || 2026}</option>
               ))}
             </select>
           </div>
@@ -424,7 +425,7 @@ export const DanhSachHoSoPage: React.FC<Props> = ({ onSelectHoSo }) => {
                     <td className="py-3 px-4 font-medium text-slate-700">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                        <span>{item.ngayPhatSinh}</span>
+                        <span className="tabular-nums">{formatDateVN(item.ngayPhatSinh)}</span>
                         {isOverdue && (
                           <span title="Đã quá 12 tháng chưa đưa vào lưu trữ (Luật KT Đ.41)">
                             <Clock className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
@@ -439,9 +440,15 @@ export const DanhSachHoSoPage: React.FC<Props> = ({ onSelectHoSo }) => {
                     </td>
                     <td className="py-3 px-4">
                       <div className="font-semibold text-slate-900">{item.tenHoSo}</div>
-                      {item.hopDongSo && (
-                        <div className="text-[11px] text-slate-500 font-mono">HĐ: {item.hopDongSo}</div>
-                      )}
+                      <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono mt-0.5">
+                        <span className="text-indigo-600 font-semibold">Kỳ {formatMonthVN(item.kyKeToan || `${item.nam}-${item.thang}`)}</span>
+                        {item.hopDongSo && (
+                          <>
+                            <span>•</span>
+                            <span>HĐ: {item.hopDongSo}</span>
+                          </>
+                        )}
+                      </div>
                     </td>
                     <td className="py-3 px-4 text-slate-700 max-w-[180px] truncate">
                       {item.doiTuongTen}

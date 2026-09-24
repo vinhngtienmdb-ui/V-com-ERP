@@ -24,7 +24,7 @@ import {
   AuditTrailManager,
   NhatKyKiemToan
 } from '../../lib/keToan/dieu28Compliance';
-import { formatDateVN } from '../../lib/keToan/dateUtils';
+import { formatDateVN, formatMonthYearVN } from '../../lib/keToan/dateUtils';
 
 // Dữ liệu mẫu khởi tạo kỳ kế toán
 const INITIAL_PERIODS: KyKeToan[] = [
@@ -107,7 +107,7 @@ export function KiemSoatDieu28Page() {
 
   // 1. Thao tác Khóa sổ kỳ kế toán
   const handleKhoaSo = (thang: number, nam: number) => {
-    const confirm = window.confirm(`Bạn có chắc chắn muốn KHÓA SỔ kỳ kế toán Tháng ${thang}/${nam}? Sau khi khóa, không ai có thể thêm, sửa, xóa chứng từ theo Điều 13 và Điều 28 TT99.`);
+    const confirm = window.confirm(`Bạn có chắc chắn muốn KHÓA SỔ kỳ kế toán Tháng ${formatMonthYearVN(thang, nam)}? Sau khi khóa, không ai có thể thêm, sửa, xóa chứng từ theo Điều 13 và Điều 28 TT99.`);
     if (!confirm) return;
 
     const hashRes = taoChuoiHashChungTu(RAW_VOUCHERS_DEMO);
@@ -133,7 +133,7 @@ export function KiemSoatDieu28Page() {
       hanhDong: 'KHOA_SO',
       loaiDoiTuong: 'KY_KE_TOAN',
       doiTuongId: `KY-${nam}-${String(thang).padStart(2, '0')}`,
-      duLieuMoi: `Khóa sổ kỳ T${thang}/${nam}. Mã băm toàn vẹn SHA-256: ${hashRes.checksumKy.substring(0, 16)}...`,
+      duLieuMoi: `Khóa sổ kỳ ${formatMonthYearVN(thang, nam)}. Mã băm toàn vẹn SHA-256: ${hashRes.checksumKy.substring(0, 16)}...`,
       checksumHanhDong: 'c8d9e0...1a2b'
     };
     setAuditLogs(prev => [newLog, ...prev]);
@@ -141,7 +141,7 @@ export function KiemSoatDieu28Page() {
 
   // Mở khóa sổ (Yêu cầu quyền KTT và nhập lý do)
   const handleMoKhoaSo = (thang: number, nam: number) => {
-    const lyDo = window.prompt(`Nhập lý do MỞ KHÓA SỔ Tháng ${thang}/${nam} (bắt buộc theo Điều 28 TT99):`);
+    const lyDo = window.prompt(`Nhập lý do MỞ KHÓA SỔ Kỳ ${formatMonthYearVN(thang, nam)} (bắt buộc theo Điều 28 TT99):`);
     if (!lyDo || lyDo.trim() === '') {
       alert('Phải nhập lý do mở khóa sổ để lưu vết kiểm toán.');
       return;
@@ -270,7 +270,7 @@ export function KiemSoatDieu28Page() {
                 )}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-sm text-slate-800">Tháng {k.thang}/2026</span>
+                  <span className="font-bold text-sm text-slate-800">Kỳ {formatMonthYearVN(k.thang, k.nam || 2026)}</span>
                   <span className={cn(
                     "px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1",
                     k.trangThai === 'DA_KHOA_SO'
