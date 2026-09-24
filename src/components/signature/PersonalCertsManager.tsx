@@ -41,17 +41,20 @@ export const PersonalCertsManager: React.FC<PersonalCertsManagerProps> = ({
   // Helper to check if a certificate is expiring within 90 days
   const isExpiringSoon = (expiryDateStr: string): boolean => {
     try {
-      const parts = expiryDateStr.split('/');
-      if (parts.length === 3) {
-        const expDate = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
-        const now = new Date();
-        const diffDays = Math.ceil((expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        return diffDays > 0 && diffDays <= 90;
+      let expDate: Date;
+      if (expiryDateStr.includes('/')) {
+        const parts = expiryDateStr.split('/');
+        expDate = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+      } else {
+        expDate = new Date(expiryDateStr);
       }
+      if (isNaN(expDate.getTime())) return false;
+      const now = new Date();
+      const diffDays = Math.ceil((expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return diffDays > 0 && diffDays <= 90;
     } catch {
       return false;
     }
-    return false;
   };
 
   // Filter certs based on status and search query
