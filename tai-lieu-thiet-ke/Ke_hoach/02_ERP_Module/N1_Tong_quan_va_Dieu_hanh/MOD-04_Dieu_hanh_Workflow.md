@@ -1,0 +1,71 @@
+# MOD-04 — Điều hành & Workflow
+
+- Hệ thống: VComm ERP (`vcomm-erp`)
+- Nhóm chức năng: Tổng quan & Điều hành
+- Mã module: MOD-04
+- Tuyến đường: `/workflow`
+- Tệp giao diện: `src/components/WorkflowHub.tsx` (743 dòng)
+- Trạng thái: Chưa bắt đầu
+- Ngày tạo: 2026-10-05
+- Ngày cập nhật: 2026-10-05
+
+## 1. Mục tiêu
+
+Quản lý quy trình và luồng công việc
+
+## 2. Định danh và bằng chứng
+
+| Hạng mục | Giá trị |
+|---|---|
+| Hệ thống | `vcomm-erp` (VComm ERP) |
+| Nhóm chức năng | Tổng quan & Điều hành |
+| Tuyến đường | `/workflow` |
+| Component | `WorkflowHub` |
+| Tệp nguồn | `src/components/WorkflowHub.tsx` |
+| Quy mô | 743 dòng |
+| Tệp kiểm thử liên quan | Chưa có |
+| Đặc tả kỹ thuật liên quan | Chưa có |
+
+## 3. Khối giao diện ghi nhận từ mã nguồn
+
+Danh sách dưới đây trích tự động từ `src/components/WorkflowHub.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
+
+- Đồng bộ lịch Google Calendar
+- Không có nhiệm vụ nào
+- Xác nhận đồng bộ Lịch
+- Đồng bộ hàng loạt
+
+Nhãn giao diện ghi nhận thêm: Phê duyệt; Ký số; Mở chi tiết.
+
+## 4. Danh sách tính năng
+
+| Mã | Tính năng | Trạng thái | Ghi chú |
+|---|---|---|---|
+| MOD-04-F01 | Quản lý quy trình và luồng công việc | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
+
+> Danh mục tính năng chi tiết cần bổ sung ở bước BA. Chưa ghi thêm vì chưa có nguồn yêu cầu đã duyệt.
+
+## 5. Phụ thuộc
+
+- Hệ thống: VComm ERP, dùng chung lớp xác thực và điều hướng của `vcomm-erp`.
+- Backend: xem `Ke_hoach/01_He_thong/HS-02_VComm_Core_Backend.md` (cổng 5000).
+- Dữ liệu: Supabase PostgreSQL, tenant mặc định `tenant-vcomm-prod-01`.
+
+## 6. Tiêu chí nghiệm thu
+
+- [ ] Tuyến đường `/workflow` truy cập được, hiển thị đúng component `WorkflowHub`.
+- [ ] Có kiểm thử cho luồng chính và luồng từ chối quyền.
+- [ ] Không phát sinh lỗi kiểu khi chạy `tsc --noEmit`.
+- [ ] Danh mục tính năng ở mục 4 đã được duyệt và đánh dấu trạng thái thật.
+
+## 7. Rủi ro và việc còn mở
+
+- Chưa có tệp kiểm thử riêng cho module — rủi ro hồi quy khi sửa.
+- Chưa có đặc tả kỹ thuật trong `specs/` gắn với module.
+- Danh mục tính năng chi tiết chưa được duyệt (cần bước BA).
+
+## 8. Chưa xác minh được
+
+- Danh mục tính năng thật của module (mục 4 mới có mục tiêu, chưa có danh mục đầy đủ).
+- Mức độ hoàn thiện thật so với mô tả menu.
+- Module có dùng bảng dữ liệu riêng hay dùng chung bảng của hệ thống.

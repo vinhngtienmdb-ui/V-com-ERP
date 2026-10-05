@@ -530,3 +530,30 @@ Khi phát triển tính năng mới hoặc sửa lỗi trong bất kỳ phân h�
 
 - Không mất nội dung: cả hai tệp gốc đều được đọc trọn trước khi ghi.
 - Tệp `CHANGELOG.md` không được tạo lại.
+
+### 2026-10-05 — Lập bộ kế hoạch tổng thể và kế hoạch theo thành phần
+
+**Người thực hiện:** AI (Minh) theo yêu cầu của Eric
+
+**Nội dung:**
+
+- Lập bộ kế hoạch ba cấp tại `tai-lieu-thiet-ke/Ke_hoach/`: một kế hoạch tổng thể, tám kế hoạch hệ thống con, bốn mươi bốn kế hoạch module ERP, kèm một mục lục. Tổng cộng 54 tệp.
+- Kế hoạch tổng thể `00_KE_HOACH_TONG_THE.md` gồm: phạm vi tám hệ thống, sơ đồ kiến trúc, bản đồ 44 module ERP theo bảy nhóm menu, hiện trạng kiểm soát, thứ tự ưu tiên, quy ước trạng thái, quan hệ phụ thuộc và rủi ro tổng thể.
+- Dữ kiện lấy từ mã nguồn thật: 44 module đọc từ `src/constants.ts` (navGroups), ánh xạ tuyến đường từ `src/App.tsx`, gắn tệp component và số dòng, tìm tệp kiểm thử và đặc tả liên quan, trích tiêu đề giao diện từ từng component.
+- Kế hoạch module dùng chung một khuôn: định danh và bằng chứng, khối giao diện ghi nhận, danh sách tính năng, phụ thuộc, tiêu chí nghiệm thu, rủi ro và phần chưa xác minh được.
+
+**Tệp bị ảnh hưởng:**
+
+- `tai-lieu-thiet-ke/Ke_hoach/00_KE_HOACH_TONG_THE.md` (mới)
+- `tai-lieu-thiet-ke/Ke_hoach/00_INDEX.md` (mới)
+- `tai-lieu-thiet-ke/Ke_hoach/01_He_thong/` (8 tệp mới)
+- `tai-lieu-thiet-ke/Ke_hoach/02_ERP_Module/` (44 tệp mới)
+- `tai-lieu-thiet-ke/index.md` (đăng ký bộ kế hoạch)
+
+**Kết quả kiểm thử:**
+
+- Đối chiếu tự động: 44/44 module ánh xạ được sang tệp component thật; bảng trong kế hoạch tổng thể đủ 44 dòng.
+
+**Ghi chú:**
+
+- Danh mục tính năng chi tiết chưa được ghi thêm vì chưa có nguồn yêu cầu đã duyệt; mỗi kế hoạch module đều nêu rõ phần này còn thiếu.

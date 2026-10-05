@@ -10,6 +10,8 @@
 | index.md | Mục lục bộ tài liệu thiết kế |
 | Nhat_ky_du_an.md | Nhật ký dự án — nguồn duy nhất: Phần I nhật ký phát hành hệ sinh thái, Phần II nhật ký công việc theo ngày |
 | Checklist_cong_viec.md | Checklist công việc và roadmap sản phẩm |
+| Ke_hoach/00_KE_HOACH_TONG_THE.md | Kế hoạch tổng thể toàn dự án VComm |
+| Ke_hoach/00_INDEX.md | Mục lục bộ kế hoạch: 1 kế hoạch tổng thể, 8 kế hoạch hệ thống con, 44 kế hoạch module ERP |
 | Quy_trinh_nghiep_vu/index.md | Mục lục các quy trình nghiệp vụ |
 | Quy_trinh_nghiep_vu/Phieu_yeu_cau.md | Phiếu yêu cầu trống để điền |
 | Quy_trinh_nghiep_vu/QT-01_Dang_nhap_va_xac_thuc_phien_nguoi_ban.md | Quy trình đăng nhập và xác thực phiên người bán |
