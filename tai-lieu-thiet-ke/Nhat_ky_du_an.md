@@ -557,3 +557,31 @@ Khi phát triển tính năng mới hoặc sửa lỗi trong bất kỳ phân h�
 **Ghi chú:**
 
 - Danh mục tính năng chi tiết chưa được ghi thêm vì chưa có nguồn yêu cầu đã duyệt; mỗi kế hoạch module đều nêu rõ phần này còn thiếu.
+
+### 2026-10-05 — Viết bộ quy trình nghiệp vụ QT-02 … QT-60
+
+**Người thực hiện:** AI (Minh) theo yêu cầu của Eric
+
+**Nội dung:**
+
+- Viết 59 quy trình nghiệp vụ mới (QT-02 … QT-60) để Eric phê duyệt, mở rộng phạm vi sang cả nhóm thương mại và vận hành, ngoài 29 đặc tả MD_ERP đã có.
+- Mỗi quy trình theo đúng khuôn mười bốn mục của QT-01: tác nhân và quyền, điều kiện trước, luồng chính, sơ đồ, luồng lỗi, máy trạng thái, quy tắc nghiệp vụ, thông báo và nhật ký, dữ liệu, màn hình, tiêu chí nghiệm thu, ảnh hưởng tới phần có sẵn, giả định và câu hỏi mở, ghi chú kỹ thuật, cộng mục "Chưa xác minh được".
+- Phân nhóm: Kế toán 11 (QT-02 … QT-12), Nhân sự 11 (QT-13 … QT-23), CRM 5 (QT-24 … QT-28), Văn phòng 2 (QT-29 … QT-30), Thương mại và Vận hành 30 (QT-31 … QT-60).
+- Nguồn nghiệp vụ: QT-02 … QT-30 lấy từ `Mo ta nghiep vu/MD_ERP/`; QT-31 … QT-60 lấy từ bộ đề án nghiệp vụ và mã nguồn hiện có trong `_recovery_V-com-ERP`.
+- Bằng chứng lấy từ mã nguồn thật: 51/51 tuyến đường ánh xạ sang 57 component qua `src/App.tsx`; tiêu đề giao diện và số dòng trích từ từng component; ký hiệu dịch vụ trích từ `src/services/`.
+
+**Tệp bị ảnh hưởng:**
+
+- `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/QT-02 … QT-60` (59 tệp mới)
+- `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/index.md` (đăng ký 60 quy trình, số tiếp theo QT-61)
+- `tai-lieu-thiet-ke/index.md` (gộp dòng QT thành tham chiếu mục lục)
+
+**Kết quả kiểm thử:**
+
+- Đối chiếu tự động: 51/51 tuyến đường ánh xạ được sang component thật; mục lục khớp 60 dòng với 60 tệp trên đĩa.
+- Mọi tệp đều có mục "Chưa xác minh được"; nơi mã nguồn chưa có mô-đun tương ứng thì ghi rõ "Đề xuất — chưa có mã nguồn tương ứng".
+
+**Ghi chú:**
+
+- Toàn bộ 60 quy trình đang ở trạng thái "Chờ duyệt"; chưa quy trình nào được duyệt.
+- Ba quyết định còn để mở: chọn một bản tài liệu làm nguồn duy nhất (bản gốc so với bản trong repo), lệch nhãn năm và mục đích sử dụng quỹ trong hai bản kế hoạch tài chính XLSX, và danh mục tính năng chi tiết theo module cần một lượt BA.

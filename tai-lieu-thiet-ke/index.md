@@ -12,9 +12,9 @@
 | Checklist_cong_viec.md | Checklist công việc và roadmap sản phẩm |
 | Ke_hoach/00_KE_HOACH_TONG_THE.md | Kế hoạch tổng thể toàn dự án VComm |
 | Ke_hoach/00_INDEX.md | Mục lục bộ kế hoạch: 1 kế hoạch tổng thể, 8 kế hoạch hệ thống con, 44 kế hoạch module ERP |
-| Quy_trinh_nghiep_vu/index.md | Mục lục các quy trình nghiệp vụ |
+| Quy_trinh_nghiep_vu/index.md | Mục lục các quy trình nghiệp vụ — đăng ký 60 quy trình QT-01 … QT-60 |
 | Quy_trinh_nghiep_vu/Phieu_yeu_cau.md | Phiếu yêu cầu trống để điền |
-| Quy_trinh_nghiep_vu/QT-01_Dang_nhap_va_xac_thuc_phien_nguoi_ban.md | Quy trình đăng nhập và xác thực phiên người bán |
+| Quy_trinh_nghiep_vu/QT-nn_*.md | Sáu mươi quy trình nghiệp vụ QT-01 … QT-60, đều ở trạng thái Chờ duyệt |
 
 ## Tài liệu thiết kế
 

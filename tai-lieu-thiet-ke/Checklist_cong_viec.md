@@ -2,7 +2,7 @@
 
 - Dự án: VComm
 - Ngày cập nhật gần nhất: 2026-10-05
-- Phiên bản mới nhất: khảo sát lại toàn bộ quy trình (VibeCode) — 20 tệp thiết kế
+- Phiên bản mới nhất: bộ 60 quy trình nghiệp vụ QT-01 … QT-60 (chờ duyệt)
 
 ## Ký hiệu trạng thái
 
@@ -94,6 +94,7 @@
 | M1 | Vá IDOR `/api/seller/*` — seller-session HMAC + 11 guard + ghi đè sellerId/ownerId | Bảo mật API | 2026-10-05 | `c384e46` | `src/lib/sellerAuth.ts`, `server.ts` `requireSellerAuth`, test revert-proof (12) |
 | M2 | Siết RLS `domain_events` — chặn anon chưa login đọc/ghi tenant mặc định | Multi-tenant | 2026-10-05 | `4b9cd56` | `006_harden_domain_events_rls.sql`, test revert-proof (4) |
 | — | Hoàn thiện bộ tài liệu thiết kế (10 tệp stub 05–08, 11–12, 15–18 + quy trình QT-01) | Tài liệu | 2026-10-05 | `tai-lieu-thiet-ke/` | Mỗi tệp có bằng chứng file:line + "Chưa xác minh được"; thêm `Quy_trinh_nghiep_vu/QT-01` |
+| — | Viết bộ 59 quy trình nghiệp vụ QT-02 … QT-60 | Tài liệu | 2026-10-05 | `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/` | Kế toán 11, Nhân sự 11, CRM 5, Văn phòng 2, Thương mại và Vận hành 30; mọi tệp ở trạng thái Chờ duyệt, có mục "Chưa xác minh được" |
 
 ## 7. Quy ước mã
 
