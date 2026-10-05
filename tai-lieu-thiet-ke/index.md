@@ -8,7 +8,7 @@
 | Tệp | Nội dung |
 |---|---|
 | index.md | Mục lục bộ tài liệu thiết kế |
-| Nhat_ky_du_an.md | Nhật ký toàn bộ dự án, cập nhật theo ngày |
+| Nhat_ky_du_an.md | Nhật ký dự án — nguồn duy nhất: Phần I nhật ký phát hành hệ sinh thái, Phần II nhật ký công việc theo ngày |
 | Checklist_cong_viec.md | Checklist công việc và roadmap sản phẩm |
 | Quy_trinh_nghiep_vu/index.md | Mục lục các quy trình nghiệp vụ |
 | Quy_trinh_nghiep_vu/Phieu_yeu_cau.md | Phiếu yêu cầu trống để điền |
@@ -47,9 +47,10 @@ Các tài liệu dưới đây tồn tại trước khi bộ tài liệu này đ
 |---|---|---|
 | thiet-ke-erp-ke-toan/00_INDEX.md | Mục lục bộ tài liệu thiết kế phân hệ kế toán | 16 tệp, đánh số 00–15. Bộ tài liệu cấp phân hệ, giữ nguyên |
 | vcomm-erp/docs/ | Tài liệu lớp tích hợp của vcomm-erp | ADR_LOP_TICH_HOP_I1.md, BAN_DO_TICH_HOP_I0.md, KE_HOACH_CUTOVER_I8.md |
-| NHAT_KY_CAP_NHAT.md | Nhật ký phiên bản toàn hệ sinh thái VComm | Nguồn duy nhất từ 2026-10-05, sau khi gộp với CHANGELOG.md |
 
 Ngày 2026-10-05 đã gộp hai tệp nhật ký trùng lặp hoàn toàn ở thư mục gốc. Giữ lại `NHAT_KY_CAP_NHAT.md` làm nguồn duy nhất, xóa `CHANGELOG.md`. Không mất nội dung vì hai tệp giống hệt nhau từng byte.
+
+Cùng ngày 2026-10-05, tiếp tục hợp nhất `NHAT_KY_CAP_NHAT.md` vào `tai-lieu-thiet-ke/Nhat_ky_du_an.md` và xóa tệp ở thư mục gốc. Từ đây `Nhat_ky_du_an.md` là nguồn duy nhất: Phần I là nhật ký phát hành hệ sinh thái (v1.0.0 đến v2.3.0), Phần II là nhật ký công việc theo ngày.
 
 ## Phân cấp tài liệu
 
