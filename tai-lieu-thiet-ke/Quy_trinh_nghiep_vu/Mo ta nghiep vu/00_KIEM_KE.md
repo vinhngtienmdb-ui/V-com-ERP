@@ -70,6 +70,8 @@ Hai bản là hai mô hình khác nhau, không phải bản trùng. Bản VNĐ k
 
 ## 6. Đánh giá
 
+> Đánh giá dưới đây lập tại thời điểm kiểm kê. Mục 1 và mục 4 của phần "Thiếu sót và không nhất quán" đã được xử lý; xem nhật ký hoàn thiện tại mục 8.
+
 **Điểm mạnh**
 - Bộ 29 đặc tả mô-đun đầy đủ về cấu trúc, có cả trường dữ liệu, quy trình, định khoản và gợi ý giao diện.
 - Bộ 9 đề án có thể thức thống nhất, số hiệu liên tục, ngày ban hành thống nhất.
@@ -91,7 +93,10 @@ Hai bản là hai mô hình khác nhau, không phải bản trùng. Bản VNĐ k
 
 - **Đã xong — thống nhất tiêu đề:** chuyển toàn bộ 29 đặc tả về quy cách `# Đặc tả nghiệp vụ: Phân hệ <Tên> (<English>)`, bỏ tên sản phẩm "MISA AMIS" khỏi tiêu đề (quyết định của chủ dự án). Sao lưu trước khi sửa tại `.workbuddy-ai/backup/MD_ERP-backup-titlefix-20261005/` (29 tệp).
 - **Đã xong — ghi rõ phạm vi phân hệ:** lập `MD_ERP/00_INDEX.md` gồm mục lục 29 tệp và bản đồ phạm vi đối chiếu với các phân hệ trong `src/App.tsx` (nêu rõ nhóm phân hệ thương mại chưa có đặc tả mô-đun).
-- **Còn lại (chưa làm):** bổ sung đặc tả chi tiết cho nhóm phân hệ thương mại; hòa giải hai bản kế hoạch tài chính; ghi rõ vai trò MISA AMIS trong thân tài liệu.
+- **Đã xong — hòa giải hai bản kế hoạch tài chính:** lập `00_HOA_GIAI_KE_HOACH_TAI_CHINH.md`. Xác định bản VNĐ `...2026-2030 (1).xlsx` là bản chuẩn (khớp tuyệt đối với đề án Tài chính 09/KH-VCOMM, đề án Tổng thể 01/KH-VCOMM và bộ đề án cũ); bản USD `...2026-2030.xlsx` là bản cũ bị thay thế. Ghi rõ chênh lệch từng năm, từng trang, kèm hai bất nhất cần chủ dự án chốt: nhãn năm lệch một năm (XLSX 2026 - 2030 so với đề án 2027 - 2036) và cơ cấu sử dụng vốn lệch giữa đề án (25/35/20/12/8) với bảng tính chuẩn (40/25/20/15).
+- **Đã xong — ghi rõ vai trò MISA AMIS:** thêm mục 1.1 vào `MD_ERP/00_INDEX.md` và chèn một dòng quy ước dưới tiêu đề của 12 tệp đặc tả có nhắc MISA/AMIS; khẳng định đây là **sản phẩm tham khảo**, không phải yêu cầu bắt buộc.
+- **Đã xong — đưa bộ tài liệu vào repo mã nguồn:** sao chép `tai-lieu-thiet-ke` vào `_recovery_V-com-ERP` (75 tệp, loại trừ `.workbuddy-ai`), commit `3905307`, đẩy lên `origin/main`. **Lưu ý:** hiện tồn tại hai bản song song (bản gốc `D:\VComm\tai-lieu-thiet-ke` và bản trong repo), cần chủ dự án chốt phương án một bản duy nhất.
+- **Còn lại (chưa làm):** bổ sung đặc tả chi tiết cho nhóm phân hệ thương mại; chốt nhãn năm và cơ cấu sử dụng vốn của kế hoạch tài chính.
 
 ## Chưa xác minh được
 

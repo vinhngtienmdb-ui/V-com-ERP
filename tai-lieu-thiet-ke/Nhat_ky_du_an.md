@@ -137,3 +137,31 @@
 
 - Bộ tài liệu 20 tệp nay đã có nội dung đầy đủ, không còn tệp trống.
 - Việc triển khai M1/M2 (bảo mật) đã hoàn tất trước đó và được phản ánh trong `19_Bao_mat.md`, `Checklist_cong_viec.md`, `20_Lich_su_thay_doi.md`.
+
+### 2026-10-05 — Hoàn thiện tài liệu nguồn và đưa bộ tài liệu thiết kế vào repo
+
+**Người thực hiện:** AI (Minh) theo yêu cầu của Eric
+
+**Nội dung:**
+
+- Lập tài liệu hòa giải hai bản kế hoạch tài chính. Xác định bản VNĐ `Ke-Hoach-Tai-Chinh-Va-Nguon-Von-VComm-2026-2030 (1).xlsx` là bản chuẩn — khớp tuyệt đối với đề án Tài chính 09/KH-VCOMM, đề án Tổng thể 01/KH-VCOMM và cả bộ đề án cũ đang lưu trữ; bản USD `Ke-Hoach-Tai-Chinh-Va-Nguon-Von-VComm-2026-2030.xlsx` là bản cũ bị thay thế, không đề án nào tham chiếu. Ghi rõ mọi chênh lệch theo từng năm và từng trang, kèm hai bất nhất cần chốt: nhãn năm lệch một năm và cơ cấu sử dụng vốn lệch giữa đề án và bảng tính.
+- Ghi rõ vai trò sản phẩm tham chiếu MISA AMIS: thêm mục quy ước vào `MD_ERP/00_INDEX.md` và chèn một dòng quy ước dưới tiêu đề của 12 tệp đặc tả có nhắc MISA/AMIS; khẳng định đây là sản phẩm tham khảo, không phải yêu cầu bắt buộc.
+- Đưa toàn bộ bộ tài liệu thiết kế vào repo mã nguồn `_recovery_V-com-ERP` (nhánh `main`), loại trừ thư mục tạm `.workbuddy-ai`.
+
+**Tệp bị ảnh hưởng:**
+
+- `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/Mo ta nghiep vu/00_HOA_GIAI_KE_HOACH_TAI_CHINH.md` (mới)
+- `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/Mo ta nghiep vu/00_KIEM_KE.md`
+- `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/Mo ta nghiep vu/MD_ERP/00_INDEX.md`
+- Mười hai tệp `MD_ERP/**/*.md` được chèn dòng quy ước
+- `_recovery_V-com-ERP/tai-lieu-thiet-ke/` (mới, 75 tệp)
+
+**Kết quả kiểm thử:**
+
+- Đối chiếu số liệu hai tệp XLSX với ba nguồn đề án: khớp tuyệt đối với bản VNĐ, lệch ở các năm 2028–2030 đối với bản USD.
+- Kiểm tra 12 tệp: đều có dòng quy ước đúng vị trí; 29 tiêu đề H1 của bộ đặc tả còn nguyên vẹn.
+
+**Ghi chú:**
+
+- Commit `3905307` đã đẩy lên `origin/main` (`c384e46..3905307`).
+- Bản gốc vẫn giữ tại `D:\VComm\tai-lieu-thiet-ke`; hiện tồn tại hai bản song song, cần chủ dự án chốt phương án một bản duy nhất.
