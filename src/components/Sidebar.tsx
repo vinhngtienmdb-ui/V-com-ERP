@@ -59,7 +59,7 @@ export function Sidebar() {
           return allowedPaths.includes(item.path);
         }
         if (role === 'accountant') {
-          const allowedPaths = ['/', '/dashboard', '/bi', '/finance', '/settlement', '/wallet', '/seller-finance', '/customers'];
+          const allowedPaths = ['/', '/dashboard', '/bi', '/finance', '/settlement', '/wallet', '/customers'];
           return allowedPaths.includes(item.path);
         }
         if (role === 'procurement_officer') {
@@ -67,11 +67,11 @@ export function Sidebar() {
           return allowedPaths.includes(item.path);
         }
         if (role === 'store_manager') {
-          const deniedPaths = ['/finance', '/settlement', '/seller-finance', '/signature', '/org'];
+          const deniedPaths = ['/finance', '/settlement', '/signature', '/org'];
           return !deniedPaths.includes(item.path);
         }
         if (role === 'seller') {
-          const allowedPaths = ['/', '/dashboard', '/orders', '/pim', '/seller-finance', '/flash-sale', '/logistics'];
+          const allowedPaths = ['/', '/dashboard', '/orders', '/pim', '/flash-sale', '/logistics'];
           return allowedPaths.includes(item.path);
         }
         return false;

@@ -2,7 +2,7 @@
 
 - Dự án: VComm
 - Ngày cập nhật gần nhất: 2026-10-05
-- Phiên bản mới nhất: bộ 60 quy trình nghiệp vụ QT-01 … QT-60 (chờ duyệt)
+- Phiên bản mới nhất: tạm hủy 2 mô-đun (Cho thuê trả góp, Hỗ trợ tài chính Nhà bán) — còn 58 quy trình và 42 mô-đun đang hoạt động
 
 ## Ký hiệu trạng thái
 
@@ -95,6 +95,7 @@
 | M2 | Siết RLS `domain_events` — chặn anon chưa login đọc/ghi tenant mặc định | Multi-tenant | 2026-10-05 | `4b9cd56` | `006_harden_domain_events_rls.sql`, test revert-proof (4) |
 | — | Hoàn thiện bộ tài liệu thiết kế (10 tệp stub 05–08, 11–12, 15–18 + quy trình QT-01) | Tài liệu | 2026-10-05 | `tai-lieu-thiet-ke/` | Mỗi tệp có bằng chứng file:line + "Chưa xác minh được"; thêm `Quy_trinh_nghiep_vu/QT-01` |
 | — | Viết bộ 59 quy trình nghiệp vụ QT-02 … QT-60 | Tài liệu | 2026-10-05 | `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/` | Kế toán 11, Nhân sự 11, CRM 5, Văn phòng 2, Thương mại và Vận hành 30; mọi tệp ở trạng thái Chờ duyệt, có mục "Chưa xác minh được" |
+| — | Tạm hủy 2 mô-đun: Cho thuê trả góp (`/device-leasing`) và Hỗ trợ Tài chính Nhà bán (`/seller-finance`) | Tài chính / Tài liệu | 2026-10-05 | `_tam_huy/2026-10-05/`, `_Tam_huy/` | Dời tài liệu (QT-49, QT-50, MOD-33, MOD-34) và mã nguồn (DeviceLeasing, SellerFinance) vào thư mục lưu trữ; gỡ route, menu, chỗ nối và test; **giữ nguyên F2B2B (Trụ cột 4)** |
 
 ## 7. Quy ước mã
 

@@ -13,13 +13,6 @@ interface Customer {
 }
 
 // Integration helper functions mirroring Customers.tsx logic
-function filterCustomerLeases(customer: Customer, leases: any[]) {
-  return leases.filter(l => 
-    (l.phone && l.phone === customer.phone) || 
-    (l.email && l.email.toLowerCase() === customer.email.toLowerCase())
-  );
-}
-
 function filterCustomerTransactions(customer: Customer, transactions: any[]) {
   return transactions.filter(t => 
     (t.description && t.description.toLowerCase().includes(customer.name.toLowerCase())) ||
@@ -36,21 +29,6 @@ function filterCustomerContracts(customer: Customer, contracts: any[]) {
   );
 }
 
-function findCustomerSeller(customer: Customer, sellers: any[]) {
-  return sellers.find(s => 
-    s.sellerName && (
-      s.sellerName.toLowerCase().includes(customer.name.toLowerCase()) || 
-      customer.name.toLowerCase().includes(s.sellerName.toLowerCase())
-    )
-  );
-}
-
-function filterCustomerPayouts(seller: any, payouts: any[]) {
-  return seller 
-    ? payouts.filter(p => p.sellerId === seller.sellerId)
-    : [];
-}
-
 describe('CRM 360-degree Multi-Service Linking Logic', () => {
   const mockCustomer: Customer = {
     id: 'CUST-001',
@@ -62,31 +40,6 @@ describe('CRM 360-degree Multi-Service Linking Logic', () => {
     totalSpent: 45000000,
     orderCount: 12
   };
-
-  describe('Device Leasing Linking', () => {
-    it('should link lease by matching phone number', () => {
-      const mockLeases = [
-        { id: 'L-01', deviceModel: 'iPhone 15 Pro', phone: '0987654321', email: 'other@test.com' },
-        { id: 'L-02', deviceModel: 'Samsung S24 Ultra', phone: '0123456789', email: 'hm@vietnam.com' }
-      ];
-
-      const linked = filterCustomerLeases(mockCustomer, mockLeases);
-      expect(linked).toHaveLength(2); // Matches L-01 (phone) and L-02 (email)
-      expect(linked[0].id).toBe('L-01');
-      expect(linked[1].id).toBe('L-02');
-    });
-
-    it('should link lease by matching email (case insensitive)', () => {
-      const mockLeases = [
-        { id: 'L-03', deviceModel: 'iPad Pro', phone: '0000000000', email: 'HM@VIETNAM.COM' },
-        { id: 'L-04', deviceModel: 'MacBook Air', phone: '1111111111', email: 'wrong@vietnam.com' }
-      ];
-
-      const linked = filterCustomerLeases(mockCustomer, mockLeases);
-      expect(linked).toHaveLength(1);
-      expect(linked[0].id).toBe('L-03');
-    });
-  });
 
   describe('Ledger Financial Transactions Linking', () => {
     it('should link transactions by containing customer name in description', () => {
@@ -124,45 +77,6 @@ describe('CRM 360-degree Multi-Service Linking Logic', () => {
       expect(linked).toHaveLength(2);
       expect(linked.map(c => c.id)).toContain('CTR-01');
       expect(linked.map(c => c.id)).toContain('CTR-02');
-    });
-  });
-
-  describe('B2B Seller Finance & Early Payouts Linking', () => {
-    it('should link seller profile and then its payouts', () => {
-      const mockSellers = [
-        { sellerId: 'SEL-01', sellerName: 'Thời Trang H&M Vietnam Retail', score: 850, tier: 'AAA' },
-        { sellerId: 'SEL-02', sellerName: 'Other Seller', score: 700, tier: 'A' }
-      ];
-
-      const mockPayouts = [
-        { id: 'EP-01', sellerId: 'SEL-01', amount: 50000000, status: 'pending' },
-        { id: 'EP-02', sellerId: 'SEL-01', amount: 20000000, status: 'disbursed' },
-        { id: 'EP-03', sellerId: 'SEL-02', amount: 15000000, status: 'pending' }
-      ];
-
-      const seller = findCustomerSeller(mockCustomer, mockSellers);
-      expect(seller).toBeDefined();
-      expect(seller!.sellerId).toBe('SEL-01');
-
-      const payouts = filterCustomerPayouts(seller, mockPayouts);
-      expect(payouts).toHaveLength(2);
-      expect(payouts[0].id).toBe('EP-01');
-      expect(payouts[1].id).toBe('EP-02');
-    });
-
-    it('should handle cases where customer is not a seller', () => {
-      const mockSellers = [
-        { sellerId: 'SEL-02', sellerName: 'Other Seller', score: 700, tier: 'A' }
-      ];
-      const mockPayouts = [
-        { id: 'EP-03', sellerId: 'SEL-02', amount: 15000000, status: 'pending' }
-      ];
-
-      const seller = findCustomerSeller(mockCustomer, mockSellers);
-      expect(seller).toBeUndefined();
-
-      const payouts = filterCustomerPayouts(seller, mockPayouts);
-      expect(payouts).toHaveLength(0);
     });
   });
 });

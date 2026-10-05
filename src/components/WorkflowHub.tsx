@@ -58,7 +58,6 @@ const MOCK_TASKS: WorkflowTask[] = [
  { id: 'WF-101', module: 'Legal', title: 'Thẩm định tranh chấp hàng giả LV-002', priority: 'critical', status: 'pending', deadline: '2 giờ tới', link: '/compliance' },
  { id: 'WF-701', module: 'eOffice', title: 'Ký duyệt: Đề nghị tạm ứng công tác phí - REQ-002', priority: 'high', status: 'pending', deadline: 'Hôm nay', link: '/signature' },
  { id: 'WF-702', module: 'eOffice', title: 'Ký duyệt: Đơn nghỉ phép thường niên - REQ-001', priority: 'medium', status: 'pending', deadline: 'Ngày mai', link: '/signature' },
- { id: 'WF-102', module: 'Finance', title: 'Phê duyệt 12 yêu cầu Early Payout', priority: 'high', status: 'pending', deadline: 'Hôm nay', link: '/seller-finance' },
  { id: 'WF-103', module: 'PIM', title: 'Duyệt 450 sản phẩm Flash Sale mới', priority: 'medium', status: 'in_progress', deadline: 'Ngày mai', link: '/pim' },
  { id: 'WF-104', module: 'Logistic', title: 'Cảnh báo tồn kho an toàn Kho Hà Nội', priority: 'critical', status: 'pending', deadline: 'Ngay lập tức', link: '/scm' },
 ];

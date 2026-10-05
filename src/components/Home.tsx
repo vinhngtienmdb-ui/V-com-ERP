@@ -101,7 +101,7 @@ const FUNCTIONAL_GROUPS: FunctionalGroup[] = [
     desc: 'Kế toán, định mức, đối soát giao dịch và ví.',
     icon: Wallet,
     color: 'teal',
-    modulePaths: ['/finance', '/settlement', '/wallet', '/seller-finance']
+    modulePaths: ['/finance', '/settlement', '/wallet']
   },
   {
     id: 'doi_tac_khach_hang',

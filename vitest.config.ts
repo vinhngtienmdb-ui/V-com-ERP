@@ -41,6 +41,8 @@ export default defineConfig({
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
+      // Thư mục lưu trữ tạm hủy (xem _tam_huy/README.md) — KHÔNG chạy test ở đây.
+      '_tam_huy/**',
       'src/__tests__/ai_vector_search_claims.test.ts',
       'src/__tests__/digital_signatures.test.ts',
     ],

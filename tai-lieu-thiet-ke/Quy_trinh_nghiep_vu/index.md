@@ -3,6 +3,8 @@
 - Dự án: VComm
 - Ngày cập nhật gần nhất: 2026-10-05
 - Số quy trình đã cấp: 60
+- Số quy trình đang hoạt động: 58
+- Số quy trình tạm hủy: 2
 - Số tiếp theo: QT-61
 
 ## Quy ước mã
@@ -90,8 +92,6 @@ Mỗi quy trình gồm mười bốn mục đánh số cộng mục "Chưa xác 
 | QT-46 | `QT-46_Mua_hang_va_Nha_cung_cap_SCM.md` | Mua hàng và Nhà cung cấp | 1.0 | Chờ duyệt |
 | QT-47 | `QT-47_Doi_soat_va_Cong_no_doi_tac.md` | Đối soát và Công nợ đối tác | 1.0 | Chờ duyệt |
 | QT-48 | `QT-48_Vi_Ky_quy_va_Thanh_toan.md` | Ví, Ký quỹ và Thanh toán | 1.0 | Chờ duyệt |
-| QT-49 | `QT-49_Ho_tro_Tai_chinh_Nha_ban.md` | Hỗ trợ Tài chính Nhà bán | 1.0 | Chờ duyệt |
-| QT-50 | `QT-50_Cho_thue_va_Tra_gop_Thiet_bi.md` | Cho thuê và Trả góp Thiết bị | 1.0 | Chờ duyệt |
 | QT-51 | `QT-51_Cham_soc_Khach_hang_va_Tong_dai.md` | Chăm sóc Khách hàng và Tổng đài | 1.0 | Chờ duyệt |
 | QT-52 | `QT-52_Hop_dong_va_Phap_che.md` | Hợp đồng và Pháp chế | 1.0 | Chờ duyệt |
 | QT-53 | `QT-53_Quan_ly_Cong_van.md` | Quản lý Công văn | 1.0 | Chờ duyệt |
@@ -102,6 +102,15 @@ Mỗi quy trình gồm mười bốn mục đánh số cộng mục "Chưa xác 
 | QT-58 | `QT-58_Cau_hinh_He_thong_va_Tich_hop.md` | Cấu hình Hệ thống và Tích hợp | 1.0 | Chờ duyệt |
 | QT-59 | `QT-59_Sieu_thi_Offline_va_Ban_le_tai_quay.md` | Siêu thị Offline và Bán lẻ tại quầy | 1.0 | Chờ duyệt |
 | QT-60 | `QT-60_E_Menu_va_Dat_mon_tai_ban.md` | E-Menu và Đặt món tại bàn | 1.0 | Chờ duyệt |
+
+## Quy trình tạm hủy
+
+Ngày 2026-10-05, hai quy trình dưới đây được tạm hủy theo yêu cầu chủ dự án. Mã đã cấp được giữ nguyên, không tái sử dụng.
+
+| Mã | Tệp (đã dời) | Tên quy trình | Lý do |
+|---|---|---|---|
+| QT-49 | `_Tam_huy/QT-49_Ho_tro_Tai_chinh_Nha_ban.md` | Hỗ trợ Tài chính Nhà bán | Tạm hủy 2026-10-05 |
+| QT-50 | `_Tam_huy/QT-50_Cho_thue_va_Tra_gop_Thiet_bi.md` | Cho thuê và Trả góp Thiết bị | Tạm hủy 2026-10-05 |
 
 ## Trạng thái quy trình
 

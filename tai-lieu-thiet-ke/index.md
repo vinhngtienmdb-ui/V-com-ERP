@@ -11,10 +11,11 @@
 | Nhat_ky_du_an.md | Nhật ký dự án — nguồn duy nhất: Phần I nhật ký phát hành hệ sinh thái, Phần II nhật ký công việc theo ngày |
 | Checklist_cong_viec.md | Checklist công việc và roadmap sản phẩm |
 | Ke_hoach/00_KE_HOACH_TONG_THE.md | Kế hoạch tổng thể toàn dự án VComm |
-| Ke_hoach/00_INDEX.md | Mục lục bộ kế hoạch: 1 kế hoạch tổng thể, 8 kế hoạch hệ thống con, 44 kế hoạch module ERP |
-| Quy_trinh_nghiep_vu/index.md | Mục lục các quy trình nghiệp vụ — đăng ký 60 quy trình QT-01 … QT-60 |
+| Ke_hoach/00_INDEX.md | Mục lục bộ kế hoạch: 1 kế hoạch tổng thể, 8 kế hoạch hệ thống con, 42 kế hoạch module ERP đang hoạt động (2 mô-đun tạm hủy) |
+| Quy_trinh_nghiep_vu/index.md | Mục lục các quy trình nghiệp vụ — đăng ký 60 quy trình QT-01 … QT-60, trong đó 58 đang hoạt động |
 | Quy_trinh_nghiep_vu/Phieu_yeu_cau.md | Phiếu yêu cầu trống để điền |
-| Quy_trinh_nghiep_vu/QT-nn_*.md | Sáu mươi quy trình nghiệp vụ QT-01 … QT-60, đều ở trạng thái Chờ duyệt |
+| Quy_trinh_nghiep_vu/QT-nn_*.md | Quy trình nghiệp vụ QT-01 … QT-60 (58 đang hoạt động, 2 tạm hủy), đều ở trạng thái Chờ duyệt |
+| _Tam_huy/ | Tài liệu tạm hủy ngày 2026-10-05 (QT-49, QT-50, MOD-33, MOD-34) — xem `_Tam_huy/README.md` |
 
 ## Tài liệu thiết kế
 

@@ -35,7 +35,7 @@ Hệ sinh thái VComm gồm bảy hệ thống con và một tầng hạ tầng 
 | HS-07 | VComm Nexthub | `vcomm-nexthub` | 3005 | `01_He_thong/HS-07_VComm_Nexthub.md` |
 | HS-08 | Hạ tầng CSDL trung tâm và Cloud | Root SQL / Cloud | Cloud | `01_He_thong/HS-08_Ha_tang_CSDL_trung_tam_va_Cloud.md` |
 
-Riêng VComm ERP được chia nhỏ tiếp thành **44 module chức năng**, mỗi module một tệp kế hoạch trong `02_ERP_Module/`.
+Riêng VComm ERP được chia nhỏ tiếp thành **42 module chức năng đang hoạt động**, mỗi module một tệp kế hoạch trong `02_ERP_Module/`. Hai mô-đun đã tạm hủy ngày 2026-10-05 được ghi tại mục 5.1.
 
 ## 3. Kiến trúc tổng thể
 
@@ -55,7 +55,7 @@ eCommerce      Store Retail    Seller Centre      iPOS           Nexthub
                     └──────────────┬───────────────┘
                                    ▼
                     ┌──────────────────────────────┐
-                    │     VComm ERP (HS-01)        │  44 module, cổng 3000
+                    │     VComm ERP (HS-01)        │  42 module, cổng 3000
                     │  Điều hành trung tâm doanh nghiệp │
                     └──────────────┬───────────────┘
                                    ▼
@@ -71,14 +71,14 @@ eCommerce      Store Retail    Seller Centre      iPOS           Nexthub
 |---|---|---|---|
 | 0 | `00_KE_HOACH_TONG_THE.md` | 1 | Bức tranh chung, thứ tự ưu tiên |
 | 1 | `01_He_thong/HS-nn_*.md` | 8 | Phạm vi và chức năng của từng hệ thống con |
-| 2 | `02_ERP_Module/N<n>_*/MOD-nn_*.md` | 44 | Kiểm soát tính năng của từng module ERP |
+| 2 | `02_ERP_Module/N<n>_*/MOD-nn_*.md` | 42 | Kiểm soát tính năng của từng module ERP đang hoạt động |
 | — | `00_INDEX.md` | 1 | Mục lục toàn bộ |
 
 Quy ước mã: `HS-nn` cho hệ thống, `MOD-nn` cho module ERP, `MOD-nn-Fxx` cho tính năng trong module.
 
-## 5. Bản đồ 44 module ERP
+## 5. Bản đồ 42 module ERP
 
-Tổng quy mô giao diện: **56,685 dòng** trên 44 module, chia bảy nhóm.
+Tổng quy mô giao diện: **52,825 dòng** trên 42 module đang hoạt động, chia bảy nhóm (chưa tính hai mô-đun tạm hủy).
 
 
 **N1 — Tổng quan & Điều hành (5 module)**
@@ -129,7 +129,7 @@ Tổng quy mô giao diện: **56,685 dòng** trên 44 module, chia bảy nhóm.
 | MOD-27 | Mua hàng & NCC | `/scm` | `src/components/Procurement.tsx` | 817 | — |
 | MOD-28 | Tuân thủ & Pháp chế | `/compliance` | `src/components/Compliance.tsx` | 344 | — |
 
-**N5 — Tài chính & Thanh toán (6 module)**
+**N5 — Tài chính & Thanh toán (4 module)**
 
 | Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
 |---|---|---|---|---|---|
@@ -137,8 +137,6 @@ Tổng quy mô giao diện: **56,685 dòng** trên 44 module, chia bảy nhóm.
 | MOD-30 | Kế toán TT99/2025 | `/ke-toan-tt99` | `src/components/TT99Accounting.tsx` | 2307 | — |
 | MOD-31 | Đối soát & Công nợ | `/settlement` | `src/components/Settlement.tsx` | 886 | — |
 | MOD-32 | Ví & Thanh toán | `/wallet` | `src/components/Wallet.tsx` | 1051 | Có |
-| MOD-33 | Hỗ trợ Tài chính Nhà bán | `/seller-finance` | `src/components/SellerFinance.tsx` | 1497 | — |
-| MOD-34 | Cho thuê thiết bị (Trả góp) | `/device-leasing` | `src/components/DeviceLeasing.tsx` | 2363 | — |
 
 **N6 — Khách hàng & Nhân sự (9 module)**
 
@@ -160,15 +158,28 @@ Tổng quy mô giao diện: **56,685 dòng** trên 44 module, chia bảy nhóm.
 |---|---|---|---|---|---|
 | MOD-44 | Cấu hình hệ thống | `/settings` | `src/components/Settings.tsx` | 6328 | Có |
 
+### 5.1. Mô-đun tạm hủy
+
+Ngày 2026-10-05, theo yêu cầu chủ dự án, hai mô-đun dưới đây được **tạm hủy** (không xóa, không tái sử dụng mã đã cấp). Tệp kế hoạch và mã nguồn đã dời vào thư mục lưu trữ.
+
+| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Lý do |
+|---|---|---|---|---|---|
+| MOD-33 | Hỗ trợ Tài chính Nhà bán | `/seller-finance` | `src/components/SellerFinance.tsx` | 1497 | Tạm hủy 2026-10-05 |
+| MOD-34 | Cho thuê thiết bị (Trả góp) | `/device-leasing` | `src/components/DeviceLeasing.tsx` | 2363 | Tạm hủy 2026-10-05 |
+
+Giữ nguyên **MOD-18 F2B2B — Gom đơn B2B** (Trụ cột 4) theo xác nhận của chủ dự án.
+
+Nơi lưu trữ: `_Tam_huy/` (tài liệu) và `_tam_huy/2026-10-05/` (mã nguồn trong repo `_recovery_V-com-ERP`).
+
 ## 6. Hiện trạng kiểm soát
 
 | Chỉ số | Giá trị | Ý nghĩa |
 |---|---|---|
-| Số module ERP | 44 | Theo menu điều hướng thật (`src/constants.ts`) |
-| Module có tệp kiểm thử riêng | 11 | Còn 33 module chưa có kiểm thử riêng |
-| Module có đặc tả trong `specs/` | 7 | Còn 37 module chưa có đặc tả kỹ thuật |
-| Tệp kiểm thử toàn hệ thống | 86 | Trải trên nhiều tầng |
-| Module có tệp giao diện trên 2.000 dòng | 9 | Ứng viên cần tách nhỏ |
+| Số module ERP đang hoạt động | 42 | Theo menu điều hướng thật (`src/constants.ts`) sau khi tạm hủy 2 mô-đun |
+| Module có tệp kiểm thử riêng | 11 | Còn 31 module chưa có kiểm thử riêng |
+| Module có đặc tả trong `specs/` | 7 | Còn 35 module chưa có đặc tả kỹ thuật |
+| Tệp kiểm thử toàn hệ thống | 84 | Trải trên nhiều tầng (đã trừ 2 tệp kiểm thử tạm hủy) |
+| Module có tệp giao diện trên 2.000 dòng | 8 | Ứng viên cần tách nhỏ |
 | Module backend NestJS | 11 | auth, catalog, crm, gateway, hr, integrations, inventory, orders, payments, seller, wallets |
 
 Module có tệp giao diện lớn nhất:
@@ -177,7 +188,6 @@ Module có tệp giao diện lớn nhất:
 - Quản trị Kho vận — `src/components/Warehouse.tsx` (3,794 dòng)
 - Quản trị Nhân sự (HRM) — `src/components/HR.tsx` (3,721 dòng)
 - Quản lý sản phẩm — `src/components/PIM.tsx` (2,738 dòng)
-- Cho thuê thiết bị (Trả góp) — `src/components/DeviceLeasing.tsx` (2,363 dòng)
 - Tài chính - Kế toán — `src/components/Finance.tsx` (2,336 dòng)
 - Kế toán TT99/2025 — `src/components/TT99Accounting.tsx` (2,307 dòng)
 - Khách hàng (CRM) — `src/components/Customers.tsx` (2,221 dòng)
@@ -189,7 +199,7 @@ Thứ tự dưới đây suy ra từ bằng chứng, không phải từ cảm t�
 
 1. **Việc bảo mật đang treo** — M2.1 (JWT thiếu claim `tenant_id`), ba endpoint Gemini chưa có guard (`/api/gemini/db-query`, `/legal-audit`, `/diagnostics`), M3 (giao dịch đường tiền), M7 (rà soát toàn bộ 86 tuyến đường). Xem `19_Bao_mat.md`.
 2. **Module có tệp lớn mà chưa có kiểm thử** — rủi ro cao nhất khi sửa. Ưu tiên: MOD-44 Cấu hình hệ thống (6.328 dòng), MOD-39 Quản trị Nhân sự (3.721 dòng), MOD-30 Kế toán TT99 (2.307 dòng), MOD-36 Khách hàng CRM (2.221 dòng).
-3. **Module thiếu cả kiểm thử và đặc tả** — 33 module, cần bổ sung kiểm thử cho luồng chính.
+3. **Module thiếu cả kiểm thử và đặc tả** — 31 module, cần bổ sung kiểm thử cho luồng chính.
 4. **Danh mục tính năng chi tiết** — bổ sung theo bước BA cho từng module, bắt đầu từ nhóm N5 Tài chính và N4 Kho vận vì ảnh hưởng tiền và hàng.
 5. **Hệ thống con ngoài ERP** — đối chiếu tài liệu với mã nguồn thật cho HS-03 đến HS-07.
 
@@ -215,8 +225,8 @@ Dùng thống nhất một trong các giá trị sau, ở mọi tệp trong bộ
 ## 10. Rủi ro tổng thể
 
 - **Ranh giới hệ thống chưa rõ:** cùng một nghiệp vụ có mặt ở nhiều hệ thống, dễ sửa một nơi mà quên nơi khác.
-- **Kiểm thử mỏng ở tầng giao diện:** 33/44 module ERP chưa có kiểm thử riêng.
-- **Tệp giao diện quá lớn:** 9 module vượt 2.000 dòng, khó kiểm soát thay đổi.
+- **Kiểm thử mỏng ở tầng giao diện:** 31/42 module ERP chưa có kiểm thử riêng.
+- **Tệp giao diện quá lớn:** 8 module vượt 2.000 dòng, khó kiểm soát thay đổi.
 - **Hai nguồn dữ liệu tài liệu:** bộ tài liệu thiết kế tồn tại ở hai nơi (bản gốc và bản sao trong repo mã nguồn) — cần chốt một nguồn duy nhất.
 - **Bộ kế hoạch mới ở mức khung:** danh mục tính năng chi tiết chưa được duyệt, nên chưa dùng để nghiệm thu được.
 

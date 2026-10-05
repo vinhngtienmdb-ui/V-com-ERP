@@ -585,3 +585,35 @@ Khi phát triển tính năng mới hoặc sửa lỗi trong bất kỳ phân h�
 
 - Toàn bộ 60 quy trình đang ở trạng thái "Chờ duyệt"; chưa quy trình nào được duyệt.
 - Ba quyết định còn để mở: chọn một bản tài liệu làm nguồn duy nhất (bản gốc so với bản trong repo), lệch nhãn năm và mục đích sử dụng quỹ trong hai bản kế hoạch tài chính XLSX, và danh mục tính năng chi tiết theo module cần một lượt BA.
+
+### 2026-10-05 — Tạm hủy hai mô-đun: Cho thuê trả góp và Hỗ trợ tài chính Nhà bán
+
+**Người thực hiện:** AI (Minh) theo yêu cầu của Eric
+
+**Nội dung:**
+
+- Eric yêu cầu tạm hủy các thiết kế liên quan tới B2B, cho thuê trả góp và hỗ trợ tài chính nhà bán, giữ lại các trụ cột nguyên bản.
+- Phát hiện xung đột thiết kế và đã hỏi trước: F2B2B (B2B) chính là **Trụ cột 4** trong mô hình 7 trụ cột gốc. Eric chốt: **giữ nguyên F2B2B**, chỉ tạm hủy cho thuê trả góp và hỗ trợ tài chính nhà bán.
+- Phạm vi do Eric chốt: **gồm cả mã nguồn**; cách làm: **dời vào thư mục lưu trữ**, không xóa.
+- Tài liệu đã dời: QT-49, QT-50, MOD-33, MOD-34 → `tai-lieu-thiet-ke/_Tam_huy/`.
+- Mã nguồn đã dời: `DeviceLeasing.tsx`, `SellerFinance.tsx`, `device_leasing.test.ts`, `seller_finance.test.ts` → `_recovery_V-com-ERP/_tam_huy/2026-10-05/`.
+- Gỡ chỗ nối: hai khai báo lazy và hai tuyến đường trong `App.tsx`; hai mục menu trong `constants.ts`; `/seller-finance` trong `Home.tsx` và `Sidebar.tsx` (ba vai trò); việc WF-102 trong `WorkflowHub.tsx`; hai khối kiểm thử và ba hàm trợ giúp trong `crm_integration.test.ts`.
+- Loại `_tam_huy` khỏi phạm vi biên dịch (`tsconfig.json`) và kiểm thử (`vitest.config.ts`).
+
+**Tệp bị ảnh hưởng:**
+
+- `tai-lieu-thiet-ke/_Tam_huy/` (bốn tệp dời và một README mới)
+- `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/index.md`, `Ke_hoach/00_INDEX.md`, `Ke_hoach/00_KE_HOACH_TONG_THE.md`, `index.md`, `Checklist_cong_viec.md`
+- `_recovery_V-com-ERP/_tam_huy/2026-10-05/` (bốn tệp dời và một README mới)
+- `src/App.tsx`, `src/constants.ts`, `src/components/Home.tsx`, `src/components/Sidebar.tsx`, `src/components/WorkflowHub.tsx`, `src/__tests__/crm_integration.test.ts`, `tsconfig.json`, `vitest.config.ts`
+
+**Kết quả kiểm thử:**
+
+- `npx tsc --noEmit` đạt, mã thoát 0.
+- Không còn tham chiếu mã tới hai mô-đun trong `src/`; chỉ còn chú thích giải thích mẫu lỗi ở `fixedAssetService.ts` và `writeFailure.ts`.
+- Mục lục khớp: 58/60 quy trình và 42/44 mô-đun đang hoạt động.
+
+**Ghi chú:**
+
+- Các đặc tả lịch sử `specs/001`, `specs/015`, `specs/023`, `specs/029` còn nhắc hai mô-đun này — là bản ghi tại thời điểm rà soát, giữ nguyên.
+- Thời điểm khôi phục hai mô-đun chưa chốt; mã đã cấp không tái sử dụng.

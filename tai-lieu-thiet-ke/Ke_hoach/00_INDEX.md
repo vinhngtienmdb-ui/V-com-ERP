@@ -13,7 +13,7 @@
 |---|---|---|---|
 | 0 | `00_KE_HOACH_TONG_THE.md` | 1 | Kế hoạch tổng thể toàn dự án |
 | 1 | `01_He_thong/` | 8 | Kế hoạch từng hệ thống con |
-| 2 | `02_ERP_Module/` | 44 | Kế hoạch từng module chức năng của ERP |
+| 2 | `02_ERP_Module/` | 42 | Kế hoạch từng module chức năng của ERP đang hoạt động (2 mô-đun tạm hủy, xem mục 3.1) |
 
 ## 2. Cấp 1 — Kế hoạch hệ thống con
 
@@ -87,8 +87,6 @@
 | MOD-30 | Kế toán TT99/2025 | `/ke-toan-tt99` | `02_ERP_Module/N5_Tai_chinh_va_Thanh_toan/MOD-30_Ke_toan_TT99_2025.md` |
 | MOD-31 | Đối soát & Công nợ | `/settlement` | `02_ERP_Module/N5_Tai_chinh_va_Thanh_toan/MOD-31_Doi_soat_Cong_no.md` |
 | MOD-32 | Ví & Thanh toán | `/wallet` | `02_ERP_Module/N5_Tai_chinh_va_Thanh_toan/MOD-32_Vi_Thanh_toan.md` |
-| MOD-33 | Hỗ trợ Tài chính Nhà bán | `/seller-finance` | `02_ERP_Module/N5_Tai_chinh_va_Thanh_toan/MOD-33_Ho_tro_Tai_chinh_Nha_ban.md` |
-| MOD-34 | Cho thuê thiết bị (Trả góp) | `/device-leasing` | `02_ERP_Module/N5_Tai_chinh_va_Thanh_toan/MOD-34_Cho_thue_thiet_bi_Tra_gop.md` |
 
 ### Khách hàng & Nhân sự
 
@@ -110,6 +108,15 @@
 |---|---|---|---|
 | MOD-44 | Cấu hình hệ thống | `/settings` | `02_ERP_Module/N7_Cau_hinh/MOD-44_Cau_hinh_he_thong.md` |
 
+### 3.1. Mô-đun tạm hủy
+
+Ngày 2026-10-05, hai mô-đun được tạm hủy theo yêu cầu chủ dự án. Mã đã cấp được giữ nguyên, không tái sử dụng.
+
+| Mã | Module | Tuyến đường | Tệp kế hoạch (đã dời) |
+|---|---|---|---|
+| MOD-33 | Hỗ trợ Tài chính Nhà bán | `/seller-finance` | `_Tam_huy/MOD-33_Ho_tro_Tai_chinh_Nha_ban.md` |
+| MOD-34 | Cho thuê thiết bị (Trả góp) | `/device-leasing` | `_Tam_huy/MOD-34_Cho_thue_thiet_bi_Tra_gop.md` |
+
 ## 4. Quy ước mã
 
 - `HS-nn`: hệ thống con trong hệ sinh thái VComm.
@@ -126,4 +133,5 @@
 ## Chưa xác minh được
 
 - Danh mục tính năng chi tiết của từng module và từng hệ thống chưa được duyệt (cần bước BA).
+- Hai mô-đun tạm hủy (MOD-33, MOD-34) có thể được khôi phục; thời điểm khôi phục chưa chốt.
 - Một số module có thể trùng chức năng với hệ thống con (ví dụ luồng đơn hàng xuất hiện ở cả ERP và eCommerce) — chưa chốt ranh giới trách nhiệm.

@@ -35,7 +35,6 @@ const WalletHub = React.lazy(() => import('./components/Wallet').then(m => ({ de
 const LiveCommerce = React.lazy(() => import('./components/LiveCommerce').then(m => ({ default: m.LiveCommerce })));
 const AdManager = React.lazy(() => import('./components/AdManager').then(m => ({ default: m.AdManager })));
 const Compliance = React.lazy(() => import('./components/Compliance').then(m => ({ default: m.Compliance })));
-const SellerFinance = React.lazy(() => import('./components/SellerFinance').then(m => ({ default: m.SellerFinance })));
 const SocialCommerce = React.lazy(() => import('./components/SocialCommerce').then(m => ({ default: m.SocialCommerce })));
 const OmniChat = React.lazy(() => import('./components/OmniChat').then(m => ({ default: m.OmniChat })));
 const WorkflowHub = React.lazy(() => import('./components/WorkflowHub').then(m => ({ default: m.WorkflowHub })));
@@ -49,7 +48,6 @@ const ContractManager = React.lazy(() => import('./components/ContractManager').
 const DocumentManager = React.lazy(() => import('./components/DocumentManager').then(m => ({ default: m.DocumentManager })));
 const SignatureHub = React.lazy(() => import('./components/SignatureHub').then(m => ({ default: m.SignatureHub })));
 const VCommSupermarket = React.lazy(() => import('./components/VCommSupermarket').then(m => ({ default: m.VCommSupermarket })));
-const DeviceLeasing = React.lazy(() => import('./components/DeviceLeasing').then(m => ({ default: m.DeviceLeasing })));
 const SupplierPortal = React.lazy(() => import('./components/SupplierPortal').then(m => ({ default: m.SupplierPortal })));
 const PublicLegalInfo = React.lazy(() => import('./components/PublicLegalInfo').then(m => ({ default: m.PublicLegalInfo })));
 const Logistics = React.lazy(() => import('./components/Logistics').then(m => ({ default: m.Logistics })));
@@ -413,7 +411,6 @@ function AppLayout() {
     <Route path="/live" element={<LiveCommerce />} />
     <Route path="/ads" element={<AdManager />} />
     <Route path="/compliance" element={<Compliance />} />
-    <Route path="/seller-finance" element={<SellerFinance />} />
     <Route path="/social" element={<SocialCommerce />} />
     <Route path="/workflow" element={<WorkflowHub />} />
     <Route path="/tasks" element={<TasksPage />} />
@@ -425,7 +422,6 @@ function AppLayout() {
 
     <Route path="/org" element={<OrgStructure />} />
     <Route path="/vcomm-supermarket" element={<VCommSupermarket />} />
-    <Route path="/device-leasing" element={<DeviceLeasing />} />
     <Route path="/analytics" element={<AnalyticsBI />} />
     <Route path="/settings" element={<SettingsPage />} />
     <Route path="/profile" element={<UserProfile />} />

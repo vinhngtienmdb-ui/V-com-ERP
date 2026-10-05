@@ -95,8 +95,6 @@ export const navGroups = [
  { icon: BookOpenCheck, label: 'Kế toán TT99/2025', path: '/ke-toan-tt99', color: 'violet', description: 'Chế độ kế toán doanh nghiệp TT99 — hệ tài khoản, sổ cái kép, lưu vết Điều 28, hợp nhất Điều 7, IFRS 15, BCTC B01-DN' },
  { icon: Wallet, label: 'Đối soát & Công nợ', path: '/settlement', color: 'sky', description: 'Tự động đối soát và quản lý công nợ' },
  { icon: Smartphone, label: 'Ví & Thanh toán', path: '/wallet', color: 'indigo', description: 'Xử lý giao dịch và cổng thanh toán' },
- { icon: Banknote, label: 'Hỗ trợ Tài chính Nhà bán', path: '/seller-finance', color: 'blue', description: 'Gói vay và hỗ trợ vốn cho nhà bán' },
- { icon: Smartphone, label: 'Cho thuê thiết bị (Trả góp)', path: '/device-leasing', color: 'blue', description: 'Quản lý đơn xin duyệt trả góp dưới danh nghĩa thuê thiết bị' },
  ]
  },
  {
