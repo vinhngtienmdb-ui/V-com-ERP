@@ -14,6 +14,7 @@ import { securityHeadersMiddleware } from './src/lib/securityHeaders'; // GĐ 2.
 import { verifySePayWebhook as sepayVerify, type SePayAuthResult } from './src/lib/sepayWebhookAuth'; // GĐ 2.4
 import { verifyBearerToken } from './src/lib/bearerAuth'; // GĐ 2.4 — khoá quản trị iPOS / metrics
 import { hashPassword, verifyPassword } from './src/lib/passwordHash'; // GĐ 2.4 — băm mật khẩu iPOS/Seller
+import { issueSellerToken, verifySellerToken, parseBearerToken } from './src/lib/sellerAuth'; // GĐ 2.4 / M1 — phiên người bán
 
 dotenv.config();
 
@@ -409,6 +410,44 @@ async function startServer() {
     } catch (err) {
       logger.error('[auth] Lỗi xác thực:', err);
       return res.status(503).json({ status: 'error', message: 'Không thể xác thực lúc này.' });
+    }
+  };
+
+  /**
+   * GĐ 2.4 / M1 — Xác thực phiên người bán (seller-session).
+   *
+   * Bắt buộc token HMAC tại mọi route `/api/seller/*` (trừ register/login). Quan trọng
+   * nhất: middleware NÀY KHÔNG tin `sellerId` từ client — nó ghi đè `req.body.sellerId`
+   * và `req.params.sellerId` / `req.params.ownerId` bằng sellerId lấy từ token, triệt
+   * lỗ hổng IDOR (trước đây client truyền sellerId thô → đọc/sửa dữ liệu người bán khác).
+   */
+  const requireSellerAuth = (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const token = parseBearerToken(req.headers['authorization']);
+    if (!token) {
+      return res
+        .status(401)
+        .json({ status: 'error', message: 'Thiếu token xác thực người bán.' });
+    }
+    try {
+      const { sellerId } = verifySellerToken(token);
+      (req as express.Request & { sellerId?: string }).sellerId = sellerId;
+      // IDOR fix: forced sellerId từ token, ghi đè mọi nguồn sellerId từ client.
+      if (req.body && typeof req.body === 'object') {
+        req.body.sellerId = sellerId;
+      }
+      if (req.params) {
+        if ('sellerId' in req.params) req.params.sellerId = sellerId;
+        if ('ownerId' in req.params) req.params.ownerId = sellerId;
+      }
+      return next();
+    } catch (e: any) {
+      return res
+        .status(401)
+        .json({ status: 'error', message: e?.message || 'Token người bán không hợp lệ.' });
     }
   };
 
@@ -3470,7 +3509,9 @@ ${summaryText}`;
         status: 'success',
         user: { id: userRow.id, email },
         seller: sellerRow,
-        role: staffRow.role
+        role: staffRow.role,
+        // M1: cấp token phiên người bán (HMAC) để client gửi kèm Authorization: Bearer.
+        token: issueSellerToken(staffRow.seller_id)
       });
     } catch (err: any) {
       logger.error('[Seller Auth Login] Error:', err);
@@ -3479,7 +3520,7 @@ ${summaryText}`;
   });
 
   // 3. Seller Profile
-  app.get('/api/seller/profile/:ownerId', async (req, res) => {
+  app.get('/api/seller/profile/:ownerId', requireSellerAuth, async (req, res) => {
     const { ownerId } = req.params;
     try {
       if (!supabaseClient) throw new Error('Supabase client not initialized');
@@ -3496,7 +3537,7 @@ ${summaryText}`;
   });
 
   // 4. Get Seller Full Dashboard Data
-  app.get('/api/seller/data/:sellerId', async (req, res) => {
+  app.get('/api/seller/data/:sellerId', requireSellerAuth, async (req, res) => {
     const { sellerId } = req.params;
     try {
       if (!supabaseClient) throw new Error('Supabase client not initialized');
@@ -3594,7 +3635,7 @@ ${summaryText}`;
   });
 
   // 5. Seller Product Create
-  app.post('/api/seller/products/create', async (req, res) => {
+  app.post('/api/seller/products/create', requireSellerAuth, async (req, res) => {
     const { product } = req.body;
     if (!product || !product.sellerId) {
       return res.status(400).json({ status: 'error', message: 'Thiếu thông tin sản phẩm hoặc sellerId' });
@@ -3623,7 +3664,7 @@ ${summaryText}`;
   });
 
   // 6. Seller Product Delete
-  app.delete('/api/seller/products/delete/:id', async (req, res) => {
+  app.delete('/api/seller/products/delete/:id', requireSellerAuth, async (req, res) => {
     const { id } = req.params;
     try {
       if (!supabaseClient) throw new Error('Supabase client not initialized');
@@ -3639,7 +3680,7 @@ ${summaryText}`;
   });
 
   // 7. Update Seller Order Status (Confirm Shipment / Delivery)
-  app.post('/api/seller/orders/status', async (req, res) => {
+  app.post('/api/seller/orders/status', requireSellerAuth, async (req, res) => {
     const { orderId, sellerId, status } = req.body;
     if (!orderId || !sellerId || !status) {
       return res.status(400).json({ status: 'error', message: 'Thiếu thông tin cập nhật trạng thái đơn hàng' });
@@ -3748,7 +3789,7 @@ ${summaryText}`;
   });
 
   // 8. Seller Wallet Withdrawal request
-  app.post('/api/seller/wallet/withdraw', async (req, res) => {
+  app.post('/api/seller/wallet/withdraw', requireSellerAuth, async (req, res) => {
     const { sellerId, amount } = req.body;
     if (!sellerId || !amount || amount <= 0) {
       return res.status(400).json({ status: 'error', message: 'Số tiền hoặc mã shop không hợp lệ' });
@@ -3785,7 +3826,7 @@ ${summaryText}`;
   });
 
   // 9. Create Promotion
-  app.post('/api/seller/promotions/create', async (req, res) => {
+  app.post('/api/seller/promotions/create', requireSellerAuth, async (req, res) => {
     const { sellerId, code, name, type, discountValue, minSpend } = req.body;
     try {
       if (!supabaseClient) throw new Error('Supabase client not initialized');
@@ -3806,7 +3847,7 @@ ${summaryText}`;
   });
 
   // 10. Create KOL Campaign
-  app.post('/api/seller/kol/create', async (req, res) => {
+  app.post('/api/seller/kol/create', requireSellerAuth, async (req, res) => {
     const { sellerId, campaignName, commissionRate } = req.body;
     try {
       if (!supabaseClient) throw new Error('Supabase client not initialized');
@@ -3822,7 +3863,7 @@ ${summaryText}`;
   });
 
   // 11. Add Staff
-  app.post('/api/seller/staffs/create', async (req, res) => {
+  app.post('/api/seller/staffs/create', requireSellerAuth, async (req, res) => {
     const { sellerId, email, role } = req.body;
     try {
       if (!supabaseClient) throw new Error('Supabase client not initialized');
@@ -3851,7 +3892,7 @@ ${summaryText}`;
   });
 
   // 12. Issue Invoice VAT
-  app.post('/api/seller/invoices/issue', async (req, res) => {
+  app.post('/api/seller/invoices/issue', requireSellerAuth, async (req, res) => {
     const { id } = req.body;
     try {
       if (!supabaseClient) throw new Error('Supabase client not initialized');
@@ -3866,7 +3907,7 @@ ${summaryText}`;
   });
 
   // 13. Update Store details
-  app.post('/api/seller/store/update', async (req, res) => {
+  app.post('/api/seller/store/update', requireSellerAuth, async (req, res) => {
     const { sellerId, shopName, logoUrl, bannerUrl, description } = req.body;
     try {
       if (!supabaseClient) throw new Error('Supabase client not initialized');
