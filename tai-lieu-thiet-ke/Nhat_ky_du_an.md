@@ -647,3 +647,63 @@ Khi phát triển tính năng mới hoặc sửa lỗi trong bất kỳ phân h�
 - Xung đột cần Eric chốt: mô-đun **Đội ngũ Kinh doanh** (`/sales`, MOD-38, `src/components/Sales.tsx`) vẫn còn phần quản lý tiềm năng trong mã nguồn và đang có mục menu. Quy trình Tiềm năng đã bị hủy theo mô hình thương mại điện tử, nên cần quyết định mô-đun này có bị hủy theo hay không. Đã ghi thành câu hỏi mở Q-03 trong QT-24.
 - Nút "Thêm Khách hàng" hiện chưa có kiểm tra quyền quản trị viên trong thành phần `Customers`; đã ghi vào mục "Chưa xác minh được" của QT-24.
 - Ba quyết định còn để mở từ trước vẫn giữ nguyên: nguồn tài liệu duy nhất, lệch nhãn năm và mục đích sử dụng quỹ trong hai bản kế hoạch tài chính XLSX, và danh mục tính năng chi tiết theo module cần một lượt BA.
+
+### 2026-10-09 — Chuẩn hóa 5 nhóm chức năng, hợp nhất 24 quy trình QT vào MD_ERP, xóa rác (Request F / Stream B)
+
+**Người thực hiện:** AI (Minh) theo yêu cầu của Eric
+
+**Nội dung:**
+
+- Eric yêu cầu: nhóm chức năng ERP đang quá nhiều, sắp xếp lại và đề xuất kế hoạch mới; **giữ nguyên bộ Mô tả nghiệp vụ gốc (MD_ERP) làm nguồn gốc duy nhất, không liên tục cập nhật thêm**; tài liệu tham khảo chỉ để tham khảo, không copy toàn bộ; rà soát lại toàn bộ nguồn ban đầu; sau khi chuẩn hóa thì xóa file rác.
+- Rà soát toàn bộ nguồn: MD_ERP (29 đặc tả, 4 phân hệ), 9 đề án `DeAn-*.docx`, 2 XLSX tài chính, 2 ghi chú kiểm toán, 54 quy trình QT, bản nháp `Ke_hoach`, `_Tam_huy`, `.workbuddy-ai`.
+- Phát hiện nguyên nhân "nhóm quá nhiều": **24 quy trình QT (QT-02…QT-23, QT-25, QT-26) chỉ sao chép lại nội dung MD_ERP**, vi phạm yêu cầu "giữ nguyên, đừng cập nhật thêm".
+- Đề xuất và được Eric duyệt ("Đồng ý toàn bộ"): gộp thành **5 nhóm chức năng** — Nhóm 1–4 lấy trọn vẹn từ MD_ERP (Kế toán, Nhân sự, CRM, Văn phòng), Nhóm 5 là Thương mại & Nền tảng mở rộng (30 QT).
+- **Hợp nhất 24 quy trình trùng MD_ERP vào MD_ERP**: dời vào `_Tam_huy/`, giữ nguyên nội dung, bỏ tiền tố mã; các mã **nghỉ hưu, không dồn số, không tái sử dụng** để bảo toàn truy vết ngược về đặc tả nguồn.
+- Xóa rác đã duyệt: thư mục `.workbuddy-ai/` (477 tệp AI tạm) và `Quy_trinh_nghiep_vu/Mo ta nghiep vu/_Luu-tru-Bo-Cu-2026-2030/` (6 docx cũ).
+- Giữ lại (không phải rác) sau khi content-diff chứng minh khác nhau: `Ke-Hoach-Tai-Chinh-Va-Nguon-Von-VComm-2026-2030 (1).xlsx`; 9 `DeAn-*.docx` và XLSX gốc giữ nguyên làm tài liệu tham khảo.
+- Cập nhật `Quy_trinh_nghiep_vu/index.md` (5 nhóm), `_Tam_huy/README.md` (ghi lịch sử hợp nhất 24 mã), `index.md` cấp cao, `Ke_hoach/00_INDEX.md` (thêm ánh xạ 5 nhóm). Chuẩn hóa CRLF.
+
+**Tệp bị ảnh hưởng:**
+
+- `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/index.md` (viết lại 5 nhóm), `tai-lieu-thiet-ke/_Tam_huy/README.md`, `tai-lieu-thiet-ke/index.md`, `tai-lieu-thiet-ke/Ke_hoach/00_INDEX.md`
+- `tai-lieu-thiet-ke/_Tam_huy/` (thêm 24 tệp hợp nhất, bỏ tiền tố mã)
+- Xóa: `tai-lieu-thiet-ke/.workbuddy-ai/`, `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/Mo ta nghiep vu/_Luu-tru-Bo-Cu-2026-2030/`
+
+**Kết quả kiểm tra:**
+
+- Mục lục khớp: **30 quy trình đang hoạt động** (QT-01, QT-24, QT-27…QT-54), **24 hợp nhất vào MD_ERP**, **6 tạm hủy**.
+- Commit `154d8a4` trên `main`, push lên `origin/main` thành công (`c5ca44c..154d8a4`).
+
+**Ghi chú:**
+
+- #156 (gập vật lý `Ke_hoach/N1…N7` thành 5 thư mục miền) là bước tiếp theo, cần chủ dự án duyệt riêng (tránh xáo trộn lớn) — mới ghi ánh xạ logic, chưa di chuyển file.
+- Bản nháp `Ke_hoach` vẫn giữ 42 mô-đun `MOD-*` và cấu trúc `N1…N7` cũ; chỉ thêm ánh xạ logic 5 nhóm.
+
+### 2026-10-09 — Viết lại 7 quy trình QT theo bốn quyết định Pinduoduo (#157, tiếp nối Stream A)
+
+**Người thực hiện:** AI (Minh) theo yêu cầu của Eric
+
+**Nội dung:**
+
+- Tiếp nối phân tích chồng chéo iPOS–Hub–Mua chung–V-Xu–Loyalty (`Phan_tich_chong_cheo_iPOS_Hub_MuaChung_VXu.md`, ngày chốt 2026-10-09, bốn quyết định ở mục 6.1). Viết lại 7 quy trình QT cho khớp mã nguồn và quyết định chốt:
+  - **QT-31 Mua chung** và **QT-35 V-Xu** (đã viết lại phiên trước, cùng đợt commit `154d8a4`): mua chung đúng mô hình 拼团; V-Xu là động cơ điểm duy nhất.
+  - **QT-37 Loyalty** (phiên bản 2.0): bãi bỏ động cơ điểm riêng, trở thành **tầng giao diện và giữ chân** đọc từ V-Xu; sửa lỗi trích dẫn `znsService.ts:212` (thực ra là `getZnsLogs`, hàm đọc nhật ký) → hàm gửi thật là `sendZnsNotification` ở `znsService.ts:255`; ghi nhận `Loyalty.tsx` là giao diện giả (`MOCK_LOYALTY`).
+  - **QT-34 VComm Hub** (phiên bản 2.0): bán tại quầy phân biệt theo loại trạm — `standard`/`freeze` được bán, `locker` chỉ nhận hàng; ghi nhận `hubService.ts` là mã chết (không thành phần chạy thật nào import).
+  - **QT-36 KOL/KOC** (phiên bản 2.0): bổ sung vai trò gom nhu cầu (团长) do mạng Affiliate/KOL hiện có đảm nhận, không xây vai trò mới; gắn `leaderId` mua chung.
+  - **QT-53 Siêu thị** và **QT-54 E-Menu** (phiên bản 2.0): ghi rõ là **POS nội bộ do VComm vận hành**, khác iPOS đối tác; cùng với Hub `standard`/`freeze` là ba nơi bán lẻ do VComm vận hành.
+- Cập nhật `Phan_tich_chong_cheo...` mục 6.2: việc 1–6 chuyển sang "Đã thực hiện" (2026-10-09); việc 8 (rà trích dẫn toàn bộ) chuyển "Đang thực hiện" — đã rà 7/30 QT Nhóm 5, còn 23 tệp chưa rà.
+
+**Tệp bị ảnh hưởng:**
+
+- `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/QT-37_*.md`, `QT-34_*.md`, `QT-36_*.md`, `QT-53_*.md`, `QT-54_*.md` (viết lại phiên bản 2.0); `QT-31_*.md`, `QT-35_*.md` (đã viết lại phiên trước)
+- `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/Phan_tich_chong_cheo_iPOS_Hub_MuaChung_VXu.md` (cập nhật mục 6.2)
+
+**Kết quả kiểm tra:**
+
+- 7/7 quy trình có mục "Chưa xác minh được" và bằng chứng `file:line`; mọi trích dẫn sai đã được sửa hoặc ghi nhận là mã chết.
+- Chờ commit/push (chung đợt với bản ghi này).
+
+**Ghi chú:**
+
+- Còn 23/30 quy trình Nhóm 5 chưa rà trích dẫn cùng loại (việc 8) — cần một lượt rà tiếp theo.
+- Các thay đổi mã nguồn thực tế (nối `gb_expire_stale_sessions()` vào lịch, lộ `leaderId`, nối Loyalty vào V-Xu, gộp sổ điểm) nằm ngoài phạm vi tài liệu này — là đầu việc kỹ thuật sau khi duyệt thiết kế.

@@ -225,16 +225,18 @@ Hai vai trò **có thể cùng tồn tại nhưng trách nhiệm khác nhau**. V
 
 ### 6.2. Bảng việc phải làm
 
+> Cập nhật 2026-10-09: các việc 1–6 đã thực hiện cùng ngày chốt (viết lại QT-31, QT-35, QT-37, QT-34, QT-36, QT-53, QT-54 theo bốn quyết định ở mục 6.1).
+
 | # | Việc | Tệp | Trạng thái |
 |---|---|---|---|
-| 1 | Viết lại QT-31 theo mã nguồn + 拼团 đầy đủ | `QT-31_Mua_chung_Group_Buy.md` | Chờ thực hiện |
-| 2 | Viết lại QT-35 thành động cơ điểm duy nhất | `QT-35_VXu_Diem_thuong_va_Hoan_tien.md` | Chờ thực hiện |
-| 3 | Viết lại QT-37 thành tầng giao diện và giữ chân | `QT-37_Khach_hang_than_thiet_Loyalty.md` | Chờ thực hiện |
-| 4 | Thêm điều kiện bán tại quầy theo loại trạm cho QT-34 | `QT-34_Van_hanh_VComm_Hub_O2O.md` | Chờ thực hiện |
-| 5 | Ghi rõ QT-53 và QT-54 là POS nội bộ do VComm vận hành, khác iPOS đối tác | `QT-53_Sieu_thi_Offline_va_Ban_le_tai_quay.md`, `QT-54_E_Menu_va_Dat_mon_tai_ban.md` | Chờ thực hiện |
-| 6 | Bổ sung vai trò gom nhu cầu vào QT-36 | `QT-36_KOL_KOC_va_Tiep_thi_lien_ket.md` | Chờ thực hiện |
+| 1 | Viết lại QT-31 theo mã nguồn + 拼团 đầy đủ | `QT-31_Mua_chung_Group_Buy.md` | **Đã thực hiện** (2026-10-09) |
+| 2 | Viết lại QT-35 thành động cơ điểm duy nhất | `QT-35_VXu_Diem_thuong_va_Hoan_tien.md` | **Đã thực hiện** (2026-10-09) |
+| 3 | Viết lại QT-37 thành tầng giao diện và giữ chân | `QT-37_Khach_hang_than_thiet_Loyalty.md` | **Đã thực hiện** (2026-10-09) |
+| 4 | Thêm điều kiện bán tại quầy theo loại trạm cho QT-34 | `QT-34_Van_hanh_VComm_Hub_O2O.md` | **Đã thực hiện** (2026-10-09) |
+| 5 | Ghi rõ QT-53 và QT-54 là POS nội bộ do VComm vận hành, khác iPOS đối tác | `QT-53_Sieu_thi_Offline_va_Ban_le_tai_quay.md`, `QT-54_E_Menu_va_Dat_mon_tai_ban.md` | **Đã thực hiện** (2026-10-09) |
+| 6 | Bổ sung vai trò gom nhu cầu vào QT-36 | `QT-36_KOL_KOC_va_Tiep_thi_lien_ket.md` | **Đã thực hiện** (2026-10-09) |
 | 7 | Ghi nhận `hubService.ts` là mã chết và `gb_expire_stale_sessions()` chưa được gọi | tài liệu này | **Đã ghi** |
-| 8 | Rà toàn bộ bộ quy trình tìm lỗi trích dẫn cùng loại | 54 tệp QT | Chờ thực hiện |
+| 8 | Rà toàn bộ bộ quy trình tìm lỗi trích dẫn cùng loại | 30 tệp QT Nhóm 5 | **Đang thực hiện** — đã rà QT-31, QT-35, QT-37, QT-34, QT-36, QT-53, QT-54 (phát hiện lệch `znsService.ts:212` và trích dẫn mã chết `hubService.ts`); còn 23 tệp chưa rà |
 
 ---
 

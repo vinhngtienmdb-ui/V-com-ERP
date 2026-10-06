@@ -78,6 +78,7 @@
 | Mã | Công việc | Giai đoạn | Người thực hiện | Trạng thái | Hạn | Ghi chú |
 |---|---|---|---|---|---|---|
 | — | Khảo sát lại toàn bộ quy trình (20 tệp thiết kế) | BA / Thiết kế | AI (Minh) | ✅ hoàn thành khảo sát | 2026-10-05 | `tai-lieu-thiet-ke/*` |
+| #156 | Gập vật lý `Ke_hoach/N1…N7` thành 5 thư mục miền (theo ánh xạ 5 nhóm) | Tài liệu | AI (Minh) | ⬜ chưa làm — chờ chủ dự án duyệt riêng | — | Tránh xáo trộn lớn; mới ghi ánh xạ logic trong `Ke_hoach/00_INDEX.md` |
 
 ## 5. Tạm dừng
 
@@ -97,6 +98,8 @@
 | — | Viết bộ 59 quy trình nghiệp vụ QT-02 … QT-60 | Tài liệu | 2026-10-05 | `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/` | Kế toán 11, Nhân sự 11, CRM 5, Văn phòng 2, Thương mại và Vận hành 30; mọi tệp ở trạng thái Chờ duyệt, có mục "Chưa xác minh được" |
 | — | Tạm hủy 2 mô-đun: Cho thuê trả góp (`/device-leasing`) và Hỗ trợ Tài chính Nhà bán (`/seller-finance`) | Tài chính / Tài liệu | 2026-10-05 | `_tam_huy/2026-10-05/`, `_Tam_huy/` | Dời tài liệu (QT-49, QT-50, MOD-33, MOD-34) và mã nguồn (DeviceLeasing, SellerFinance) vào thư mục lưu trữ; gỡ route, menu, chỗ nối và test; **giữ nguyên F2B2B (Trụ cột 4)** |
 | — | Tạm hủy 4 quy trình CRM không hợp mô hình TMĐT và dồn số QT liên tục | Tài liệu | 2026-10-09 | `_Tam_huy/`, `Quy_trinh_nghiep_vu/` | Dời Tiềm năng, Liên hệ, Cơ hội bán hàng, Báo giá (bỏ tiền tố mã); dồn QT-25→QT-24, QT-29…48→QT-25…44, QT-51…60→QT-45…54; viết lại QT-24 Quản trị Khách hàng theo mô hình eCommerce (khách chỉ sinh ra khi tự đăng ký, quản trị viên là ngoại lệ duy nhất); còn 54 quy trình, số tiếp theo QT-55 |
+| — | Chuẩn hóa 5 nhóm chức năng, hợp nhất 24 QT trùng MD_ERP, xóa rác (Request F) | Tài liệu | 2026-10-09 | `tai-lieu-thiet-ke/` | commit `154d8a4` — 30 QT hoạt động, 24 hợp nhất vào MD_ERP, 6 tạm hủy; xóa `.workbuddy-ai/`, `_Luu-tru`; giữ `(1).xlsx` sau content-diff |
+| — | Viết lại 7 QT theo 4 quyết định Pinduoduo (QT-31/35/37/34/36/53/54) | Tài liệu | 2026-10-09 | `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/` | V-Xu động cơ điểm duy nhất (QT-35/37); Hub bán tại quầy phân loại trạm (QT-34); Siêu thị/E-Menu POS nội bộ VComm khác iPOS (QT-53/54); Affiliate/KOL gánh gom nhu cầu (QT-36). Sửa lệch `znsService.ts:212`; ghi nhận `hubService.ts` mã chết |
 
 ## 7. Quy ước mã
 

@@ -1,15 +1,17 @@
-# QT-54 — E-Menu và Đặt món tại bàn
+# QT-54 — E-Menu và Đặt món tại bàn (POS nội bộ do VComm vận hành)
 
 - Dự án: VComm
 - Mã quy trình: QT-54
-- Phiên bản: 1.0
+- Phiên bản: 2.0
 - Trạng thái: Chờ duyệt
 - Ngày tạo: 2026-10-05
 - Ngày cập nhật: 2026-10-09
 - Nhóm nghiệp vụ: Thương mại và Vận hành
-- Nguồn nghiệp vụ: Bộ đề án `Mo ta nghiep vu/` (9 đề án) và mã nguồn `_recovery_V-com-ERP`
+- Nguồn nghiệp vụ: Bộ đề án `Mo ta nghiep vu/` (9 đề án), mã nguồn `_recovery_V-com-ERP`, và Quyết định chủ dự án 2026-10-09 (xem `Phan_tich_chong_cheo_iPOS_Hub_MuaChung_VXu.md`, mục 6.1 quyết định 1)
 - Mô-đun hệ thống: E-Menu (`/emenu/:tableId`)
 - Hiện trạng mã nguồn: Đã có — trang gọi món tại bàn dành cho khách, có xác nhận đặt món thành công
+
+> Quyết định chủ dự án ngày 2026-10-09 (quyết định 1): **E-Menu là POS nội bộ do VComm vận hành**, khác với iPOS (shop đối tác, ngoài repo, đa tenant). Cùng với Siêu thị VComm (QT-53) và trạm Hub `standard`/`freeze` (QT-34), E-Menu là một trong ba nơi bán lẻ do VComm vận hành. Xem mục 7 và mục 12.
 
 ## 1. Tác nhân và quyền
 
@@ -23,6 +25,7 @@
 
 - Đã có thực đơn và giá theo từng món.
 - Đã có mã bàn hoặc mã điểm phục vụ.
+- Đã phân biệt rõ E-Menu là cơ sở do VComm vận hành (không phải shop đối tác iPOS).
 
 ## 3. Luồng chính
 
@@ -76,6 +79,8 @@ Yêu cầu --bị hủy--> Đã hủy
 | BR-01 | Yêu cầu đặt món gắn với mã bàn hoặc mã điểm phục vụ | `src/components/EMenu.tsx:147` |
 | BR-02 | Chỉ món còn phục vụ được mới cho chọn | `src/components/EMenu.tsx:147` |
 | BR-03 | Doanh thu ghi nhận khi khách thanh toán | `src/components/EMenu.tsx:118` |
+| BR-04 | **E-Menu là POS nội bộ do VComm vận hành**; khác iPOS (shop đối tác, ngoài repo, đa tenant) | Quyết định 1 (2026-10-09); `src/components/VCommHub.tsx:25` |
+| BR-05 | E-Menu chia sẻ mô hình POS nội bộ với Siêu thị VComm (QT-53) và trạm Hub `standard`/`freeze` (QT-34) | Quyết định 1; phân tích mục 4.1 |
 
 ## 8. Thông báo và nhật ký
 
@@ -100,10 +105,12 @@ Yêu cầu --bị hủy--> Đã hủy
 - **AC-01.** Cho mã bàn hợp lệ, Khi khách mở, Thì thực đơn hiển thị đúng món đang phục vụ.
 - **AC-02.** Cho mã bàn không hợp lệ, Khi khách mở, Thì hệ thống không hiển thị thực đơn (ca thất bại bắt buộc).
 - **AC-03.** Cho khách gửi yêu cầu, Khi gửi thành công, Thì hệ thống hiển thị xác nhận và ghi nhận theo mã bàn.
+- **AC-04.** Cho E-Menu được gán nhầm là shop iPOS đối tác, Khi phân loại, Thì hệ thống phân biệt rõ là POS nội bộ VComm (ca bắt buộc).
 
 ## 12. Ảnh hưởng tới phần có sẵn
 
 - Dùng lại trang gọi món đã có.
+- **Làm rõ phân loại POS:** E-Menu là POS nội bộ do VComm vận hành, khác iPOS đối tác (quyết định 1). Cùng với Siêu thị (QT-53) và trạm Hub `standard`/`freeze` (QT-34), E-Menu là một trong ba nơi bán lẻ do VComm vận hành, giải quyết chồng chéo "bốn nơi cùng bán lẻ" (phân tích mục 2.1 và 4.1).
 - Cần bổ sung cơ chế chống gửi trùng yêu cầu nếu chưa có.
 
 ## 13. Giả định và câu hỏi mở

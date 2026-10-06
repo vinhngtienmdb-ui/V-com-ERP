@@ -86,6 +86,8 @@ Bốn nhóm này **không có quy trình QT riêng** — nội dung đầy đủ
 
 ## Nhóm 5 — Thương mại & Nền tảng mở rộng (30 quy trình, không có trong MD_ERP)
 
+> Bảy quy trình QT-31, QT-35, QT-37, QT-34, QT-36, QT-53, QT-54 đã được viết lại theo **bốn quyết định chốt ngày 2026-10-09** về mô hình Pinduoduo (xem `Phan_tich_chong_cheo_iPOS_Hub_MuaChung_VXu.md`, mục 6.1): (1) **V-Xu là động cơ điểm duy nhất**, Loyalty thành tầng giao diện/giữ chân (QT-35, QT-37); (2) **Hub bán tại quầy phân theo loại trạm** — `standard`/`freeze` bán được, `locker` chỉ nhận hàng (QT-34); (3) **Siêu thị và E-Menu là POS nội bộ do VComm vận hành**, khác iPOS đối tác (QT-53, QT-54); (4) **Mạng Affiliate/KOL gánh vai trò gom nhu cầu** (团长), không xây vai trò mới (QT-36).
+
 ### 5A — Xác thực & Khách hàng
 
 | Mã | Tệp | Tên quy trình | Trạng thái |
