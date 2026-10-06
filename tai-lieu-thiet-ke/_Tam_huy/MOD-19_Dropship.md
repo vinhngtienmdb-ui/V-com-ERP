@@ -1,48 +1,44 @@
-# MOD-07 — Hợp đồng & Pháp chế
+# MOD-19 — Dropship
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng
-- Mã module: MOD-07
-- Tuyến đường: `/contracts`
-- Tệp giao diện: `src/components/ContractManager.tsx` (822 dòng)
+- Nhóm chức năng: Thương mại & Nền tảng mở rộng
+- Mã module: MOD-19
+- Tuyến đường: `/dropship`
+- Tệp giao diện: `src/components/Dropship.tsx` (1152 dòng)
 - Trạng thái: Chưa bắt đầu
 - Ngày tạo: 2026-10-05
 - Ngày cập nhật: 2026-10-05
 
 ## 1. Mục tiêu
 
-Quản lý kho hợp đồng và tuân thủ
+Trụ cột 1 — Đối tác bán trên kênh của họ, VComm giữ kho & giao hàng, đối tác ăn chênh lệch
 
 ## 2. Định danh và bằng chứng
 
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng |
-| Tuyến đường | `/contracts` |
-| Component | `ContractManager` |
-| Tệp nguồn | `src/components/ContractManager.tsx` |
-| Quy mô | 822 dòng |
-| Tệp kiểm thử liên quan | Chưa có |
-| Đặc tả kỹ thuật liên quan | Chưa có |
+| Nhóm chức năng | Thương mại & Nền tảng mở rộng |
+| Tuyến đường | `/dropship` |
+| Component | `DropshipManager` |
+| Tệp nguồn | `src/components/Dropship.tsx` |
+| Quy mô | 1152 dòng |
+| Tệp kiểm thử liên quan | `src/__tests__/dropship.test.ts` |
+| Đặc tả kỹ thuật liên quan | `specs/017-dropship` |
 
 ## 3. Khối giao diện ghi nhận từ mã nguồn
 
-Danh sách dưới đây trích tự động từ `src/components/ContractManager.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
+Danh sách dưới đây trích tự động từ `src/components/Dropship.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
 
-- Tình trạng hồ sơ
-- Thao tác phê duyệt
-- Tiến trình chữ ký số
-- Quản trị Hợp đồng
-- Tạo hợp đồng mới
 
-Nhãn giao diện ghi nhận thêm: Đóng (Esc).
+
+Nhãn giao diện ghi nhận thêm: Thêm đối tác dropship; Niêm yết sản phẩm lên kênh đối tác; Nhận đơn từ kênh đối tác.
 
 ## 4. Danh sách tính năng
 
 | Mã | Tính năng | Trạng thái | Ghi chú |
 |---|---|---|---|
-| MOD-07-F01 | Quản lý kho hợp đồng và tuân thủ | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
+| MOD-19-F01 | Trụ cột 1 — Đối tác bán trên kênh của họ, VComm giữ kho & giao hàng, đối tác ăn chênh lệch | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
 
 > Danh mục tính năng chi tiết cần bổ sung ở bước BA. Chưa ghi thêm vì chưa có nguồn yêu cầu đã duyệt.
 
@@ -54,15 +50,13 @@ Nhãn giao diện ghi nhận thêm: Đóng (Esc).
 
 ## 6. Tiêu chí nghiệm thu
 
-- [ ] Tuyến đường `/contracts` truy cập được, hiển thị đúng component `ContractManager`.
+- [ ] Tuyến đường `/dropship` truy cập được, hiển thị đúng component `DropshipManager`.
 - [ ] Có kiểm thử cho luồng chính và luồng từ chối quyền.
 - [ ] Không phát sinh lỗi kiểu khi chạy `tsc --noEmit`.
 - [ ] Danh mục tính năng ở mục 4 đã được duyệt và đánh dấu trạng thái thật.
 
 ## 7. Rủi ro và việc còn mở
 
-- Chưa có tệp kiểm thử riêng cho module — rủi ro hồi quy khi sửa.
-- Chưa có đặc tả kỹ thuật trong `specs/` gắn với module.
 - Danh mục tính năng chi tiết chưa được duyệt (cần bước BA).
 
 ## 8. Chưa xác minh được
@@ -70,3 +64,6 @@ Nhãn giao diện ghi nhận thêm: Đóng (Esc).
 - Danh mục tính năng thật của module (mục 4 mới có mục tiêu, chưa có danh mục đầy đủ).
 - Mức độ hoàn thiện thật so với mô tả menu.
 - Module có dùng bảng dữ liệu riêng hay dùng chung bảng của hệ thống.
+
+— ĐÃ GỘP VÀO MOD-35 (Nhà bán hàng) ngày 2026-10-06. Dropship là chức năng của Quản lý Nhà bán.
+

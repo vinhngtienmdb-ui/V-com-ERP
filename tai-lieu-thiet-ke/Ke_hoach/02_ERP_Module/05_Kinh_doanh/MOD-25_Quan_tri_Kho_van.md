@@ -1,48 +1,54 @@
-# MOD-07 — Hợp đồng & Pháp chế
+# MOD-25 — Kho vận & Logistics
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng
-- Mã module: MOD-07
-- Tuyến đường: `/contracts`
-- Tệp giao diện: `src/components/ContractManager.tsx` (822 dòng)
+- Nhóm chức năng: Kinh doanh
+- Mã module: MOD-25
+- Tuyến đường: `/warehouse`
+- Tệp giao diện: `src/components/Warehouse.tsx` (3794 dòng)
 - Trạng thái: Chưa bắt đầu
 - Ngày tạo: 2026-10-05
 - Ngày cập nhật: 2026-10-05
 
 ## 1. Mục tiêu
 
-Quản lý kho hợp đồng và tuân thủ
+Tối ưu tồn kho và quản lý kho bãi
 
 ## 2. Định danh và bằng chứng
 
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng |
-| Tuyến đường | `/contracts` |
-| Component | `ContractManager` |
-| Tệp nguồn | `src/components/ContractManager.tsx` |
-| Quy mô | 822 dòng |
-| Tệp kiểm thử liên quan | Chưa có |
+| Nhóm chức năng | Kinh doanh |
+| Tuyến đường | `/warehouse` |
+| Component | `WarehouseModule` |
+| Tệp nguồn | `src/components/Warehouse.tsx` |
+| Quy mô | 3794 dòng |
+| Tệp kiểm thử liên quan | `src/__tests__/warehouseVoucherApproval.test.ts`, `src/__tests__/warehouse_ai_impersonation.test.ts`, `src/__tests__/warehouse_approval_wiring.test.ts` |
 | Đặc tả kỹ thuật liên quan | Chưa có |
 
 ## 3. Khối giao diện ghi nhận từ mã nguồn
 
-Danh sách dưới đây trích tự động từ `src/components/ContractManager.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
+Danh sách dưới đây trích tự động từ `src/components/Warehouse.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
 
-- Tình trạng hồ sơ
-- Thao tác phê duyệt
-- Tiến trình chữ ký số
-- Quản trị Hợp đồng
-- Tạo hợp đồng mới
+- Quản trị Kho vận
+- AI Recommendation
+- Độ chính xác mô hình
+- Chi tiết Phân khu kệ hàng
+- Tính toán Bố cục AI đề xuất
+- Đơn đang giao (2)
+- Tối ưu Tuyến đường Giao hàng
+- Tồn kho nguyên vật liệu
+- Phiếu kho (Nhập/Xuất/Luân chuyển)
+- Lịch sử Luân chuyển kho
+- Tạo phiếu kho mới
 
-Nhãn giao diện ghi nhận thêm: Đóng (Esc).
+Nhãn giao diện ghi nhận thêm: Quét mã QR/Barcode.
 
 ## 4. Danh sách tính năng
 
 | Mã | Tính năng | Trạng thái | Ghi chú |
 |---|---|---|---|
-| MOD-07-F01 | Quản lý kho hợp đồng và tuân thủ | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
+| MOD-25-F01 | Tối ưu tồn kho và quản lý kho bãi | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
 
 > Danh mục tính năng chi tiết cần bổ sung ở bước BA. Chưa ghi thêm vì chưa có nguồn yêu cầu đã duyệt.
 
@@ -54,14 +60,14 @@ Nhãn giao diện ghi nhận thêm: Đóng (Esc).
 
 ## 6. Tiêu chí nghiệm thu
 
-- [ ] Tuyến đường `/contracts` truy cập được, hiển thị đúng component `ContractManager`.
+- [ ] Tuyến đường `/warehouse` truy cập được, hiển thị đúng component `WarehouseModule`.
 - [ ] Có kiểm thử cho luồng chính và luồng từ chối quyền.
 - [ ] Không phát sinh lỗi kiểu khi chạy `tsc --noEmit`.
 - [ ] Danh mục tính năng ở mục 4 đã được duyệt và đánh dấu trạng thái thật.
 
 ## 7. Rủi ro và việc còn mở
 
-- Chưa có tệp kiểm thử riêng cho module — rủi ro hồi quy khi sửa.
+- Tệp giao diện lớn (3794 dòng) — nên tách nhỏ trước khi mở rộng.
 - Chưa có đặc tả kỹ thuật trong `specs/` gắn với module.
 - Danh mục tính năng chi tiết chưa được duyệt (cần bước BA).
 

@@ -63,6 +63,30 @@ Khác với tạm hủy, đây là **hợp nhất (merge)** — nội dung đã 
 | QT-25 | `Thiet_ke_va_Van_hanh_Quy_trinh.md` | `4_office/28_workflows.md` |
 | QT-26 | `Giao_viec_va_Thuc_hien_Cong_viec.md` | `4_office/29_tasks.md` |
 
+## 2026-10-06 — Tái cấu trúc ERP thành Portal (gộp và loại bỏ module)
+
+Theo yêu cầu chủ dự án, ERP chuyển thành cổng Portal, các chức năng thành mini-app; đồng thời gộp và loại bỏ một số module. Các module bị gộp được đưa vào đây (giữ tiền tố `MOD-nn_` theo quy ước lưu trữ module), ghi rõ module đích. Các module bị loại bỏ (Livestream, Mạng xã hội, F2B2B) cũng đưa vào đây.
+
+| Mã | Tên module | Trạng thái | Gộp vào / Lý do |
+|---|---|---|---|
+| MOD-29 | Tài chính - Kế toán | Đã gộp | MOD-30 Kế toán (dùng chức năng MOD-30) |
+| MOD-40 | Hồ sơ Nhân sự (EasyHRM) | Đã gộp | MOD-39 HRM (là chức năng của MOD-39) |
+| MOD-41 | Sơ đồ tổ chức | Đã gộp | MOD-39 HRM (phần của HRM chuyên nghiệp) |
+| MOD-42 | Hiệu suất & Đào tạo | Đã gộp | MOD-39 HRM (phần của HRM chuyên nghiệp) |
+| MOD-17 | Mua chung (Group Buy) | Đã gộp | MOD-16 Quản lý khuyến mại |
+| MOD-23 | Khách hàng thân thiết | Đã gộp | MOD-21 V-Xu |
+| MOD-26 | Vận chuyển (Logistics) | Đã gộp | MOD-25 Kho vận & Logistics |
+| MOD-31 | Đối soát & Công nợ | Đã gộp | MOD-27 Mua hàng, NCC & Đối soát |
+| MOD-19 | Dropship | Đã gộp | MOD-35 Nhà bán hàng |
+| MOD-12 | Quản lý Livestream | Loại bỏ | Loại bỏ theo tái cấu trúc Portal |
+| MOD-13 | Mạng xã hội người dùng | Loại bỏ | Loại bỏ theo tái cấu trúc Portal |
+| MOD-18 | F2B2B — Gom đơn B2B | Loại bỏ | Loại bỏ (trước đây giữ nguyên Trụ cột 4, nay loại bỏ) |
+| MOD-38 | Đội ngũ Kinh doanh | Tạm hủy | Q-03 đã chốt: không còn quản lý khách hàng tiềm năng |
+
+> Lưu ý: MOD-18 từng được ghi "giữ nguyên" tại mục 2026-10-05 bên dưới — quyết định đó được thay đổi ngày 2026-10-06 theo tái cấu trúc này.
+
+Số module hoạt động giảm từ 42 xuống 29 (5 nhóm chức năng cũ → Portal + 6 nhóm mini-app). Xem `Ke_hoach/00_INDEX.md` (Cấp 2).
+
 ## Tệp đã dời
 
 | Tệp gốc | Vị trí lưu trữ | Mã cũ |
@@ -75,6 +99,19 @@ Khác với tạm hủy, đây là **hợp nhất (merge)** — nội dung đã 
 | `Quy_trinh_nghiep_vu/QT-26_Quan_ly_Lien_he.md` | `_Tam_huy/Quan_ly_Lien_he.md` | QT-26 |
 | `Quy_trinh_nghiep_vu/QT-27_Co_hoi_ban_hang.md` | `_Tam_huy/Co_hoi_ban_hang.md` | QT-27 |
 | `Quy_trinh_nghiep_vu/QT-28_Bao_gia_va_Don_hang_CRM.md` | `_Tam_huy/Bao_gia_va_Don_hang_CRM.md` | QT-28 |
+| `Ke_hoach/02_ERP_Module/01_Ke_toan/MOD-29_Tai_chinh_Ke_toan.md` | `_Tam_huy/MOD-29_Tai_chinh_Ke_toan.md` | MOD-29 |
+| `Ke_hoach/02_ERP_Module/02_Nhan_su/MOD-40_Ho_so_Nhan_su_EasyHRM.md` | `_Tam_huy/MOD-40_Ho_so_Nhan_su_EasyHRM.md` | MOD-40 |
+| `Ke_hoach/02_ERP_Module/02_Nhan_su/MOD-41_So_do_to_chuc.md` | `_Tam_huy/MOD-41_So_do_to_chuc.md` | MOD-41 |
+| `Ke_hoach/02_ERP_Module/02_Nhan_su/MOD-42_Hieu_suat_Dao_tao.md` | `_Tam_huy/MOD-42_Hieu_suat_Dao_tao.md` | MOD-42 |
+| `Ke_hoach/02_ERP_Module/05_Thuong_mai_Nen_tang_mo_rong/MOD-17_Mua_chung_Group_Buy.md` | `_Tam_huy/MOD-17_Mua_chung_Group_Buy.md` | MOD-17 |
+| `Ke_hoach/02_ERP_Module/05_Thuong_mai_Nen_tang_mo_rong/MOD-23_Khach_hang_than_thiet.md` | `_Tam_huy/MOD-23_Khach_hang_than_thiet.md` | MOD-23 |
+| `Ke_hoach/02_ERP_Module/05_Thuong_mai_Nen_tang_mo_rong/MOD-26_Van_chuyen_Logistics.md` | `_Tam_huy/MOD-26_Van_chuyen_Logistics.md` | MOD-26 |
+| `Ke_hoach/02_ERP_Module/05_Thuong_mai_Nen_tang_mo_rong/MOD-31_Doi_soat_Cong_no.md` | `_Tam_huy/MOD-31_Doi_soat_Cong_no.md` | MOD-31 |
+| `Ke_hoach/02_ERP_Module/05_Thuong_mai_Nen_tang_mo_rong/MOD-19_Dropship.md` | `_Tam_huy/MOD-19_Dropship.md` | MOD-19 |
+| `Ke_hoach/02_ERP_Module/05_Thuong_mai_Nen_tang_mo_rong/MOD-12_Quan_ly_Livestream.md` | `_Tam_huy/MOD-12_Quan_ly_Livestream.md` | MOD-12 |
+| `Ke_hoach/02_ERP_Module/05_Thuong_mai_Nen_tang_mo_rong/MOD-13_Mang_xa_hoi_nguoi_dung.md` | `_Tam_huy/MOD-13_Mang_xa_hoi_nguoi_dung.md` | MOD-13 |
+| `Ke_hoach/02_ERP_Module/05_Thuong_mai_Nen_tang_mo_rong/MOD-18_F2B2B_Gom_don_B2B.md` | `_Tam_huy/MOD-18_F2B2B_Gom_don_B2B.md` | MOD-18 |
+| `Ke_hoach/02_ERP_Module/05_Thuong_mai_Nen_tang_mo_rong/MOD-38_Doi_ngu_Kinh_doanh.md` | `_Tam_huy/MOD-38_Doi_ngu_Kinh_doanh.md` | MOD-38 |
 
 ## Mục lục đã cập nhật
 

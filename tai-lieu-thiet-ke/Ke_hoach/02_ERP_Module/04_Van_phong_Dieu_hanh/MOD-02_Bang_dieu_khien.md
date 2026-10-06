@@ -1,7 +1,7 @@
 # MOD-02 — Bảng điều khiển
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng & Điều hành
+- Nhóm chức năng: Vỏ Portal (Portal shell)
 - Mã module: MOD-02
 - Tuyến đường: `/dashboard`
 - Tệp giao diện: `src/components/Dashboard.tsx` (978 dòng)
@@ -18,7 +18,7 @@ Báo cáo và thông số vận hành realtime
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng & Điều hành |
+| Nhóm chức năng | Vỏ Portal (Portal shell) |
 | Tuyến đường | `/dashboard` |
 | Component | `Dashboard` |
 | Tệp nguồn | `src/components/Dashboard.tsx` |

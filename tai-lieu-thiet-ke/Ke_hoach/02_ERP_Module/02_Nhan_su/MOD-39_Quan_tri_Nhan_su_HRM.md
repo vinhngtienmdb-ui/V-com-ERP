@@ -1,7 +1,7 @@
 # MOD-39 — Quản trị Nhân sự (HRM)
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Nhân sự
+- Nhóm chức năng: Nhân sự (HRM)
 - Mã module: MOD-39
 - Tuyến đường: `/hr`
 - Tệp giao diện: `src/components/HR.tsx` (3721 dòng)
@@ -18,7 +18,7 @@ Tuyển dụng, hồ sơ và chế độ nhân viên
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Nhân sự |
+| Nhóm chức năng | Nhân sự (HRM) |
 | Tuyến đường | `/hr` |
 | Component | `HumanResources` |
 | Tệp nguồn | `src/components/HR.tsx` |

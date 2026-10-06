@@ -1,48 +1,44 @@
-# MOD-07 — Hợp đồng & Pháp chế
+# MOD-21 — V-Xu
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng
-- Mã module: MOD-07
-- Tuyến đường: `/contracts`
-- Tệp giao diện: `src/components/ContractManager.tsx` (822 dòng)
+- Nhóm chức năng: Kinh doanh
+- Mã module: MOD-21
+- Tuyến đường: `/vxu`
+- Tệp giao diện: `src/components/VXu.tsx` (547 dòng)
 - Trạng thái: Chưa bắt đầu
 - Ngày tạo: 2026-10-05
 - Ngày cập nhật: 2026-10-05
 
 ## 1. Mục tiêu
 
-Quản lý kho hợp đồng và tuân thủ
+Trụ cột 7 — Điểm thưởng xuyên suốt hệ sinh thái, hoàn tiền 1–5% theo hạng, sổ cái kế toán kép
 
 ## 2. Định danh và bằng chứng
 
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng |
-| Tuyến đường | `/contracts` |
-| Component | `ContractManager` |
-| Tệp nguồn | `src/components/ContractManager.tsx` |
-| Quy mô | 822 dòng |
-| Tệp kiểm thử liên quan | Chưa có |
-| Đặc tả kỹ thuật liên quan | Chưa có |
+| Nhóm chức năng | Kinh doanh |
+| Tuyến đường | `/vxu` |
+| Component | `VXuManager` |
+| Tệp nguồn | `src/components/VXu.tsx` |
+| Quy mô | 547 dòng |
+| Tệp kiểm thử liên quan | `src/__tests__/vxu.test.ts` |
+| Đặc tả kỹ thuật liên quan | `specs/019-vxu` |
 
 ## 3. Khối giao diện ghi nhận từ mã nguồn
 
-Danh sách dưới đây trích tự động từ `src/components/ContractManager.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
+Danh sách dưới đây trích tự động từ `src/components/VXu.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
 
-- Tình trạng hồ sơ
-- Thao tác phê duyệt
-- Tiến trình chữ ký số
-- Quản trị Hợp đồng
-- Tạo hợp đồng mới
-
-Nhãn giao diện ghi nhận thêm: Đóng (Esc).
+- Cách tính hạng & hoàn tiền
+- Ma trận phiếu ưu đãi — mở khoá theo hạng
+- Phiếu đã đổi
 
 ## 4. Danh sách tính năng
 
 | Mã | Tính năng | Trạng thái | Ghi chú |
 |---|---|---|---|
-| MOD-07-F01 | Quản lý kho hợp đồng và tuân thủ | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
+| MOD-21-F01 | Trụ cột 7 — Điểm thưởng xuyên suốt hệ sinh thái, hoàn tiền 1–5% theo hạng, sổ cái kế toán kép | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
 
 > Danh mục tính năng chi tiết cần bổ sung ở bước BA. Chưa ghi thêm vì chưa có nguồn yêu cầu đã duyệt.
 
@@ -54,15 +50,13 @@ Nhãn giao diện ghi nhận thêm: Đóng (Esc).
 
 ## 6. Tiêu chí nghiệm thu
 
-- [ ] Tuyến đường `/contracts` truy cập được, hiển thị đúng component `ContractManager`.
+- [ ] Tuyến đường `/vxu` truy cập được, hiển thị đúng component `VXuManager`.
 - [ ] Có kiểm thử cho luồng chính và luồng từ chối quyền.
 - [ ] Không phát sinh lỗi kiểu khi chạy `tsc --noEmit`.
 - [ ] Danh mục tính năng ở mục 4 đã được duyệt và đánh dấu trạng thái thật.
 
 ## 7. Rủi ro và việc còn mở
 
-- Chưa có tệp kiểm thử riêng cho module — rủi ro hồi quy khi sửa.
-- Chưa có đặc tả kỹ thuật trong `specs/` gắn với module.
 - Danh mục tính năng chi tiết chưa được duyệt (cần bước BA).
 
 ## 8. Chưa xác minh được

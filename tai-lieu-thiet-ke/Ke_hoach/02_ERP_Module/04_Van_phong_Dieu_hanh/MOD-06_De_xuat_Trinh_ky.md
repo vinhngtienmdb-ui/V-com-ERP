@@ -1,7 +1,7 @@
 # MOD-06 — Đề xuất & Trình ký
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng & Điều hành
+- Nhóm chức năng: Văn phòng
 - Mã module: MOD-06
 - Tuyến đường: `/requests`
 - Tệp giao diện: `src/components/RequestHub.tsx` (1628 dòng)
@@ -18,7 +18,7 @@ Hệ thống phê duyệt và trình ký điện tử
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng & Điều hành |
+| Nhóm chức năng | Văn phòng |
 | Tuyến đường | `/requests` |
 | Component | `RequestHub` |
 | Tệp nguồn | `src/components/RequestHub.tsx` |

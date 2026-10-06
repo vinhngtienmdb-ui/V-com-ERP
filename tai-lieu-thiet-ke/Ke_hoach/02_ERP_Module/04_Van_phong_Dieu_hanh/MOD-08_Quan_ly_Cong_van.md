@@ -1,7 +1,7 @@
 # MOD-08 — Quản lý Công văn
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng & Điều hành
+- Nhóm chức năng: Văn phòng
 - Mã module: MOD-08
 - Tuyến đường: `/documents`
 - Tệp giao diện: `src/components/DocumentManager.tsx` (1126 dòng)
@@ -18,7 +18,7 @@ Số hóa và lưu trữ văn bản đến/đi
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng & Điều hành |
+| Nhóm chức năng | Văn phòng |
 | Tuyến đường | `/documents` |
 | Component | `DocumentManager` |
 | Tệp nguồn | `src/components/DocumentManager.tsx` |

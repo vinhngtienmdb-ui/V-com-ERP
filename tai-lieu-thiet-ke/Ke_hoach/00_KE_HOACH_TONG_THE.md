@@ -6,7 +6,7 @@
 - Phạm vi: toàn bộ hệ sinh thái VComm
 - Trạng thái: Đang soạn
 - Ngày tạo: 2026-10-05
-- Ngày cập nhật: 2026-10-09
+- Ngày cập nhật: 2026-10-06
 - Mục lục bộ kế hoạch: `00_INDEX.md`
 
 ## 1. Mục đích
@@ -26,7 +26,7 @@ Hệ sinh thái VComm gồm bảy hệ thống con và một tầng hạ tầng 
 
 | Mã | Hệ thống | Thư mục | Cổng | Kế hoạch |
 |---|---|---|---|---|
-| HS-01 | VComm ERP | `vcomm-erp` | 3000 | `01_He_thong/HS-01_VComm_ERP.md` |
+| HS-01 | VComm ERP (Portal) | `vcomm-erp` | 3000 | `01_He_thong/HS-01_VComm_ERP.md` |
 | HS-02 | VComm Core Backend | `vcomm-core-backend` | 5000 | `01_He_thong/HS-02_VComm_Core_Backend.md` |
 | HS-03 | VComm eCommerce | `vcomm-ecommerce` | 5173 | `01_He_thong/HS-03_VComm_eCommerce.md` |
 | HS-04 | VComm iPOS | `vcomm-ipos` | 3002 | `01_He_thong/HS-04_VComm_iPOS.md` |
@@ -35,7 +35,7 @@ Hệ sinh thái VComm gồm bảy hệ thống con và một tầng hạ tầng 
 | HS-07 | VComm Nexthub | `vcomm-nexthub` | 3005 | `01_He_thong/HS-07_VComm_Nexthub.md` |
 | HS-08 | Hạ tầng CSDL trung tâm và Cloud | Root SQL / Cloud | Cloud | `01_He_thong/HS-08_Ha_tang_CSDL_trung_tam_va_Cloud.md` |
 
-Riêng VComm ERP được chia nhỏ tiếp thành **42 module chức năng đang hoạt động**, mỗi module một tệp kế hoạch trong `02_ERP_Module/`. Hai mô-đun đã tạm hủy ngày 2026-10-05 được ghi tại mục 5.1.
+Riêng VComm ERP được chuyển thành **cổng Portal** và chia nhỏ tiếp thành **29 module (mini-app) đang hoạt động**, mỗi module một tệp kế hoạch trong `02_ERP_Module/`. 15 mô-đun đã gộp hoặc loại bỏ ngày 2026-10-06, cùng 2 mô-đun tạm hủy trước đó, được ghi tại mục 5.1.
 
 ## 3. Kiến trúc tổng thể
 
@@ -51,12 +51,12 @@ eCommerce      Store Retail    Seller Centre      iPOS           Nexthub
                                    ▼
                     ┌──────────────────────────────┐
                     │  VComm Core Backend (HS-02)  │  NestJS, cổng 5000
-                    │  Gateway · Orders · Payments │
+                    │  Gateway · Orders · Payments │  (API server chung)
                     └──────────────┬───────────────┘
                                    ▼
                     ┌──────────────────────────────┐
-                    │     VComm ERP (HS-01)        │  42 module, cổng 3000
-                    │  Điều hành trung tâm doanh nghiệp │
+                    │  VComm ERP Portal (HS-01)    │  cổng 3000 (shell)
+                    │  29 mini-app, mỗi app 1 cổng  │  nối qua HS-02
                     └──────────────┬───────────────┘
                                    ▼
                     ┌──────────────────────────────┐
@@ -71,94 +71,109 @@ eCommerce      Store Retail    Seller Centre      iPOS           Nexthub
 |---|---|---|---|
 | 0 | `00_KE_HOACH_TONG_THE.md` | 1 | Bức tranh chung, thứ tự ưu tiên |
 | 1 | `01_He_thong/HS-nn_*.md` | 8 | Phạm vi và chức năng của từng hệ thống con |
-| 2 | `02_ERP_Module/{01_Ke_toan,02_Nhan_su,03_CRM_Khach_hang,04_Van_phong_Dieu_hanh,05_Thuong_mai_Nen_tang_mo_rong}/MOD-nn_*.md` | 42 | Kiểm soát tính năng của từng module ERP đang hoạt động |
+| 2 | `02_ERP_Module/{01_Ke_toan,02_Nhan_su,04_Van_phong_Dieu_hanh,05_Kinh_doanh,06_Chia_se_Nen_tang}/MOD-nn_*.md` | 29 | Kiểm soát tính năng của từng module ERP đang hoạt động |
 | — | `00_INDEX.md` | 1 | Mục lục toàn bộ |
 
 Quy ước mã: `HS-nn` cho hệ thống, `MOD-nn` cho module ERP, `MOD-nn-Fxx` cho tính năng trong module.
 
-## 5. Bản đồ 42 module ERP
+## 5. Bản đồ 29 module ERP (Portal + 6 nhóm mini-app)
 
-Tổng quy mô giao diện: **52,825 dòng** trên 42 module đang hoạt động, chia năm nhóm chức năng (chưa tính hai mô-đun tạm hủy).
+Theo tái cấu trúc ngày 2026-10-06, ERP chuyển thành **cổng Portal**, các chức năng thành **mini-app** (mỗi app một cổng riêng, nối qua API server HS-02). Tổng quy mô giao diện: **41,922 dòng** trên 29 module đang hoạt động (chưa tính 13 module đã gộp/loại bỏ và 2 tạm hủy trước đó).
 
+> Cổng trong bảng là **cổng giả định** của mini-app (dải 3101–3402); cổng thật cố định khi tách source. Mọi dữ liệu qua HS-02 (5000).
 
+**Vỏ Portal (shell) — 3 module**
 
-**Nhóm 1 — Kế toán (2 module)**
+| Mã | Module | Tuyến đường | Cổng | Tệp giao diện | Dòng | Kiểm thử |
+|---|---|---|---|---|---|---|
+| MOD-01 | Trang chủ | `/` | 3000 | `src/components/Home.tsx` | 857 | — |
+| MOD-02 | Bảng điều khiển | `/dashboard` | 3000 | `src/components/Dashboard.tsx` | 978 | — |
+| MOD-03 | Phân tích dữ liệu | `/bi` | 3000 | `src/components/AnalyticsBI.tsx` | 1031 | — |
 
-| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
+**Nhóm 1 — Kế toán (1 module)**
+
+| Mã | Module | Tuyến đường | Cổng | Tệp giao diện | Dòng | Kiểm thử |
+|---|---|---|---|---|---|---|
+| MOD-30 | Kế toán (TT99/2025) | `/ke-toan-tt99` | 3101 | `src/components/TT99Accounting.tsx` | 2307 | — |
+
+**Nhóm 2 — Nhân sự (HRM) (1 module)**
+
+| Mã | Module | Tuyến đường | Cổng | Tệp giao diện | Dòng | Kiểm thử |
+|---|---|---|---|---|---|---|
+| MOD-39 | Quản trị Nhân sự (HRM) | `/hr` | 3102 | `src/components/HR.tsx` | 3721 | Có |
+
+**Nhóm 3 — Kinh doanh (15 module)**
+
+| Mã | Module | Tuyến đường | Cổng | Tệp giao diện | Dòng | Kiểm thử |
+|---|---|---|---|---|---|---|
+| MOD-36 | Khách hàng (CRM) | `/customers` | 3201 | `src/components/Customers.tsx` | 2221 | — |
+| MOD-37 | Chăm sóc Khách hàng | `/cskh` | 3202 | `src/components/CustomerService.tsx` | 1723 | — |
+| MOD-35 | Nhà bán hàng | `/sellers` | 3203 | `src/components/Sellers.tsx` | 1338 | — |
+| MOD-11 | Quản lý Đơn hàng | `/orders` | 3204 | `src/components/Orders.tsx` | 1998 | — |
+| MOD-14 | Quản lý sản phẩm | `/pim` | 3205 | `src/components/PIM.tsx` | 2738 | Có |
+| MOD-15 | Social | `/social` | 3206 | `src/components/Marketing.tsx` | 530 | — |
+| MOD-16 | Quản lý khuyến mại | `/flash-sale` | 3207 | `src/components/FlashSale.tsx` | 825 | — |
+| MOD-20 | VComm Hub (O2O) | `/vcomm-hub` | 3208 | `src/components/VCommHub.tsx` | 685 | — |
+| MOD-21 | V-Xu | `/vxu` | 3209 | `src/components/VXu.tsx` | 547 | Có |
+| MOD-22 | KOL/KOC & Affiliate | `/affiliate` | 3210 | `src/components/Affiliate.tsx` | 288 | — |
+| MOD-24 | Quản lý Quảng cáo (Ads) | `/ads` | 3211 | `src/components/AdManager.tsx` | 372 | — |
+| MOD-10 | Siêu thị VComm (Offline) | `/vcomm-supermarket` | 3212 | `src/components/VCommSupermarket.tsx` | 1189 | — |
+| MOD-32 | Ví & Thanh toán | `/wallet` | 3213 | `src/components/Wallet.tsx` | 1051 | Có |
+| MOD-25 | Kho vận & Logistics | `/warehouse` | 3214 | `src/components/Warehouse.tsx` | 3794 | Có |
+| MOD-27 | Mua hàng, NCC & Đối soát | `/scm` | 3215 | `src/components/Procurement.tsx` | 817 | — |
+
+**Nhóm 4 — Văn phòng (7 module)**
+
+| Mã | Module | Tuyến đường | Cổng | Tệp giao diện | Dòng | Kiểm thử |
+|---|---|---|---|---|---|---|
+| MOD-04 | Điều hành & Workflow | `/workflow` | 3301 | `src/components/WorkflowHub.tsx` | 743 | — |
+| MOD-05 | Quản lý Công việc | `/tasks` | 3302 | `src/components/TasksPage.tsx` | 215 | — |
+| MOD-06 | Đề xuất & Trình ký | `/requests` | 3303 | `src/components/RequestHub.tsx` | 1628 | Có |
+| MOD-07 | Hợp đồng & Pháp chế | `/contracts` | 3304 | `src/components/ContractManager.tsx` | 822 | — |
+| MOD-08 | Quản lý Công văn | `/documents` | 3305 | `src/components/DocumentManager.tsx` | 1126 | — |
+| MOD-09 | Trung tâm Ký số | `/signature` | 3306 | `src/components/SignatureHub.tsx` | 1213 | — |
+| MOD-43 | Không gian làm việc | `/workspace` | 3307 | `src/components/Workspace.tsx` | 493 | Có |
+
+**Nhóm 5 — Chia sẻ & Nền tảng (2 module)**
+
+| Mã | Module | Tuyến đường | Cổng | Tệp giao diện | Dòng | Kiểm thử |
+|---|---|---|---|---|---|---|
+| MOD-28 | Tuân thủ & Pháp chế | `/compliance` | 3401 | `src/components/Compliance.tsx` | 344 | — |
+| MOD-44 | Cấu hình hệ thống | `/settings` | 3402 | `src/components/Settings.tsx` | 6328 | Có |
+
+### 5.1. Mô-đun đã gộp / tạm hủy / loại bỏ
+
+Ngày 2026-10-06, 13 module bị gộp hoặc loại bỏ theo tái cấu trúc ERP thành Portal. Mã đã cấp được giữ nguyên, không tái sử dụng. Chi tiết tại `_Tam_huy/README.md`.
+
+**Đã gộp (chức năng hợp nhất vào module đích):**
+
+| Mã | Tên | Gộp vào | Tệp giao diện | Dòng |
+|---|---|---|---|---|
+| MOD-29 | Tài chính - Kế toán | MOD-30 Kế toán | `src/components/Finance.tsx` | 2336 |
+| MOD-40 | Hồ sơ Nhân sự (EasyHRM) | MOD-39 HRM | `src/components/EasyHRM.tsx` | 2080 |
+| MOD-41 | Sơ đồ tổ chức | MOD-39 HRM | `src/components/OrgStructure.tsx` | 488 |
+| MOD-42 | Hiệu suất & Đào tạo | MOD-39 HRM | `src/components/Performance.tsx` | 307 |
+| MOD-17 | Mua chung (Group Buy) | MOD-16 Quản lý khuyến mại | `src/components/GroupBuy.tsx` | 720 |
+| MOD-23 | Khách hàng thân thiết | MOD-21 V-Xu | `src/components/Loyalty.tsx` | 500 |
+| MOD-26 | Vận chuyển (Logistics) | MOD-25 Kho vận & Logistics | `src/components/Logistics.tsx` | 544 |
+| MOD-31 | Đối soát & Công nợ | MOD-27 Mua hàng, NCC & Đối soát | `src/components/Settlement.tsx` | 886 |
+| MOD-19 | Dropship | MOD-35 Nhà bán hàng | `src/components/Dropship.tsx` | 1152 |
+
+**Loại bỏ / Tạm hủy:**
+
+| Mã | Tên | Trạng thái | Tệp giao diện | Dòng | Ghi chú |
 |---|---|---|---|---|---|
-| MOD-29 | Tài chính - Kế toán | `/finance` | `src/components/Finance.tsx` | 2336 | Có |
-| MOD-30 | Kế toán TT99/2025 | `/ke-toan-tt99` | `src/components/TT99Accounting.tsx` | 2307 | — |
+| MOD-12 | Quản lý Livestream | Loại bỏ | `src/components/LiveCommerce.tsx` | 222 | Loại bỏ theo tái cấu trúc Portal |
+| MOD-13 | Mạng xã hội người dùng | Loại bỏ | `src/components/SocialCommerce.tsx` | 228 | Loại bỏ theo tái cấu trúc Portal |
+| MOD-18 | F2B2B — Gom đơn B2B | Loại bỏ | `src/components/F2B2B.tsx` | 1028 | Trước đây giữ nguyên Trụ cột 4, nay loại bỏ |
+| MOD-38 | Đội ngũ Kinh doanh | Tạm hủy | `src/components/Sales.tsx` | 412 | Q-03 đã chốt: không còn quản lý khách hàng tiềm năng |
 
-**Nhóm 2 — Nhân sự (4 module)**
+**Tạm hủy trước đó (2026-10-05):**
 
-| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
-|---|---|---|---|---|---|
-| MOD-39 | Quản trị Nhân sự (HRM) | `/hr` | `src/components/HR.tsx` | 3721 | Có |
-| MOD-40 | Hồ sơ Nhân sự (EasyHRM) | `/easyhrm` | `src/components/EasyHRM.tsx` | 2080 | — |
-| MOD-41 | Sơ đồ tổ chức | `/org` | `src/components/OrgStructure.tsx` | 488 | — |
-| MOD-42 | Hiệu suất & Đào tạo | `/performance` | `src/components/Performance.tsx` | 307 | — |
-
-**Nhóm 3 — CRM & Khách hàng (2 module)**
-
-| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
-|---|---|---|---|---|---|
-| MOD-36 | Khách hàng (CRM) | `/customers` | `src/components/Customers.tsx` | 2221 | — |
-| MOD-37 | Chăm sóc Khách hàng | `/cskh` | `src/components/CustomerService.tsx` | 1723 | — |
-
-**Nhóm 4 — Văn phòng & Điều hành (10 module)**
-
-| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
-|---|---|---|---|---|---|
-| MOD-01 | Trang chủ | `/` | `src/components/Home.tsx` | 857 | — |
-| MOD-02 | Bảng điều khiển | `/dashboard` | `src/components/Dashboard.tsx` | 978 | — |
-| MOD-03 | Phân tích dữ liệu | `/bi` | `src/components/AnalyticsBI.tsx` | 1031 | — |
-| MOD-04 | Điều hành & Workflow | `/workflow` | `src/components/WorkflowHub.tsx` | 743 | — |
-| MOD-05 | Quản lý Công việc | `/tasks` | `src/components/TasksPage.tsx` | 215 | — |
-| MOD-06 | Đề xuất & Trình ký | `/requests` | `src/components/RequestHub.tsx` | 1628 | Có |
-| MOD-07 | Hợp đồng & Pháp chế | `/contracts` | `src/components/ContractManager.tsx` | 822 | — |
-| MOD-08 | Quản lý Công văn | `/documents` | `src/components/DocumentManager.tsx` | 1126 | — |
-| MOD-09 | Trung tâm Ký số | `/signature` | `src/components/SignatureHub.tsx` | 1213 | — |
-| MOD-43 | Không gian làm việc | `/workspace` | `src/components/Workspace.tsx` | 493 | Có |
-
-**Nhóm 5 — Thương mại & Nền tảng mở rộng (24 module)**
-
-| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
-|---|---|---|---|---|---|
-| MOD-10 | Siêu thị VComm (Offline) | `/vcomm-supermarket` | `src/components/VCommSupermarket.tsx` | 1189 | — |
-| MOD-11 | Quản lý Đơn hàng | `/orders` | `src/components/Orders.tsx` | 1998 | — |
-| MOD-12 | Quản lý Livestream | `/live` | `src/components/LiveCommerce.tsx` | 222 | — |
-| MOD-13 | Mạng xã hội người dùng | `/social` | `src/components/SocialCommerce.tsx` | 228 | — |
-| MOD-14 | Quản lý sản phẩm | `/pim` | `src/components/PIM.tsx` | 2738 | Có |
-| MOD-15 | Marketing & Social | `/marketing` | `src/components/Marketing.tsx` | 530 | — |
-| MOD-16 | Flash Sale & Mua chung | `/flash-sale` | `src/components/FlashSale.tsx` | 825 | — |
-| MOD-17 | Mua chung (Group Buy) | `/group-buy` | `src/components/GroupBuy.tsx` | 720 | — |
-| MOD-18 | F2B2B — Gom đơn B2B | `/f2b2b` | `src/components/F2B2B.tsx` | 1028 | — |
-| MOD-19 | Dropship | `/dropship` | `src/components/Dropship.tsx` | 1152 | Có |
-| MOD-20 | VComm Hub (O2O) | `/vcomm-hub` | `src/components/VCommHub.tsx` | 685 | — |
-| MOD-21 | V-Xu | `/vxu` | `src/components/VXu.tsx` | 547 | Có |
-| MOD-22 | KOL/KOC & Affiliate | `/affiliate` | `src/components/Affiliate.tsx` | 288 | — |
-| MOD-23 | Khách hàng thân thiết | `/loyalty` | `src/components/Loyalty.tsx` | 500 | Có |
-| MOD-24 | Quản lý Quảng cáo (Ads) | `/ads` | `src/components/AdManager.tsx` | 372 | — |
-| MOD-25 | Quản trị Kho vận | `/warehouse` | `src/components/Warehouse.tsx` | 3794 | Có |
-| MOD-26 | Vận chuyển (Logistics) | `/logistics` | `src/components/Logistics.tsx` | 544 | — |
-| MOD-27 | Mua hàng & NCC | `/scm` | `src/components/Procurement.tsx` | 817 | — |
-| MOD-28 | Tuân thủ & Pháp chế | `/compliance` | `src/components/Compliance.tsx` | 344 | — |
-| MOD-31 | Đối soát & Công nợ | `/settlement` | `src/components/Settlement.tsx` | 886 | — |
-| MOD-32 | Ví & Thanh toán | `/wallet` | `src/components/Wallet.tsx` | 1051 | Có |
-| MOD-35 | Nhà bán hàng | `/sellers` | `src/components/Sellers.tsx` | 1338 | — |
-| MOD-38 | Đội ngũ Kinh doanh | `/sales` | `src/components/Sales.tsx` | 412 | — |
-| MOD-44 | Cấu hình hệ thống | `/settings` | `src/components/Settings.tsx` | 6328 | Có |
-
-### 5.1. Mô-đun tạm hủy
-
-Ngày 2026-10-05, theo yêu cầu chủ dự án, hai mô-đun dưới đây được **tạm hủy** (không xóa, không tái sử dụng mã đã cấp). Tệp kế hoạch và mã nguồn đã dời vào thư mục lưu trữ.
-
-| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Lý do |
-|---|---|---|---|---|---|
-| MOD-33 | Hỗ trợ Tài chính Nhà bán | `/seller-finance` | `src/components/SellerFinance.tsx` | 1497 | Tạm hủy 2026-10-05 |
-| MOD-34 | Cho thuê thiết bị (Trả góp) | `/device-leasing` | `src/components/DeviceLeasing.tsx` | 2363 | Tạm hủy 2026-10-05 |
-
-Giữ nguyên **MOD-18 F2B2B — Gom đơn B2B** (Trụ cột 4) theo xác nhận của chủ dự án.
+| Mã | Module | Tệp giao diện | Dòng | Lý do |
+|---|---|---|---|---|
+| MOD-33 | Hỗ trợ Tài chính Nhà bán | `src/components/SellerFinance.tsx` | 1497 | Tạm hủy 2026-10-05 |
+| MOD-34 | Cho thuê thiết bị (Trả góp) | `src/components/DeviceLeasing.tsx` | 2363 | Tạm hủy 2026-10-05 |
 
 Nơi lưu trữ: `_Tam_huy/` (tài liệu) và `_tam_huy/2026-10-05/` (mã nguồn trong repo `_recovery_V-com-ERP`).
 
@@ -166,11 +181,11 @@ Nơi lưu trữ: `_Tam_huy/` (tài liệu) và `_tam_huy/2026-10-05/` (mã ngu�
 
 | Chỉ số | Giá trị | Ý nghĩa |
 |---|---|---|
-| Số module ERP đang hoạt động | 42 | Theo menu điều hướng thật (`src/constants.ts`) sau khi tạm hủy 2 mô-đun |
-| Module có tệp kiểm thử riêng | 11 | Còn 31 module chưa có kiểm thử riêng |
-| Module có đặc tả trong `specs/` | 7 | Còn 35 module chưa có đặc tả kỹ thuật |
-| Tệp kiểm thử toàn hệ thống | 84 | Trải trên nhiều tầng (đã trừ 2 tệp kiểm thử tạm hủy) |
-| Module có tệp giao diện trên 2.000 dòng | 8 | Ứng viên cần tách nhỏ |
+| Số module ERP đang hoạt động | 29 | Theo menu điều hướng thật (`src/constants.ts`) sau khi gộp/loại bỏ 13 module |
+| Module có tệp kiểm thử riêng | 8 | Còn 21 module chưa có kiểm thử riêng |
+| Module có đặc tả trong `specs/` | 7 | Còn 22 module chưa có đặc tả kỹ thuật |
+| Tệp kiểm thử toàn hệ thống | 84 | Trải trên nhiều tầng (đã trừ tệp kiểm thử của module tạm hủy/đã gộp) |
+| Module có tệp giao diện trên 2.000 dòng | 6 | Ứng viên cần tách nhỏ |
 | Module backend NestJS | 11 | auth, catalog, crm, gateway, hr, integrations, inventory, orders, payments, seller, wallets |
 
 Module có tệp giao diện lớn nhất:
@@ -179,26 +194,25 @@ Module có tệp giao diện lớn nhất:
 - Quản trị Kho vận — `src/components/Warehouse.tsx` (3,794 dòng)
 - Quản trị Nhân sự (HRM) — `src/components/HR.tsx` (3,721 dòng)
 - Quản lý sản phẩm — `src/components/PIM.tsx` (2,738 dòng)
-- Tài chính - Kế toán — `src/components/Finance.tsx` (2,336 dòng)
 - Kế toán TT99/2025 — `src/components/TT99Accounting.tsx` (2,307 dòng)
 - Khách hàng (CRM) — `src/components/Customers.tsx` (2,221 dòng)
-- Hồ sơ Nhân sự (EasyHRM) — `src/components/EasyHRM.tsx` (2,080 dòng)
 
 ## 7. Thứ tự ưu tiên đề xuất
 
 Thứ tự dưới đây suy ra từ bằng chứng, không phải từ cảm tính:
 
 1. **Việc bảo mật đang treo** — M2.1 (JWT thiếu claim `tenant_id`), ba endpoint Gemini chưa có guard (`/api/gemini/db-query`, `/legal-audit`, `/diagnostics`), M3 (giao dịch đường tiền), M7 (rà soát toàn bộ 86 tuyến đường). Xem `19_Bao_mat.md`.
-2. **Module có tệp lớn mà chưa có kiểm thử** — rủi ro cao nhất khi sửa. Ưu tiên: MOD-44 Cấu hình hệ thống (6.328 dòng), MOD-39 Quản trị Nhân sự (3.721 dòng), MOD-30 Kế toán TT99 (2.307 dòng), MOD-36 Khách hàng CRM (2.221 dòng).
-3. **Module thiếu cả kiểm thử và đặc tả** — 31 module, cần bổ sung kiểm thử cho luồng chính.
-4. **Danh mục tính năng chi tiết** — bổ sung theo bước BA cho từng module, bắt đầu từ nhóm N5 Tài chính và N4 Kho vận vì ảnh hưởng tiền và hàng.
+2. **Module có tệp lớn mà chưa có kiểm thử** — rủi ro cao nhất khi sửa. Ưu tiên: MOD-44 Cấu hình hệ thống (6.328 dòng), MOD-25 Quản trị Kho vận (3.794 dòng), MOD-39 Quản trị Nhân sự (3.721 dòng), MOD-14 Quản lý sản phẩm (2.738 dòng), MOD-30 Kế toán TT99 (2.307 dòng), MOD-36 Khách hàng CRM (2.221 dòng).
+3. **Module thiếu cả kiểm thử và đặc tả** — 21 module, cần bổ sung kiểm thử cho luồng chính.
+4. **Danh mục tính năng chi tiết** — bổ sung theo bước BA cho từng module, bắt đầu từ Kế toán và Kho vận vì ảnh hưởng tiền và hàng.
 5. **Hệ thống con ngoài ERP** — đối chiếu tài liệu với mã nguồn thật cho HS-03 đến HS-07.
+6. **Tách ERP thành Portal + mini-app** — đầu việc kỹ thuật theo sau (mỗi mini-app một process/port), nằm ngoài phạm vi tài liệu này (xem `Checklist_cong_viec.md`).
 
 ## 8. Quan hệ phụ thuộc
 
 - Mọi hệ thống con đều dùng chung hạ tầng dữ liệu HS-08.
 - Mọi hệ thống con đều gọi cổng API trung tâm HS-02.
-- HS-01 (ERP) là nơi điều hành tập trung; HS-03 đến HS-07 là kênh đầu cuối.
+- HS-01 (ERP) là cổng Portal điều hành tập trung; HS-03 đến HS-07 là kênh đầu cuối.
 - Ranh giới trách nhiệm giữa ERP và các hệ thống con **chưa được chốt** — ví dụ luồng đơn hàng xuất hiện ở cả ERP (`/orders`) và eCommerce. Đây là việc cần quyết định ở bước BA.
 
 ## 9. Quy ước trạng thái
@@ -216,8 +230,8 @@ Dùng thống nhất một trong các giá trị sau, ở mọi tệp trong bộ
 ## 10. Rủi ro tổng thể
 
 - **Ranh giới hệ thống chưa rõ:** cùng một nghiệp vụ có mặt ở nhiều hệ thống, dễ sửa một nơi mà quên nơi khác.
-- **Kiểm thử mỏng ở tầng giao diện:** 31/42 module ERP chưa có kiểm thử riêng.
-- **Tệp giao diện quá lớn:** 8 module vượt 2.000 dòng, khó kiểm soát thay đổi.
+- **Kiểm thử mỏng ở tầng giao diện:** 21/29 module ERP chưa có kiểm thử riêng.
+- **Tệp giao diện quá lớn:** 6 module vượt 2.000 dòng, khó kiểm soát thay đổi.
 - **Hai nguồn dữ liệu tài liệu:** bộ tài liệu thiết kế tồn tại ở hai nơi (bản gốc và bản sao trong repo mã nguồn) — cần chốt một nguồn duy nhất.
 - **Bộ kế hoạch mới ở mức khung:** danh mục tính năng chi tiết chưa được duyệt, nên chưa dùng để nghiệm thu được.
 
@@ -228,3 +242,4 @@ Dùng thống nhất một trong các giá trị sau, ở mọi tệp trong bộ
 - Danh sách bảng dữ liệu riêng của từng module.
 - Cổng chạy của HS-07 Nexthub và HS-08 lấy theo bộ nhật ký hệ sinh thái, chưa đọc lại mã nguồn để xác nhận.
 - Thư mục `src/pages` của `vcomm-seller` có danh sách tệp giống hệt `vcomm-ecommerce` — chưa xác minh đây là bản sao hay là dùng chung thật.
+- Cổng (Portal) gán cho mỗi mini-app là **giả định** (dải 3101–3402); cổng thật cố định khi tách source thành các ứng dụng riêng — chưa chốt.

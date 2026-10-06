@@ -795,3 +795,33 @@ Khi phát triển tính năng mới hoặc sửa lỗi trong bất kỳ phân h�
 **Ghi chú:**
 
 - Việc xóa mã nguồn Lead trong `Sales.tsx` là nhiệm vụ kỹ thuật, nằm ngoài chiến dịch tài liệu; cần Eric duyệt riêng trước khi sửa source.
+
+### 2026-10-06 — Tái cấu trúc ERP thành Cổng Portal + 6 nhóm mini-app (#168–#174)
+
+**Người thực hiện:** AI (Minh) theo chỉ đạo của Eric (tiếp nối sau 2026-10-09)
+
+**Nội dung:**
+- Theo yêu cầu chủ dự án ngày 2026-10-06: ERP chuyển thành cổng Portal; các chức năng thành mini-app, mỗi app giao diện và cổng riêng, nối dữ liệu qua API server HS-02 (5000).
+- Tái cấu trúc từ 5 nhóm chức năng thành **Portal + 6 nhóm mini-app**. Từ 42 module → 29 module đang hoạt động + 13 gộp/loại bỏ/tạm hủy.
+- Gộp: MOD-29→MOD-30 (Kế toán); MOD-40/41/42→MOD-39 (HRM) + mở rộng HRM (Tuyển dụng, Phê duyệt, Tính lương, BHXH); MOD-17→MOD-16 (Quản lý khuyến mại); MOD-23→MOD-21 (V-Xu); MOD-26→MOD-25 (Kho vận & Logistics); MOD-31→MOD-27 (Mua hàng, NCC & Đối soát); MOD-19→MOD-35 (Nhà bán hàng).
+- Đổi tên: MOD-15→Social (`/social`); MOD-16→Quản lý khuyến mại; MOD-25→Kho vận & Logistics; MOD-27→Mua hàng, NCC & Đối soát.
+- Loại bỏ: MOD-12 (Livestream), MOD-13 (Mạng xã hội người dùng), MOD-18 (F2B2B — trước giữ nguyên Trụ cột 4, nay loại bỏ). MOD-38 (Đội ngũ Kinh doanh) tạm hủy (Q-03 đã chốt).
+- Tái phân loại: MOD-28, MOD-44 → nhóm mới "Chia sẻ & Nền tảng"; MOD-10/22/24/32 giữ Nhóm Kinh doanh.
+- Vỏ Portal (shell, cổng 3000): MOD-01/02/03. 6 nhóm: Kế toán (MOD-30), Nhân sự (MOD-39), Kinh doanh (15), Văn phòng (7), Chia sẻ & Nền tảng (2).
+- Di chuyển vật lý: 13 MOD vào `_Tam_huy` (thêm banner); MOD-36/37→`05_Kinh_doanh`; MOD-28/44→`06_Chia_se_Nen_tang` (tạo mới); `MOD-15_Marketing_Social.md`→`MOD-15_Social.md`; gập `05_Thuong_mai_Nen_tang_mo_rong`→`05_Kinh_doanh`; xóa `03_CRM_Khach_hang` (rỗng).
+- Cập nhật nhãn + ghi chú gộp cho 29 MOD sống sót; viết lại `00_INDEX.md`, `00_KE_HOACH_TONG_THE.md`, `HS-01_VComm_ERP.md` (kiến trúc Portal + mini-app); thêm mục 2.5 (task tách source) vào `Checklist_cong_viec.md`.
+- Cổng mini-app (3101–3402) là **giả định** — cố định khi tách source (S1–S7, xem Checklist §2.5).
+
+**Tệp bị ảnh hưởng:**
+- 13 tệp `_Tam_huy/MOD-*.md` (thêm banner lưu trữ)
+- 29 tệp MOD-* sống sót (nhãn "Nhóm chức năng" + ghi chú gộp + đổi tên)
+- `Ke_hoach/00_INDEX.md`, `Ke_hoach/00_KE_HOACH_TONG_THE.md`, `Ke_hoach/01_He_thong/HS-01_VComm_ERP.md`, `Checklist_cong_viec.md`, `_Tam_huy/README.md`
+- Thư mục: tạo `06_Chia_se_Nen_tang`; đổi tên `05_Thuong_mai_Nen_tang_mo_rong`→`05_Kinh_doanh`; xóa `03_CRM_Khach_hang`
+
+**Kiểm chứng:**
+- Đếm MOD sống sót: Vỏ Portal(3) + Kế toán(1) + Nhân sự(1) + Kinh doanh(15) + Văn phòng(7) + Chia sẻ(2) = 29.
+- Grep nhãn cũ "Thương mại & Nền tảng mở rộng" trong 29 MOD → 0 kết quả.
+- `_Tam_huy/README.md` có 13 dòng MOD gộp/loại bỏ/tạm hủy mới.
+
+**Ghi chú:**
+- Tách ERP thành các mini-app có cổng riêng là đầu việc kỹ thuật theo sau (S1–S7), nằm ngoài phạm vi tài liệu; cổng (3101–3402) giả định.

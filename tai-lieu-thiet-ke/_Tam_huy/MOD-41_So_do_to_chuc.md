@@ -1,48 +1,42 @@
-# MOD-07 — Hợp đồng & Pháp chế
+# MOD-41 — Sơ đồ tổ chức
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng
-- Mã module: MOD-07
-- Tuyến đường: `/contracts`
-- Tệp giao diện: `src/components/ContractManager.tsx` (822 dòng)
+- Nhóm chức năng: Nhân sự
+- Mã module: MOD-41
+- Tuyến đường: `/org`
+- Tệp giao diện: `src/components/OrgStructure.tsx` (488 dòng)
 - Trạng thái: Chưa bắt đầu
 - Ngày tạo: 2026-10-05
 - Ngày cập nhật: 2026-10-05
 
 ## 1. Mục tiêu
 
-Quản lý kho hợp đồng và tuân thủ
+Quản lý cấu trúc và phân quyền tổ chức
 
 ## 2. Định danh và bằng chứng
 
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng |
-| Tuyến đường | `/contracts` |
-| Component | `ContractManager` |
-| Tệp nguồn | `src/components/ContractManager.tsx` |
-| Quy mô | 822 dòng |
+| Nhóm chức năng | Nhân sự |
+| Tuyến đường | `/org` |
+| Component | `OrgStructure` |
+| Tệp nguồn | `src/components/OrgStructure.tsx` |
+| Quy mô | 488 dòng |
 | Tệp kiểm thử liên quan | Chưa có |
 | Đặc tả kỹ thuật liên quan | Chưa có |
 
 ## 3. Khối giao diện ghi nhận từ mã nguồn
 
-Danh sách dưới đây trích tự động từ `src/components/ContractManager.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
+Danh sách dưới đây trích tự động từ `src/components/OrgStructure.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
 
-- Tình trạng hồ sơ
-- Thao tác phê duyệt
-- Tiến trình chữ ký số
-- Quản trị Hợp đồng
-- Tạo hợp đồng mới
-
-Nhãn giao diện ghi nhận thêm: Đóng (Esc).
+- Cơ cấu Tổ chức
 
 ## 4. Danh sách tính năng
 
 | Mã | Tính năng | Trạng thái | Ghi chú |
 |---|---|---|---|
-| MOD-07-F01 | Quản lý kho hợp đồng và tuân thủ | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
+| MOD-41-F01 | Quản lý cấu trúc và phân quyền tổ chức | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
 
 > Danh mục tính năng chi tiết cần bổ sung ở bước BA. Chưa ghi thêm vì chưa có nguồn yêu cầu đã duyệt.
 
@@ -54,7 +48,7 @@ Nhãn giao diện ghi nhận thêm: Đóng (Esc).
 
 ## 6. Tiêu chí nghiệm thu
 
-- [ ] Tuyến đường `/contracts` truy cập được, hiển thị đúng component `ContractManager`.
+- [ ] Tuyến đường `/org` truy cập được, hiển thị đúng component `OrgStructure`.
 - [ ] Có kiểm thử cho luồng chính và luồng từ chối quyền.
 - [ ] Không phát sinh lỗi kiểu khi chạy `tsc --noEmit`.
 - [ ] Danh mục tính năng ở mục 4 đã được duyệt và đánh dấu trạng thái thật.
@@ -70,3 +64,6 @@ Nhãn giao diện ghi nhận thêm: Đóng (Esc).
 - Danh mục tính năng thật của module (mục 4 mới có mục tiêu, chưa có danh mục đầy đủ).
 - Mức độ hoàn thiện thật so với mô tả menu.
 - Module có dùng bảng dữ liệu riêng hay dùng chung bảng của hệ thống.
+
+— ĐÃ GỘP VÀO MOD-39 (HRM) ngày 2026-10-06. Sơ đồ tổ chức là phần của phần mềm HRM chuyên nghiệp.
+

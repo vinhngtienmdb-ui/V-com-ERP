@@ -1,7 +1,7 @@
 # MOD-09 — Trung tâm Ký số
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng & Điều hành
+- Nhóm chức năng: Văn phòng
 - Mã module: MOD-09
 - Tuyến đường: `/signature`
 - Tệp giao diện: `src/components/SignatureHub.tsx` (1213 dòng)
@@ -18,7 +18,7 @@ Quản lý chữ ký số và xác thực doanh nghiệp
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng & Điều hành |
+| Nhóm chức năng | Văn phòng |
 | Tuyến đường | `/signature` |
 | Component | `SignatureHub` |
 | Tệp nguồn | `src/components/SignatureHub.tsx` |

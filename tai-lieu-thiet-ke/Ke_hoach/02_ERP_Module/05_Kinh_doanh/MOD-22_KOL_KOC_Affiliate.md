@@ -1,48 +1,45 @@
-# MOD-07 — Hợp đồng & Pháp chế
+# MOD-22 — KOL/KOC & Affiliate
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng
-- Mã module: MOD-07
-- Tuyến đường: `/contracts`
-- Tệp giao diện: `src/components/ContractManager.tsx` (822 dòng)
+- Nhóm chức năng: Kinh doanh
+- Mã module: MOD-22
+- Tuyến đường: `/affiliate`
+- Tệp giao diện: `src/components/Affiliate.tsx` (288 dòng)
 - Trạng thái: Chưa bắt đầu
 - Ngày tạo: 2026-10-05
 - Ngày cập nhật: 2026-10-05
 
 ## 1. Mục tiêu
 
-Quản lý kho hợp đồng và tuân thủ
+Mạng lưới cộng tác viên và tiếp thị liên kết
 
 ## 2. Định danh và bằng chứng
 
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng |
-| Tuyến đường | `/contracts` |
-| Component | `ContractManager` |
-| Tệp nguồn | `src/components/ContractManager.tsx` |
-| Quy mô | 822 dòng |
+| Nhóm chức năng | Kinh doanh |
+| Tuyến đường | `/affiliate` |
+| Component | `AffiliateManagement` |
+| Tệp nguồn | `src/components/Affiliate.tsx` |
+| Quy mô | 288 dòng |
 | Tệp kiểm thử liên quan | Chưa có |
 | Đặc tả kỹ thuật liên quan | Chưa có |
 
 ## 3. Khối giao diện ghi nhận từ mã nguồn
 
-Danh sách dưới đây trích tự động từ `src/components/ContractManager.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
+Danh sách dưới đây trích tự động từ `src/components/Affiliate.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
 
-- Tình trạng hồ sơ
-- Thao tác phê duyệt
-- Tiến trình chữ ký số
-- Quản trị Hợp đồng
-- Tạo hợp đồng mới
+- Quản lý KOL/KOC & Affiliate
+- Thiết lập Hoa hồng Affiliate theo ngành hàng
 
-Nhãn giao diện ghi nhận thêm: Đóng (Esc).
+Nhãn giao diện ghi nhận thêm: Đã xác thực VNeID.
 
 ## 4. Danh sách tính năng
 
 | Mã | Tính năng | Trạng thái | Ghi chú |
 |---|---|---|---|
-| MOD-07-F01 | Quản lý kho hợp đồng và tuân thủ | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
+| MOD-22-F01 | Mạng lưới cộng tác viên và tiếp thị liên kết | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
 
 > Danh mục tính năng chi tiết cần bổ sung ở bước BA. Chưa ghi thêm vì chưa có nguồn yêu cầu đã duyệt.
 
@@ -54,7 +51,7 @@ Nhãn giao diện ghi nhận thêm: Đóng (Esc).
 
 ## 6. Tiêu chí nghiệm thu
 
-- [ ] Tuyến đường `/contracts` truy cập được, hiển thị đúng component `ContractManager`.
+- [ ] Tuyến đường `/affiliate` truy cập được, hiển thị đúng component `AffiliateManagement`.
 - [ ] Có kiểm thử cho luồng chính và luồng từ chối quyền.
 - [ ] Không phát sinh lỗi kiểu khi chạy `tsc --noEmit`.
 - [ ] Danh mục tính năng ở mục 4 đã được duyệt và đánh dấu trạng thái thật.

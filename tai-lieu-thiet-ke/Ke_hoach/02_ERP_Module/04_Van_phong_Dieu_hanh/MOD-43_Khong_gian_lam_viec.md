@@ -1,7 +1,7 @@
 # MOD-43 — Không gian làm việc
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng & Điều hành
+- Nhóm chức năng: Văn phòng
 - Mã module: MOD-43
 - Tuyến đường: `/workspace`
 - Tệp giao diện: `src/components/Workspace.tsx` (493 dòng)
@@ -18,7 +18,7 @@ Cộng tác nội bộ và chia sẻ tài liệu
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng & Điều hành |
+| Nhóm chức năng | Văn phòng |
 | Tuyến đường | `/workspace` |
 | Component | `Workspace` |
 | Tệp nguồn | `src/components/Workspace.tsx` |

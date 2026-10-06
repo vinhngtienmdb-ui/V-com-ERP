@@ -1,7 +1,7 @@
 # MOD-03 — Phân tích dữ liệu
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng & Điều hành
+- Nhóm chức năng: Vỏ Portal (Portal shell)
 - Mã module: MOD-03
 - Tuyến đường: `/bi`
 - Tệp giao diện: `src/components/AnalyticsBI.tsx` (1031 dòng)
@@ -18,7 +18,7 @@ Công cụ BI và phân tích chuyên sâu
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng & Điều hành |
+| Nhóm chức năng | Vỏ Portal (Portal shell) |
 | Tuyến đường | `/bi` |
 | Component | `AnalyticsBI` |
 | Tệp nguồn | `src/components/AnalyticsBI.tsx` |

@@ -1,8 +1,8 @@
 # Checklist công việc và roadmap
 
 - Dự án: VComm
-- Ngày cập nhật gần nhất: 2026-10-09
-- Phiên bản mới nhất: tạm hủy 6 quy trình (2 mô-đun tài chính + 4 quy trình CRM cũ) và dồn số QT liên tục — còn 54 quy trình và 42 mô-đun đang hoạt động
+- Ngày cập nhật gần nhất: 2026-10-06
+- Phiên bản mới nhất: tái cấu trúc ERP thành Cổng Portal + 6 nhóm mini-app — còn 29 mô-đun đang hoạt động (15 gộp/loại bỏ/tạm hủy, xem `00_INDEX.md` mục 3.1). Thiết kế tách source (mỗi mini-app một cổng riêng) nằm ở mục 2.5 — chưa thực hiện.
 
 ## Ký hiệu trạng thái
 
@@ -65,6 +65,22 @@
 | N3 | Thiết kế lại kiến trúc transaction / event-driven chuẩn | ⬜ chưa làm | thay trigger SQL bằng cơ chế bền vững |
 | N4 | Kiểm thử xâm nhập (penetration test) toàn diện | ⬜ chưa làm | 🏗 |
 
+### 2.5 Tách ERP thành Cổng Portal + mini-app (đầu việc kỹ thuật theo sau)
+
+> Theo yêu cầu chủ dự án 2026-10-06: ERP chuyển thành cổng Portal, mỗi chức năng là một mini-app có giao diện và cổng riêng, nối dữ liệu qua API server HS-02 (5000). Các việc sau là **đầu việc kỹ thuật**, được tài liệu hóa ở đây, **chưa thực hiện** (ngoài phạm vi tài liệu thiết kế — xem `HS-01_VComm_ERP.md` §7, §8).
+
+| Mã | Công việc | Trạng thái | Ghi chú |
+|---|---|---|---|
+| S1 | Tách vỏ Portal: giữ `vcomm-erp` làm shell (cổng 3000) chỉ với MOD-01/02/03; gỡ 29 module khỏi shell | ⬜ chưa làm | MOD-01/02/03 giữ ở shell; còn lại thành mini-app |
+| S2 | Tạo 29 mini-app (monorepo hoặc repo riêng), mỗi app một cổng (3101–3402), bootstrap từ template chung | ⬜ chưa làm | Cổng giả định — cố định khi tách |
+| S3 | Xây Gateway / SSO Portal: đăng nhập một lần, menu động dẫn tới mini-app theo cổng | ⬜ chưa làm | SSO + route động |
+| S4 | Chuẩn hóa giao tiếp qua HS-02 (API server 5000): mọi mini-app gọi chung, không truy cập DB trực tiếp | ⬜ chưa làm | Tách data layer khỏi từng app |
+| S5 | Chia sẻ dữ liệu & auth đa tenant (`tenant_id`) giữa mini-app qua HS-02 | ⬜ chưa làm | RLS + JWT claim tenant |
+| S6 | CI/CD & deploy từng mini-app độc lập (Dockerfile, port config) | ⬜ chưa làm | 🏗 |
+| S7 | Chốt ranh giới trách nhiệm ERP ↔ eCommerce / Hub / iPOS (đơn hàng, sản phẩm trùng) trước khi tách | ⬜ chưa làm | Tránh trùng chức năng |
+
+Khi cổng thật được chốt, cập nhật `00_INDEX.md` mục "Chưa xác minh được" và `HS-01_VComm_ERP.md` §8.
+
 ## 3. Thứ tự ưu tiên tiếp theo
 
 1. ~~M1~~ ✅ ĐÃ XONG (`c384e46`): seller-session + guard `/api/seller/*` (11 route). Còn `/api/gemini/db-query` (`:1515`) — M1 mở rộng, VẪN MỞ.
@@ -102,6 +118,7 @@
 | — | Viết lại 7 QT theo 4 quyết định Pinduoduo (QT-31/35/37/34/36/53/54) | Tài liệu | 2026-10-09 | `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/` | V-Xu động cơ điểm duy nhất (QT-35/37); Hub bán tại quầy phân loại trạm (QT-34); Siêu thị/E-Menu POS nội bộ VComm khác iPOS (QT-53/54); Affiliate/KOL gánh gom nhu cầu (QT-36). Sửa lệch `znsService.ts:212`; ghi nhận `hubService.ts` mã chết |
 | #158 | Rà soát 23 QT Nhóm 5 còn lại (việc 8) — kiểm chứng 211 trích dẫn `đường-dẫn:dòng` | Tài liệu | 2026-10-09 | `Quy_trinh_nghiep_vu/` | `server.ts` (8 dòng) + toàn bộ tầng service (`crmService`, `escrowService`, `dbService`, `consentService`, `f2b2bService`, `dropshipService`, `sellerKycService`, `integrationConfigService`, ...) KHỚP nội dung; component `.tsx:dòng` nằm trong phạm vi tệp. 1 mã chết: `SellerFinance.tsx` (chỉ còn ở `_tam_huy/2026-10-05`, dòng 1280 trích sai — thực tế là xác minh vận đơn, quy tắc xác minh tài khoản nhận tiền dùng MOCK bank) → re-point sang bản lưu trữ + ghi chú "Chưa xác minh được" trong QT-43, QT-44. Chi tiết `Phan_tich_...` §6.2 việc 8 |
 | #156 | Gập vật lý `Ke_hoach/N1…N7` thành 5 thư mục miền — 42 mô-đun MOD-* | Tài liệu | 2026-10-09 | `Ke_hoach/02_ERP_Module/` | 42 tệp MOD-* chuyển từ 7 thư mục `N1…N7` vào 5 thư mục miền (`01_Ke_toan` 2, `02_Nhan_su` 4, `03_CRM_Khach_hang` 2, `04_Van_phong_Dieu_hanh` 10, `05_Thuong_mai_Nen_tang_mo_rong` 24); cập nhật đường dẫn trong `00_INDEX.md` (Cấp 2) và `00_KE_HOACH_TONG_THE.md` (§5); cập nhật nhãn "Nhóm chức năng" trong 42 MOD; re-point `_Tam_huy/README.md`. Không đứt liên kết (Backend dùng đường dẫn gốc `Ke_hoach/01_He_thong/...`). Phân loại vài module chéo: MOD-31/32 (thanh toán/đối soát) và MOD-35/38 (nhà bán hàng/đội ngũ kinh doanh) → Nhóm 5; MOD-43 (không gian làm việc) → Nhóm 4 |
+| #168–#173 | Tái cấu trúc tài liệu ERP thành Cổng Portal + 6 nhóm mini-app (29 module) | Tài liệu | 2026-10-06 | `Ke_hoach/` | Lưu trữ 13 MOD vào `_Tam_huy` (MOD-29, 40, 41, 42, 17, 23, 26, 31, 19 gộp; MOD-12, 13, 18 loại bỏ; MOD-38 tạm hủy). Cập nhật nhãn/ghi chú 29 MOD sống sót; đổi tên MOD-15→Social, MOD-16→Quản lý khuyến mại, MOD-25→Kho vận & Logistics, MOD-27→Mua hàng, NCC & Đối soát; chuyển MOD-28/44 sang nhóm Chia sẻ & Nền tảng mới; gập folder `05_Thuong_mai_Nen_tang_mo_rong`→`05_Kinh_doanh`; viết lại `00_INDEX.md`, `00_KE_HOACH_TONG_THE.md`, `HS-01_VComm_ERP.md`; thêm task tách source (§2.5). Chi tiết `_Tam_huy/README.md`. Cổng mini-app (3101–3402) là giả định |
 
 ## 7. Quy ước mã
 

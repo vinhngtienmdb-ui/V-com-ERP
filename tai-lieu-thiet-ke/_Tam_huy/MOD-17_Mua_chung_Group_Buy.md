@@ -1,48 +1,44 @@
-# MOD-07 — Hợp đồng & Pháp chế
+# MOD-17 — Mua chung (Group Buy)
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng
-- Mã module: MOD-07
-- Tuyến đường: `/contracts`
-- Tệp giao diện: `src/components/ContractManager.tsx` (822 dòng)
+- Nhóm chức năng: Thương mại & Nền tảng mở rộng
+- Mã module: MOD-17
+- Tuyến đường: `/group-buy`
+- Tệp giao diện: `src/components/GroupBuy.tsx` (720 dòng)
 - Trạng thái: Chưa bắt đầu
 - Ngày tạo: 2026-10-05
 - Ngày cập nhật: 2026-10-05
 
 ## 1. Mục tiêu
 
-Quản lý kho hợp đồng và tuân thủ
+Trụ cột 3 — Phiên mua theo nhóm, chốt khi đạt tối thiểu
 
 ## 2. Định danh và bằng chứng
 
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng |
-| Tuyến đường | `/contracts` |
-| Component | `ContractManager` |
-| Tệp nguồn | `src/components/ContractManager.tsx` |
-| Quy mô | 822 dòng |
+| Nhóm chức năng | Thương mại & Nền tảng mở rộng |
+| Tuyến đường | `/group-buy` |
+| Component | `GroupBuyManager` |
+| Tệp nguồn | `src/components/GroupBuy.tsx` |
+| Quy mô | 720 dòng |
 | Tệp kiểm thử liên quan | Chưa có |
 | Đặc tả kỹ thuật liên quan | Chưa có |
 
 ## 3. Khối giao diện ghi nhận từ mã nguồn
 
-Danh sách dưới đây trích tự động từ `src/components/ContractManager.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
+Danh sách dưới đây trích tự động từ `src/components/GroupBuy.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
 
-- Tình trạng hồ sơ
-- Thao tác phê duyệt
-- Tiến trình chữ ký số
-- Quản trị Hợp đồng
-- Tạo hợp đồng mới
+- Người tham gia
 
-Nhãn giao diện ghi nhận thêm: Đóng (Esc).
+Nhãn giao diện ghi nhận thêm: Tạo phiên Mua chung; Xóa phiên chưa có người tham gia; Cho khách rời phiên (trước khi chốt sổ).
 
 ## 4. Danh sách tính năng
 
 | Mã | Tính năng | Trạng thái | Ghi chú |
 |---|---|---|---|
-| MOD-07-F01 | Quản lý kho hợp đồng và tuân thủ | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
+| MOD-17-F01 | Trụ cột 3 — Phiên mua theo nhóm, chốt khi đạt tối thiểu | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
 
 > Danh mục tính năng chi tiết cần bổ sung ở bước BA. Chưa ghi thêm vì chưa có nguồn yêu cầu đã duyệt.
 
@@ -54,7 +50,7 @@ Nhãn giao diện ghi nhận thêm: Đóng (Esc).
 
 ## 6. Tiêu chí nghiệm thu
 
-- [ ] Tuyến đường `/contracts` truy cập được, hiển thị đúng component `ContractManager`.
+- [ ] Tuyến đường `/group-buy` truy cập được, hiển thị đúng component `GroupBuyManager`.
 - [ ] Có kiểm thử cho luồng chính và luồng từ chối quyền.
 - [ ] Không phát sinh lỗi kiểu khi chạy `tsc --noEmit`.
 - [ ] Danh mục tính năng ở mục 4 đã được duyệt và đánh dấu trạng thái thật.
@@ -70,3 +66,6 @@ Nhãn giao diện ghi nhận thêm: Đóng (Esc).
 - Danh mục tính năng thật của module (mục 4 mới có mục tiêu, chưa có danh mục đầy đủ).
 - Mức độ hoàn thiện thật so với mô tả menu.
 - Module có dùng bảng dữ liệu riêng hay dùng chung bảng của hệ thống.
+
+— ĐÃ GỘP VÀO MOD-16 (Quản lý khuyến mại) ngày 2026-10-06. Mua chung (Group Buy) hợp nhất vào Quản lý khuyến mại.
+

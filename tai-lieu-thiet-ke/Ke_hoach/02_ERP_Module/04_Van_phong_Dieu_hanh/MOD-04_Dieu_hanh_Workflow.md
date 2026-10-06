@@ -1,7 +1,7 @@
 # MOD-04 — Điều hành & Workflow
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng & Điều hành
+- Nhóm chức năng: Văn phòng
 - Mã module: MOD-04
 - Tuyến đường: `/workflow`
 - Tệp giao diện: `src/components/WorkflowHub.tsx` (743 dòng)
@@ -18,7 +18,7 @@ Quản lý quy trình và luồng công việc
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng & Điều hành |
+| Nhóm chức năng | Văn phòng |
 | Tuyến đường | `/workflow` |
 | Component | `WorkflowHub` |
 | Tệp nguồn | `src/components/WorkflowHub.tsx` |

@@ -1,7 +1,7 @@
 # MOD-05 — Quản lý Công việc
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng & Điều hành
+- Nhóm chức năng: Văn phòng
 - Mã module: MOD-05
 - Tuyến đường: `/tasks`
 - Tệp giao diện: `src/components/TasksPage.tsx` (215 dòng)
@@ -18,7 +18,7 @@ Kanban, việc của tôi, giao việc & báo cáo
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng & Điều hành |
+| Nhóm chức năng | Văn phòng |
 | Tuyến đường | `/tasks` |
 | Component | `TasksPage` |
 | Tệp nguồn | `src/components/TasksPage.tsx` |

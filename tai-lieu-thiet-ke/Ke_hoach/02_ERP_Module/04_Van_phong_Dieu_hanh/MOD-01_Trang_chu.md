@@ -1,7 +1,7 @@
 # MOD-01 — Trang chủ
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng & Điều hành
+- Nhóm chức năng: Vỏ Portal (Portal shell)
 - Mã module: MOD-01
 - Tuyến đường: `/`
 - Tệp giao diện: `src/components/Home.tsx` (857 dòng)
@@ -18,7 +18,7 @@ Tổng quan và truy cập nhanh tất cả module
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng & Điều hành |
+| Nhóm chức năng | Vỏ Portal (Portal shell) |
 | Tuyến đường | `/` |
 | Component | `Home` |
 | Tệp nguồn | `src/components/Home.tsx` |

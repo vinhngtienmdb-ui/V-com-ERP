@@ -1,48 +1,44 @@
-# MOD-07 — Hợp đồng & Pháp chế
+# MOD-20 — VComm Hub (O2O)
 
 - Hệ thống: VComm ERP (`vcomm-erp`)
-- Nhóm chức năng: Văn phòng
-- Mã module: MOD-07
-- Tuyến đường: `/contracts`
-- Tệp giao diện: `src/components/ContractManager.tsx` (822 dòng)
+- Nhóm chức năng: Kinh doanh
+- Mã module: MOD-20
+- Tuyến đường: `/vcomm-hub`
+- Tệp giao diện: `src/components/VCommHub.tsx` (685 dòng)
 - Trạng thái: Chưa bắt đầu
 - Ngày tạo: 2026-10-05
 - Ngày cập nhật: 2026-10-05
 
 ## 1. Mục tiêu
 
-Quản lý kho hợp đồng và tuân thủ
+Trụ cột 6 — Trạm giao hàng & shop offline do VComm tự vận hành, nhận hàng bằng QR, tự huỷ sau 72h
 
 ## 2. Định danh và bằng chứng
 
 | Hạng mục | Giá trị |
 |---|---|
 | Hệ thống | `vcomm-erp` (VComm ERP) |
-| Nhóm chức năng | Văn phòng |
-| Tuyến đường | `/contracts` |
-| Component | `ContractManager` |
-| Tệp nguồn | `src/components/ContractManager.tsx` |
-| Quy mô | 822 dòng |
+| Nhóm chức năng | Kinh doanh |
+| Tuyến đường | `/vcomm-hub` |
+| Component | `VCommHubManager` |
+| Tệp nguồn | `src/components/VCommHub.tsx` |
+| Quy mô | 685 dòng |
 | Tệp kiểm thử liên quan | Chưa có |
 | Đặc tả kỹ thuật liên quan | Chưa có |
 
 ## 3. Khối giao diện ghi nhận từ mã nguồn
 
-Danh sách dưới đây trích tự động từ `src/components/ContractManager.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
+Danh sách dưới đây trích tự động từ `src/components/VCommHub.tsx`; dùng làm mốc rà soát, không phải danh mục tính năng đã được duyệt.
 
-- Tình trạng hồ sơ
-- Thao tác phê duyệt
-- Tiến trình chữ ký số
-- Quản trị Hợp đồng
-- Tạo hợp đồng mới
 
-Nhãn giao diện ghi nhận thêm: Đóng (Esc).
+
+Nhãn giao diện ghi nhận thêm: Thêm trạm VComm Hub; Quét QR nhận hàng.
 
 ## 4. Danh sách tính năng
 
 | Mã | Tính năng | Trạng thái | Ghi chú |
 |---|---|---|---|
-| MOD-07-F01 | Quản lý kho hợp đồng và tuân thủ | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
+| MOD-20-F01 | Trụ cột 6 — Trạm giao hàng & shop offline do VComm tự vận hành, nhận hàng bằng QR, tự huỷ sau 72h | Chưa bắt đầu | Mục tiêu module theo menu hệ thống |
 
 > Danh mục tính năng chi tiết cần bổ sung ở bước BA. Chưa ghi thêm vì chưa có nguồn yêu cầu đã duyệt.
 
@@ -54,7 +50,7 @@ Nhãn giao diện ghi nhận thêm: Đóng (Esc).
 
 ## 6. Tiêu chí nghiệm thu
 
-- [ ] Tuyến đường `/contracts` truy cập được, hiển thị đúng component `ContractManager`.
+- [ ] Tuyến đường `/vcomm-hub` truy cập được, hiển thị đúng component `VCommHubManager`.
 - [ ] Có kiểm thử cho luồng chính và luồng từ chối quyền.
 - [ ] Không phát sinh lỗi kiểu khi chạy `tsc --noEmit`.
 - [ ] Danh mục tính năng ở mục 4 đã được duyệt và đánh dấu trạng thái thật.
