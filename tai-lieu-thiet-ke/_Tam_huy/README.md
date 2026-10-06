@@ -30,6 +30,39 @@ Quy trình **Quản trị Khách hàng** được giữ lại, viết lại theo
 
 Dồn liên tục để không để trống số: QT-25 → QT-24, QT-29 … QT-48 → QT-25 … QT-44, QT-51 … QT-60 → QT-45 … QT-54. Cây hoạt động còn 54 quy trình, số tiếp theo là QT-55.
 
+## 2026-10-09 — Hợp nhất 24 quy trình cốt lõi vào MD_ERP (nguồn gốc)
+
+Theo rà soát toàn bộ nguồn tài liệu ban đầu, 24 quy trình QT (QT-02…QT-23, QT-25, QT-26) chỉ sao chép lại nội dung bộ đặc tả gốc `Mo ta nghiep vu/MD_ERP/` (4 phân hệ Kế toán, Nhân sự, CRM, Văn phòng). Để giữ MD_ERP làm **nguồn gốc duy nhất** và giảm số nhóm chức năng, 24 quy trình này được **hợp nhất vào MD_ERP**: đưa vào `_Tam_huy/`, giữ nguyên nội dung, bỏ tiền tố mã.
+
+Khác với tạm hủy, đây là **hợp nhất (merge)** — nội dung đã có đủ tại MD_ERP, không mất thông tin. Các mã QT-02…QT-23, QT-25, QT-26 **nghỉ hưu, không dồn số, không tái sử dụng** để bảo toàn truy vết ngược về đặc tả nguồn. Bản đồ đối chiếu đầy đủ xem `Quy_trinh_nghiep_vu/index.md`, mục "Quy trình đã hợp nhất vào MD_ERP".
+
+| Mã cũ | Tệp lưu trữ | Nguồn MD_ERP |
+|---|---|---|
+| QT-02 | `Quan_ly_Quy_tien_mat.md` | `1_accounting/01_cash.md` |
+| QT-03 | `Quan_ly_Tien_gui_Ngan_hang.md` | `1_accounting/02_bank.md` |
+| QT-04 | `Mua_hang_va_Cong_no_phai_tra.md` | `1_accounting/03_purchase.md` |
+| QT-05 | `Ban_hang_va_Cong_no_phai_thu.md` | `1_accounting/04_sales.md` |
+| QT-06 | `Phat_hanh_Hoa_don_dien_tu.md` | `1_accounting/05_invoice.md` |
+| QT-07 | `Nhap_Xuat_Ton_kho.md` | `1_accounting/06_inventory.md` |
+| QT-08 | `Quan_ly_Cong_cu_dung_cu.md` | `1_accounting/07_tools.md` |
+| QT-09 | `Quan_ly_Tai_san_co_dinh.md` | `1_accounting/08_assets.md` |
+| QT-10 | `Ke_khai_va_Khau_tru_Thue_GTGT.md` | `1_accounting/09_taxes.md` |
+| QT-11 | `Tinh_gia_thanh.md` | `1_accounting/10_costing.md` |
+| QT-12 | `Tong_hop_Ket_chuyen_va_Khoa_so.md` | `1_accounting/11_general_ledger.md` |
+| QT-13 | `Tuyen_dung.md` | `2_hrm/12_recruitment.md` |
+| QT-14 | `Tiep_nhan_nhan_su_moi.md` | `2_hrm/13_onboarding.md` |
+| QT-15 | `Ho_so_nhan_vien.md` | `2_hrm/14_employee_records.md` |
+| QT-16 | `Hop_dong_lao_dong.md` | `2_hrm/15_labor_contracts.md` |
+| QT-17 | `Cham_cong.md` | `2_hrm/16_timekeeping.md` |
+| QT-18 | `Tinh_luong.md` | `2_hrm/17_payroll.md` |
+| QT-19 | `Bao_hiem_xa_hoi.md` | `2_hrm/18_social_insurance.md` |
+| QT-20 | `Thue_thu_nhap_ca_nhan.md` | `2_hrm/19_pit.md` |
+| QT-21 | `Danh_gia_hieu_suat_KPI_OKR.md` | `2_hrm/20_kpi_okr.md` |
+| QT-22 | `Dao_tao_va_Phat_trien.md` | `2_hrm/21_training.md` |
+| QT-23 | `Khen_thuong_va_Ky_luat.md` | `2_hrm/22_rewards_discipline.md` |
+| QT-25 | `Thiet_ke_va_Van_hanh_Quy_trinh.md` | `4_office/28_workflows.md` |
+| QT-26 | `Giao_viec_va_Thuc_hien_Cong_viec.md` | `4_office/29_tasks.md` |
+
 ## Tệp đã dời
 
 | Tệp gốc | Vị trí lưu trữ | Mã cũ |

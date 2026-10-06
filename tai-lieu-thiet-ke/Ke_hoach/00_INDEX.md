@@ -7,6 +7,22 @@
 - Ngày tạo: 2026-10-05
 - Ngày cập nhật: 2026-10-05
 
+## Cấu trúc chức năng chuẩn hóa (5 nhóm) — 2026-10-09
+
+Theo rà soát toàn bộ nguồn tài liệu ban đầu, bộ quy trình/phân hệ được chuẩn hóa thành **5 nhóm chức năng**. Bốn nhóm đầu là nền tảng cốt lõi, lấy trọn vẹn từ bộ đặc tả gốc `Quy_trinh_nghiep_vu/Mo ta nghiep vu/MD_ERP/` — đây là **nguồn gốc duy nhất**, không viết lại thành quy trình riêng (24 quy trình QT trùng lặp đã hợp nhất vào MD_ERP, xem `Quy_trinh_nghiep_vu/index.md`).
+
+| Nhóm | Tên | Nguồn | Module ERP tiêu biểu |
+|---|---|---|---|
+| 1 | Kế toán | MD_ERP `1_accounting/` (01–11) | Tài chính – Kế toán, Kế toán TT99/2025 |
+| 2 | Nhân sự | MD_ERP `2_hrm/` (12–22) | Quản trị Nhân sự, Hồ sơ Nhân sự, Sơ đồ tổ chức, Hiệu suất & Đào tạo |
+| 3 | CRM & Khách hàng | MD_ERP `3_crm/` (23–27) + viết lại theo TMĐT | Quản trị Khách hàng (QT-24), Chăm sóc Khách hàng |
+| 4 | Văn phòng & Điều hành | MD_ERP `4_office/` (28–29) | Điều hành & Workflow, Quản lý Công việc |
+| 5 | Thương mại & Nền tảng mở rộng | Đề án + mã nguồn (không có trong MD_ERP) | Toàn bộ module Nhóm 5 (Sàn, Xúc tiến, Hợp tác/Hậu cần, Tài chính mở rộng, Nền tảng/Tuân thủ) |
+
+Nhóm 5 gom các module hiện rải rác ở N3, N4, N5, N6, N7 thành các cụm năng lực: (a) Sàn, Sản phẩm & Nhà bán hàng; (b) Xúc tiến & Marketing; (c) Mô hình hợp tác & Hậu logistics; (d) Tài chính mở rộng & Đối soát; (e) Nền tảng, Tuân thủ & Cấu hình.
+
+> Ghi chú: việc gập vật lý các thư mục `N1…N7` thành 5 thư mục miền là bước tiếp theo, cần chủ dự án duyệt riêng (tránh xáo trộn lớn). Mục lục Cấp 2 dưới đây tạm giữ cấu trúc thư mục hiện tại nhưng đã ánh xạ vào 5 nhóm trên.
+
 ## 1. Cấu trúc bộ kế hoạch
 
 | Cấp | Thư mục | Số tệp | Nội dung |
