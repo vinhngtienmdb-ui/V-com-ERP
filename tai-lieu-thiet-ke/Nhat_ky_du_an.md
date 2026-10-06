@@ -644,7 +644,7 @@ Khi phát triển tính năng mới hoặc sửa lỗi trong bất kỳ phân h�
 
 **Ghi chú:**
 
-- Xung đột cần Eric chốt: mô-đun **Đội ngũ Kinh doanh** (`/sales`, MOD-38, `src/components/Sales.tsx`) vẫn còn phần quản lý tiềm năng trong mã nguồn và đang có mục menu. Quy trình Tiềm năng đã bị hủy theo mô hình thương mại điện tử, nên cần quyết định mô-đun này có bị hủy theo hay không. Đã ghi thành câu hỏi mở Q-03 trong QT-24.
+- Xung đột **đã chốt (2026-10-09) — Q-03:** mô-đun **Đội ngũ Kinh doanh** (`/sales`, MOD-38, `src/components/Sales.tsx`) từng còn phần quản lý tiềm năng trong mã nguồn. Chủ dự án quyết định: **không còn bất kỳ quản lý khách hàng tiềm năng nào** — mô-đun này bị hủy theo mô hình thương mại điện tử. Giao diện Lead trong `src/components/Sales.tsx` (dòng 87, 113, 181, 341) là vị trí cần xóa; việc xóa mã nguồn là nhiệm vụ kỹ thuật theo sau, cần duyệt riêng (chưa sửa source trong chiến dịch tài liệu này).
 - Nút "Thêm Khách hàng" hiện chưa có kiểm tra quyền quản trị viên trong thành phần `Customers`; đã ghi vào mục "Chưa xác minh được" của QT-24.
 - Ba quyết định còn để mở từ trước vẫn giữ nguyên: nguồn tài liệu duy nhất, lệch nhãn năm và mục đích sử dụng quỹ trong hai bản kế hoạch tài chính XLSX, và danh mục tính năng chi tiết theo module cần một lượt BA.
 
@@ -769,4 +769,29 @@ Khi phát triển tính năng mới hoặc sửa lỗi trong bất kỳ phân h�
 **Ghi chú:**
 - Di chuyển thực hiện bằng script Python (`kehoach_collapse.py`), chạy tắt sandbox (D:\ ghi bị sandbox nuốt).
 - Lệch cân bằng: Nhóm 5 có 24/42 module (VComm là nền tảng thương mại, phần lớn module thuộc thương mại/mở rộng) — nhất quán với taxonomy 5 nhóm ở `00_INDEX.md`.
-- Còn mở: MOD-38 "Đội ngũ Kinh doanh" (`/sales`) vẫn có phần quản lý tiềm năng trong mã nguồn (`Sales.tsx`) dù quy trình Tiềm năng đã hủy — cần Eric chốt có hủy module này theo hay không (Q-03).
+- **Đã chốt (2026-10-09) — Q-03:** MOD-38 "Đội ngũ Kinh doanh" (`/sales`) không còn quản lý khách hàng tiềm năng; giao diện Lead trong `src/components/Sales.tsx` (dòng 87, 113, 181, 341) cần xóa theo quyết định chủ dự án — là nhiệm vụ kỹ thuật theo sau, chưa sửa source trong chiến dịch tài liệu này.
+
+### 2026-10-09 (tiếp 3) — Chốt Q-03 và rà soát tham chiếu "7 nhóm menu" tại HS-01
+
+**Người thực hiện:** AI (Minh) theo quyết định của Eric
+
+**Nội dung:**
+
+- Eric chốt Q-03: "không còn bất kỳ quản lý khách hàng tiềm năng nào" — mô-đun **Đội ngũ Kinh doanh** (MOD-38, `/sales`, `src/components/Sales.tsx`) bị hủy theo mô hình thương mại điện tử. Giao diện Lead trong `Sales.tsx` (dòng 87 "Tạo Lead mới", 113 "45 Leads", 181 "Lead mới từ Facebook: VNPT Corp", 341 "Phân bổ Leads") là vị trí cần xóa.
+- Cập nhật QT-24: đánh dấu Q-03 đã chốt (mục 13) và xóa dòng "Chưa xác minh được" về MOD-38 (mục "Chưa xác minh được").
+- Rà soát tham chiếu "7 nhóm menu" còn lại tại `Ke_hoach/01_He_thong/HS-01_VComm_ERP.md`: có 2 chỗ (dòng 12 và dòng 32, ô HS-01-F01). Hai chỗ này mô tả **menu điều hướng thật của app** (`src/constants.ts` navGroups = 7 nhóm, `src/App.tsx` 51 tuyến, `src/components` 78 tệp) — khác với taxonomy "5 nhóm chức năng" của cây tài liệu MOD. Eric ghi chú HS-01 "mô tả menu điều hướng thật của app, chưa đổi" → **đã xác nhận giữ nguyên "7 nhóm menu"** (không sửa HS-01; hai khái niệm riêng biệt, không mâu thuẫn).
+- Kiểm tra chéo: sau gập vật lý #156, cây tài liệu MOD dùng "5 nhóm chức năng" (miền); HS-01 dùng "7 nhóm menu" (nav app thật). Hai khái niệm khác nhau, không mâu thuẫn.
+
+**Tệp bị ảnh hưởng:**
+
+- `Quy_trinh_nghiep_vu/QT-24_Quan_tri_Khach_hang.md` (Q-03 chốt, xóa 1 dòng "Chưa xác minh được")
+- `Nhat_ky_du_an.md` (ghi chú Q-03 đã chốt tại 2 vị trí)
+
+**Kiểm chứng:**
+
+- Grep `tiềm năng|Lead|Leads` trong `tai-lieu-thiet-ke` → chỉ còn ở tệp lưu trữ (`_Tam_huy/`) và ghi chú lịch sử; không còn quy trình tiềm năng hoạt động.
+- HS-01 còn 2 tham chiếu "7 nhóm menu" (dòng 12, 32) — **đã xác nhận giữ nguyên** (faithful to real app nav, khác taxonomy 5 nhóm của tài liệu MOD).
+
+**Ghi chú:**
+
+- Việc xóa mã nguồn Lead trong `Sales.tsx` là nhiệm vụ kỹ thuật, nằm ngoài chiến dịch tài liệu; cần Eric duyệt riêng trước khi sửa source.

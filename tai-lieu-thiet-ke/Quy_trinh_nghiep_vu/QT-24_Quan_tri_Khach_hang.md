@@ -122,7 +122,7 @@ Hạng thành viên: Mới --> Bạc --> Vàng --> Kim cương
 - **GD-01.** Cổng đăng ký eCommerce ghi vào cùng bảng tài khoản mà ERP đọc.
 - **Q-01.** Điều kiện lên hạng và quyền lợi theo hạng như thế nào?
 - **Q-02.** Khách vãng lai mua không đăng ký có được tạo hồ sơ không?
-- **Q-03.** Mô-đun "Đội ngũ Kinh doanh" (`/sales`, MOD-38) còn phần quản lý tiềm năng trong mã nguồn — mô-đun này có bị hủy theo mô hình thương mại điện tử không?
+- **Q-03 (ĐÃ CHỐT 2026-10-09).** Mô-đun "Đội ngũ Kinh doanh" (`/sales`, MOD-38) còn phần quản lý tiềm năng trong mã nguồn — **chủ dự án quyết định: không còn bất kỳ quản lý khách hàng tiềm năng nào**, mô-đun này bị hủy theo mô hình thương mại điện tử. Vị trí cần xóa trong `src/components/Sales.tsx`: dòng 87 ("Tạo Lead mới"), 113 ("45 Leads"), 181 ("Lead mới từ Facebook: VNPT Corp"), 341 ("Phân bổ Leads"). Việc xóa mã nguồn là nhiệm vụ kỹ thuật theo sau, nằm ngoài phạm vi chiến dịch tài liệu này.
 
 ## 14. Ghi chú kỹ thuật
 
@@ -136,4 +136,3 @@ Hạng thành viên: Mới --> Bạc --> Vàng --> Kim cương
 - Chưa xác minh được có kiểm tra quyền quản trị viên cho nút "Thêm Khách hàng" hay không; thành phần `Customers` không dùng ngữ cảnh xác thực.
 - Chưa xác minh được cầu nối giữa bảng tài khoản người dùng và bảng khách hàng.
 - Chưa xác minh được quy tắc lên hạng đang áp dụng.
-- Chưa xác minh được mô-đun "Đội ngũ Kinh doanh" (`/sales`) có bị hủy theo mô hình thương mại điện tử hay không.
