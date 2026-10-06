@@ -80,7 +80,9 @@ Quy ước mã: `HS-nn` cho hệ thống, `MOD-nn` cho module ERP, `MOD-nn-Fxx` 
 
 Theo tái cấu trúc ngày 2026-10-06, ERP chuyển thành **cổng Portal**, các chức năng thành **mini-app** (mỗi app một cổng riêng, nối qua API server HS-02). Tổng quy mô giao diện: **41,922 dòng** trên 29 module đang hoạt động (chưa tính 13 module đã gộp/loại bỏ và 2 tạm hủy trước đó).
 
-> **Cập nhật 2026-10-06 (kiểm chứng thực tế):** Cột “Dòng” và con số 41.922 ở trên là **ảnh chụp (snapshot)** tại thời điểm viết tài liệu và **không còn khớp mã nguồn hiện tại**. Kiểm tra ngày 2026-10-06: chỉ **25/29** tệp giao diện còn tồn tại tại đường dẫn đã ghi, tổng thực tế **36.876 dòng**; 4 tệp (`TT99Accounting.tsx`, `TasksPage.tsx`, `VCommHub.tsx`, `VXu.tsx`) đã không còn tồn tại trong `vcomm-erp/src/components/`. Các chỉ số quy mô giao diện ở mục 6 cũng theo snapshot này và cần đo lại khi bắt đầu tách source (S1–S7).
+> **Đã kiểm chứng 2026-10-06** trên mã nguồn chuẩn `_recovery_V-com-ERP` (nhánh `main`): đủ **29/29** tệp giao diện tồn tại tại đường dẫn đã ghi; tổng thực tế **41.892 dòng**, khớp con số **41.922** (lệch 30 dòng ≈ 0,07% — do quy ước đếm dòng cuối). Cột “Dòng” là số liệu **chính xác**.
+>
+> ⚠️ Lưu ý nguồn: còn một bản ERP **cũ** ở `D:/VComm/vcomm-erp` (nhánh `feat/digital-signature-upgrade`, HEAD 2026-09-24, **thiếu** các bản vá M1/M2) có cấu trúc component khác (thư mục `accounting/`, các tệp `Task*`). Bản này **không phải nguồn chuẩn**; nguồn chuẩn là `_recovery_V-com-ERP` (nhánh `main`).
 
 > Cổng trong bảng là **cổng giả định** của mini-app (dải 3101–3402); cổng thật cố định khi tách source. Mọi dữ liệu qua HS-02 (5000).
 
