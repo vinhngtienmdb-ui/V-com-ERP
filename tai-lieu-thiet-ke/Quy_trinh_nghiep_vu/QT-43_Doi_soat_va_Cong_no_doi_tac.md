@@ -59,7 +59,7 @@
 | Mã | Tình huống | Xử lý | Bằng chứng |
 |---|---|---|---|
 | E1 | Số liệu đối soát lệch giữa hai bên | Đưa vào danh sách lệch để xử lý thủ công | `src/components/Settlement.tsx:447` |
-| E2 | Tài khoản nhận tiền chưa xác minh | Chặn giải ngân | `src/components/SellerFinance.tsx:1280` |
+| E2 | Tài khoản nhận tiền chưa xác minh | Chặn giải ngân | `_tam_huy/2026-10-05/src/components/SellerFinance.tsx` |
 | E3 | Bút toán đối soát lệch Nợ/Có | Từ chối ghi sổ | `src/services/dbService.ts:1888` |
 | E4 | Thiếu quyền xác thực | HTTP 401 | `server.ts:384` |
 
@@ -75,7 +75,7 @@ Kỳ đối soát: Chưa tổng hợp --> Đã tổng hợp --> Đã xác nhận
 | Mã | Quy tắc | Bằng chứng |
 |---|---|---|
 | BR-01 | Chỉ giải ngân khi kỳ đối soát đã được xác nhận | `src/components/Settlement.tsx:807` |
-| BR-02 | Tài khoản nhận tiền phải được xác minh trước khi giải ngân | `src/components/SellerFinance.tsx:1280` |
+| BR-02 | Tài khoản nhận tiền phải được xác minh trước khi giải ngân | `_tam_huy/2026-10-05/src/components/SellerFinance.tsx` |
 | BR-03 | Mọi khoản giải ngân phải ghi sổ qua cổng ghi sổ chung | `src/services/dbService.ts:1883` |
 
 ## 8. Thông báo và nhật ký
@@ -89,7 +89,7 @@ Kỳ đối soát: Chưa tổng hợp --> Đã tổng hợp --> Đã xác nhận
 |---|---|---|
 | Bảng kỳ đối soát | Kỳ, đối tác, doanh thu, phí, số phải trả | `src/components/Settlement.tsx:447` |
 | Bảng lệnh giải ngân | Kỳ, số tiền, trạng thái, thời điểm | `src/components/Settlement.tsx:807` |
-| Bảng tài khoản nhận tiền | Đối tác, ngân hàng, số tài khoản, trạng thái xác minh | `src/components/SellerFinance.tsx:1280` |
+| Bảng tài khoản nhận tiền | Đối tác, ngân hàng, số tài khoản, trạng thái xác minh | `_tam_huy/2026-10-05/src/components/SellerFinance.tsx` |
 
 ## 10. Màn hình
 
@@ -122,3 +122,4 @@ Kỳ đối soát: Chưa tổng hợp --> Đã tổng hợp --> Đã xác nhận
 - Chưa xác minh được chu kỳ đối soát.
 - Chưa xác minh được cổng thanh toán đang dùng.
 - Chưa xác minh được chính sách phí áp cho đối tác.
+- `SellerFinance.tsx` đã được lưu trữ vào `_tam_huy/2026-10-05` (không còn nằm trong `src/components` của mã nguồn live). Quy tắc "tài khoản nhận tiền chưa xác minh thì chặn giải ngân/rút tiền" (E2/BR-02) chưa tìm thấy chỗ thực thi rõ ràng ở mã nguồn hiện tại — có khả năng đã chuyển sang `Wallet.tsx` (rút tiền) hoặc `Settlement.tsx` (giải ngân), cần xác nhận. Bản lưu trữ của màn hình này dùng tài khoản ngân hàng MOCK (`// Mock bank` tại khoảng dòng 179), nên quy tắc xác minh chưa được hiện thực hóa đầy đủ.

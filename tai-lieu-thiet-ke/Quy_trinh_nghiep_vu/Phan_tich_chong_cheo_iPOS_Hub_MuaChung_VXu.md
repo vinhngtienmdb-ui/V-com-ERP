@@ -236,7 +236,7 @@ Hai vai trò **có thể cùng tồn tại nhưng trách nhiệm khác nhau**. V
 | 5 | Ghi rõ QT-53 và QT-54 là POS nội bộ do VComm vận hành, khác iPOS đối tác | `QT-53_Sieu_thi_Offline_va_Ban_le_tai_quay.md`, `QT-54_E_Menu_va_Dat_mon_tai_ban.md` | **Đã thực hiện** (2026-10-09) |
 | 6 | Bổ sung vai trò gom nhu cầu vào QT-36 | `QT-36_KOL_KOC_va_Tiep_thi_lien_ket.md` | **Đã thực hiện** (2026-10-09) |
 | 7 | Ghi nhận `hubService.ts` là mã chết và `gb_expire_stale_sessions()` chưa được gọi | tài liệu này | **Đã ghi** |
-| 8 | Rà toàn bộ bộ quy trình tìm lỗi trích dẫn cùng loại | 30 tệp QT Nhóm 5 | **Đang thực hiện** — đã rà QT-31, QT-35, QT-37, QT-34, QT-36, QT-53, QT-54 (phát hiện lệch `znsService.ts:212` và trích dẫn mã chết `hubService.ts`); còn 23 tệp chưa rà |
+| 8 | Rà toàn bộ bộ quy trình tìm lỗi trích dẫn cùng loại | 30 tệp QT Nhóm 5 | **Đã thực hiện** (2026-10-09) — đã rà tổng 30 tệp, 211 trích dẫn `đường-dẫn:dòng`. Kết quả: `server.ts` (8 dòng) và toàn bộ tầng service (`crmService`, `escrowService`, `dbService`, `consentService`, `f2b2bService`, `dropshipService`, `sellerKycService`, `integrationConfigService`, ...) đều KHỚP nội dung; các trích dẫn component `.tsx:dòng` đều nằm trong phạm vi tệp. Phát hiện 1 lỗi mã chết: `SellerFinance.tsx` không còn trong `src/components` (chỉ còn ở `_tam_huy/2026-10-05`), dòng 1280 bị trích sai (thực tế là xác minh vận đơn), quy tắc xác minh tài khoản nhận tiền chưa được hiện thực hóa (dùng MOCK bank) — đã re-point sang bản lưu trữ và ghi chú vào "Chưa xác minh được" của QT-43, QT-44 |
 
 ---
 

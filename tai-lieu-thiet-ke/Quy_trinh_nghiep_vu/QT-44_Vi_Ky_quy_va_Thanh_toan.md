@@ -67,7 +67,7 @@
 |---|---|---|---|
 | E1 | Số dư ví không đủ để đặt hàng | Chặn đặt hàng | `src/services/escrowService.ts:44` |
 | E2 | Giải phóng ký quỹ hai lần cho cùng đơn | Hệ thống chặn theo trạng thái ký quỹ | `src/services/escrowService.ts:111` |
-| E3 | Rút tiền khi chưa xác minh tài khoản | Chặn rút tiền | `src/components/SellerFinance.tsx:1280` |
+| E3 | Rút tiền khi chưa xác minh tài khoản | Chặn rút tiền | `_tam_huy/2026-10-05/src/components/SellerFinance.tsx` |
 | E4 | Bút toán ví lệch Nợ/Có | Từ chối ghi sổ | `src/services/dbService.ts:1888` |
 
 ## 6. Máy trạng thái
@@ -137,4 +137,5 @@ Giao dịch ví: Đang chờ --> Thành công / Thất bại
 
 - Chưa xác minh được thời hạn tự động giải phóng ký quỹ.
 - Chưa xác minh được quy trình xử lý tranh chấp.
+- `SellerFinance.tsx` đã được lưu trữ vào `_tam_huy/2026-10-05` (không còn nằm trong `src/components` của mã nguồn live). Quy tắc "rút tiền khi chưa xác minh tài khoản thì chặn" (E3) chưa tìm thấy chỗ thực thi rõ ràng ở mã nguồn hiện tại — có khả năng đã chuyển sang `Wallet.tsx` (rút tiền), cần xác nhận. Bản lưu trữ của màn hình này dùng tài khoản ngân hàng MOCK (`// Mock bank` tại khoảng dòng 179), nên quy tắc xác minh chưa được hiện thực hóa đầy đủ.
 - Chưa xác minh được mô hình pháp lý của ví trong hệ thống.

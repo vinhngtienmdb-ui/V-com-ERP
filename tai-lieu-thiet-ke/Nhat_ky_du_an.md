@@ -707,3 +707,33 @@ Khi phát triển tính năng mới hoặc sửa lỗi trong bất kỳ phân h�
 
 - Còn 23/30 quy trình Nhóm 5 chưa rà trích dẫn cùng loại (việc 8) — cần một lượt rà tiếp theo.
 - Các thay đổi mã nguồn thực tế (nối `gb_expire_stale_sessions()` vào lịch, lộ `leaderId`, nối Loyalty vào V-Xu, gộp sổ điểm) nằm ngoài phạm vi tài liệu này — là đầu việc kỹ thuật sau khi duyệt thiết kế.
+
+### 2026-10-09 (tiếp) — Rà soát 23 quy trình QT Nhóm 5 còn lại, kiểm chứng toàn bộ trích dẫn (việc 8, #158)
+
+**Người thực hiện:** AI (Minh) theo yêu cầu của Eric
+
+**Nội dung:**
+
+- Hoàn thành việc 8 (rà trích dẫn toàn bộ): kiểm chứng **211 trích dẫn `đường-dẫn:dòng`** trên tổng **30 tệp QT Nhóm 5** (7 tệp rà phiên trước + 23 tệp còn lại rà đợt này).
+- Phương pháp: trích xuất mọi `file:line` bằng script, đối chiếu với mã nguồn thật trong `_recovery_V-com-ERP/src` (kèm `_tam_huy/2026-10-05` để phân biệt mã đã lưu trữ).
+- **Kết quả kiểm chứng:**
+  - `server.ts` (8 dòng được trích: `:3346`, `:3447`, `:3514`, `:3523` route đăng nhập/đăng ký seller; `:384` `requireAuth`; `:389` 401; `:424` `requireSellerAuth`; `:3829` tạo khuyến mãi) — **nội dung KHỚP** với tuyên bố của từng QT.
+  - Toàn bộ tầng service được trích (`crmService`, `escrowService`, `dbService`, `consentService`, `f2b2bService`, `dropshipService`, `sellerKycService`, `databankService`, `integrationConfigService`, `featureFlagService`, `warehouseVoucherApproval`, `codReconciliation`, `orderStatusNotification`, `accountingOutbox`, `misaService`, `writeFailure`, `auditTrailService`, `chatwootService`, `storageService`, `crmTicketService`, `fullTextSearchService`) — **tên hàm/hằng số tại dòng được trích KHỚP** với quy tắc/nghiệp vụ QT.
+  - Các trích dẫn component `src/components/*.tsx:dòng` — **đều nằm trong phạm vi tệp** (không quá EOF); phần mở rộng `.ts` in đậm trong tài liệu thực chất là `.tsx` (component đều là `.tsx`), không có lỗi phần mở rộng thực tế.
+- **Lỗi duy nhất phát hiện — mã chết:** `SellerFinance.tsx` **không còn trong `src/components`** (chỉ còn ở `_tam_huy/2026-10-05`, do đợt tạm hủy mô-đun `/seller-finance` ngày 2026-10-05). Dòng `:1280` bị QT-43/QT-44 trích sai (thực tế tại dòng 1280 là xác minh tình trạng vận đơn, không phải xác minh tài khoản nhận tiền); quy tắc "tài khoản nhận tiền chưa xác minh thì chặn giải ngân/rút tiền" **chưa được hiện thực hóa thật** — bản lưu trữ dùng tài khoản ngân hàng MOCK (`// Mock bank` tại khoảng dòng 179).
+  - Xử lý: re-point 4 trích dẫn `SellerFinance.tsx` trong QT-43/QT-44 sang `_tam_huy/2026-10-05/src/components/SellerFinance.tsx` (giữ tính truy vết) và ghi chú rõ vào mục "Chưa xác minh được" của hai QT này (quy tắc cần xác nhận vị trí thực thi hiện tại — khả năng đã chuyển sang `Wallet.tsx`/`Settlement.tsx`).
+
+**Tệp bị ảnh hưởng:**
+
+- `Quy_trinh_nghiep_vu/QT-43_Doi_soat_va_Cong_no_doi_tac.md`, `QT-44_Vi_Ky_quy_va_Thanh_toan.md` (re-point `SellerFinance` + ghi chú "Chưa xác minh được")
+- `Quy_trinh_nghiep_vu/Phan_tich_chong_cheo_iPOS_Hub_MuaChung_VXu.md` (§6.2 việc 8 → "Đã thực hiện")
+- `Checklist_cong_viec.md` (thêm #158 vào "Đã xong")
+
+**Kết quả kiểm tra:**
+
+- Sau sửa: chạy lại script phân giải — **211/211 trích dẫn đều chỉ vào tệp thật** (0 trích dẫn hỏng).
+- Không có lỗi lệch khái niệm (như QT-31 từng mắc) hay lệch dòng trong tầng service.
+
+**Ghi chú:**
+
+- Việc 8 (rà trích dẫn) đã xong toàn bộ 30/30 QT Nhóm 5. Bước tiếp theo theo chỉ đạo của Eric: triển khai #156/#159 — gập vật lý `Ke_hoach` (42 mô-đun `MOD-*` / cấu trúc `N1…N7`) thành 5 thư mục miền. Đầu việc này cần chủ dự án duyệt riêng trước khi di chuyển file (tránh xáo trộn lớn).
