@@ -12,6 +12,8 @@
 
 ## 1. Đề xuất đánh số lại MOD theo nhóm phân hệ
 
+> ⚠️ **ĐÃ THAY THẾ (2026-10-06):** chủ dự án đã chốt 8 thay đổi cấu trúc (gộp Dashboard, tách Nhóm 2 Nhân sự, đổi tên Ký số, gộp Workflow/Workspace vào Portal…). Bảng đánh số dưới đây là **bản đề xuất v1**; bảng chính thức là **`05_Cau_truc_dich_ERP.md` §2** (26 app). Giữ §1 này để truy vết.
+
 **Nguyên tắc:** đánh số **liên tục theo nhóm** — Vỏ Portal giữ 01–03, rồi lần lượt Nhóm 1→5. Đánh số mới **trùng thứ tự cổng** (3101–3402) để dễ tra.
 
 | Số mới | Số cũ | Tên app | Nhóm | Tuyến đường | Cổng |

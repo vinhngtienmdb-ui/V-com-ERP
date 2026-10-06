@@ -33,6 +33,7 @@ Mô hình này khớp với các hệ thống con đã có cổng riêng: HS-03 
 | 2 | `02_ERP_Module/` | 29 | Kế hoạch từng module chức năng của ERP đang hoạt động (15 mô-đun tạm hủy/đã gộp, xem mục 3.1) |
 | 3 | `03_Ke_hoach_Tach_Source_Portal_MiniApp.md` | 1 | Kế hoạch kỹ thuật tách source: vỏ Portal + 29 mini-app (S1–S7) — 🟡 chờ duyệt |
 | 4 | `04_Mo_ta_Chuc_nang_App_ERP.md` | 1 | Mô tả chức năng 29 app + đề xuất đánh số lại MOD theo nhóm phân hệ — 🟡 chờ xác nhận |
+| 5 | `05_Cau_truc_dich_ERP.md` | 1 | **Cấu trúc đích sau chốt 2026-10-06: 26 app, đánh số lại v2 + ánh xạ QT** — 🟡 chờ xác nhận lần cuối |
 
 ## 2. Cấp 1 — Kế hoạch hệ thống con
 
