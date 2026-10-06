@@ -10,7 +10,7 @@
 
 Mã quy trình theo dạng QT-nn, đánh số tăng dần và liền mạch, không để trống số.
 
-Quy trình bị tạm hủy thì dời vào `_Tam_huy/`, **bỏ tiền tố mã** và **không giữ chỗ số**; các quy trình còn lại được dồn lại cho liền mạch. Số đã dồn không dùng lại cho quy trình khác.
+Quy trình bị tạm hủy thì dời vào `_Tam_huy/`, **bỏ tiền tố mã** và **không giữ chỗ số**; các quy trình còn lại được dồn lại cho liền mạch. Vì mã được cấp lại theo thứ tự, một giá trị mã có thể đổi chủ — tra mục "Lịch sử đánh số" khi cần đối chiếu.
 
 Mỗi quy trình gồm mười bốn mục đánh số cộng mục "Chưa xác minh được". Mọi khẳng định trong tài liệu phải kèm bằng chứng dạng `đường-dẫn:dòng` hoặc trích dẫn đặc tả nguồn.
 
