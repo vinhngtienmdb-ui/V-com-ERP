@@ -79,6 +79,8 @@
 | S6 | CI/CD & deploy từng mini-app độc lập (Dockerfile, port config) | ⬜ chưa làm | 🏗 |
 | S7 | Chốt ranh giới trách nhiệm ERP ↔ eCommerce / Hub / iPOS (đơn hàng, sản phẩm trùng) trước khi tách | ⬜ chưa làm | Tránh trùng chức năng |
 
+Kế hoạch kỹ thuật chi tiết: `Ke_hoach/03_Ke_hoach_Tach_Source_Portal_MiniApp.md` (KH-03, 🟡 chờ duyệt) — gồm bước **S0 đối chiếu mã nguồn ↔ tài liệu** và 8 quyết định cần chốt (D1–D8).
+
 Khi cổng thật được chốt, cập nhật `00_INDEX.md` mục "Chưa xác minh được" và `HS-01_VComm_ERP.md` §8.
 
 ## 3. Thứ tự ưu tiên tiếp theo

@@ -183,7 +183,7 @@ Nơi lưu trữ: `_Tam_huy/` (tài liệu) và `_tam_huy/2026-10-05/` (mã ngu�
 
 | Chỉ số | Giá trị | Ý nghĩa |
 |---|---|---|
-| Số module ERP đang hoạt động | 29 | Theo menu điều hướng thật (`src/constants.ts`) sau khi gộp/loại bỏ 13 module |
+| Số module ERP đang hoạt động | 29 (mục tiêu tài liệu) | **Mã nguồn hiện tại chưa giảm**: `src/constants.ts` (navGroups) vẫn còn **42 mục menu**, gồm cả 3 module tài liệu đã loại bỏ (`/live`, `/social`, `/sales`). Con số 29 là cấu trúc **đích** sau tái cấu trúc tài liệu; việc giảm mã nguồn về 29 thuộc đầu việc tách source S1–S7 (xem `Checklist_cong_viec.md` §2.5, `03_Ke_hoach_Tach_Source_Portal_MiniApp.md`) |
 | Module có tệp kiểm thử riêng | 8 | Còn 21 module chưa có kiểm thử riêng |
 | Module có đặc tả trong `specs/` | 7 | Còn 22 module chưa có đặc tả kỹ thuật |
 | Tệp kiểm thử toàn hệ thống | 84 | Trải trên nhiều tầng (đã trừ tệp kiểm thử của module tạm hủy/đã gộp) |
