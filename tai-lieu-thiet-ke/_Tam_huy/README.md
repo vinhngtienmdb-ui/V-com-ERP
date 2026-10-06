@@ -116,7 +116,7 @@ Số module hoạt động giảm từ 42 xuống 29 (5 nhóm chức năng cũ �
 ## Mục lục đã cập nhật
 
 - `Quy_trinh_nghiep_vu/index.md` — còn 54 quy trình đang hoạt động, 6 quy trình tạm hủy, số tiếp theo QT-55; thêm mục "Lịch sử đánh số".
-- `Ke_hoach/00_INDEX.md` — thêm mục 3.1 "Mô-đun tạm hủy"; còn 42 mô-đun đang hoạt động trên 44 mã đã cấp.
+- `Ke_hoach/00_INDEX.md` — thêm mục 3.1 "Mô-đun tạm hủy"; còn 29 mô-đun đang hoạt động trên 44 mã đã cấp.
 - `Ke_hoach/00_KE_HOACH_TONG_THE.md` — thêm mục 5.1 "Mô-đun tạm hủy"; cập nhật lại tổng số mô-đun, tổng số dòng giao diện và các chỉ số liên quan.
 
 ## Mã nguồn đi kèm

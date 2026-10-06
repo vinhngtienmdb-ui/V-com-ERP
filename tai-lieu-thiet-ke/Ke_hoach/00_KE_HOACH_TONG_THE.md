@@ -35,7 +35,7 @@ Hệ sinh thái VComm gồm bảy hệ thống con và một tầng hạ tầng 
 | HS-07 | VComm Nexthub | `vcomm-nexthub` | 3005 | `01_He_thong/HS-07_VComm_Nexthub.md` |
 | HS-08 | Hạ tầng CSDL trung tâm và Cloud | Root SQL / Cloud | Cloud | `01_He_thong/HS-08_Ha_tang_CSDL_trung_tam_va_Cloud.md` |
 
-Riêng VComm ERP được chuyển thành **cổng Portal** và chia nhỏ tiếp thành **29 module (mini-app) đang hoạt động**, mỗi module một tệp kế hoạch trong `02_ERP_Module/`. 15 mô-đun đã gộp hoặc loại bỏ ngày 2026-10-06, cùng 2 mô-đun tạm hủy trước đó, được ghi tại mục 5.1.
+Riêng VComm ERP được chuyển thành **cổng Portal** và chia nhỏ tiếp thành **29 module (mini-app) đang hoạt động**, mỗi module một tệp kế hoạch trong `02_ERP_Module/`. 13 mô-đun bị gộp hoặc loại bỏ ngày 2026-10-06, cộng 2 mô-đun tạm hủy trước đó (ngày 2026-10-05, MOD-33, MOD-34) = 15 mô-đun được lưu trữ tại `_Tam_huy/`, chi tiết tại mục 5.1.
 
 ## 3. Kiến trúc tổng thể
 
@@ -79,6 +79,8 @@ Quy ước mã: `HS-nn` cho hệ thống, `MOD-nn` cho module ERP, `MOD-nn-Fxx` 
 ## 5. Bản đồ 29 module ERP (Portal + 6 nhóm mini-app)
 
 Theo tái cấu trúc ngày 2026-10-06, ERP chuyển thành **cổng Portal**, các chức năng thành **mini-app** (mỗi app một cổng riêng, nối qua API server HS-02). Tổng quy mô giao diện: **41,922 dòng** trên 29 module đang hoạt động (chưa tính 13 module đã gộp/loại bỏ và 2 tạm hủy trước đó).
+
+> **Cập nhật 2026-09-09 (kiểm chứng thực tế):** Cột “Dòng” và con số 41.922 ở trên là **ảnh chụp (snapshot)** tại thời điểm viết tài liệu và **không còn khớp mã nguồn hiện tại**. Kiểm tra ngày 2026-09-09: chỉ **25/29** tệp giao diện còn tồn tại tại đường dẫn đã ghi, tổng thực tế **36.876 dòng**; 4 tệp (`TT99Accounting.tsx`, `TasksPage.tsx`, `VCommHub.tsx`, `VXu.tsx`) đã không còn tồn tại trong `vcomm-erp/src/components/`. Các chỉ số quy mô giao diện ở mục 6 cũng theo snapshot này và cần đo lại khi bắt đầu tách source (S1–S7).
 
 > Cổng trong bảng là **cổng giả định** của mini-app (dải 3101–3402); cổng thật cố định khi tách source. Mọi dữ liệu qua HS-02 (5000).
 
