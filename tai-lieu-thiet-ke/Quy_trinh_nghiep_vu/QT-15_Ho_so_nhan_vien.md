@@ -5,7 +5,7 @@
 - Phiên bản: 1.0
 - Trạng thái: Chờ duyệt
 - Ngày tạo: 2026-10-05
-- Ngày cập nhật: 2026-10-05
+- Ngày cập nhật: 2026-10-09
 - Nhóm nghiệp vụ: Nhân sự
 - Nguồn nghiệp vụ: `Mo ta nghiep vu/MD_ERP/2_hrm/14_employee_records.md (§2)`
 - Mô-đun hệ thống: MOD-40 Hồ sơ Nhân sự (`/easyhrm`) và MOD-41 Sơ đồ tổ chức (`/org`)

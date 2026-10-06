@@ -617,3 +617,33 @@ Khi phát triển tính năng mới hoặc sửa lỗi trong bất kỳ phân h�
 
 - Các đặc tả lịch sử `specs/001`, `specs/015`, `specs/023`, `specs/029` còn nhắc hai mô-đun này — là bản ghi tại thời điểm rà soát, giữ nguyên.
 - Thời điểm khôi phục hai mô-đun chưa chốt; mã đã cấp không tái sử dụng.
+
+### 2026-10-09 — Tạm hủy bốn quy trình CRM và dồn số QT liên tục
+
+**Người thực hiện:** AI (Minh) theo yêu cầu của Eric
+
+**Nội dung:**
+
+- Eric nêu: các quy trình 24, 25, 26, 27, 28 không phù hợp mô hình thương mại điện tử. Khách hàng chỉ được tạo ra khi tự đăng ký qua cổng eCommerce, không ai được tạo bằng tay trừ quản trị viên; do đó không phát sinh chức năng quản lý liên hệ, cơ hội bán hàng, báo giá.
+- Hai câu hỏi làm rõ đã hỏi trước: giữ QT-25 và viết lại, hay hủy cả năm; và dồn số hay giữ chỗ. Eric chốt: **giữ QT-25 và viết lại theo mô hình thương mại điện tử**, **dồn số liên tục**.
+- Bốn quy trình bị dời vào lưu trữ, **bỏ tiền tố mã**: Quản lý Tiềm năng (cũ QT-24), Quản lý Liên hệ (cũ QT-26), Cơ hội bán hàng (cũ QT-27), Báo giá và Đơn hàng (cũ QT-28). Hai tệp lưu trữ cũ (QT-49, QT-50) cũng được bỏ tiền tố mã cho nhất quán.
+- Dồn số 31 tệp cho liền mạch: QT-25 → QT-24; QT-29 … QT-48 → QT-25 … QT-44; QT-51 … QT-60 → QT-45 … QT-54. Cây hoạt động còn 54 quy trình, số tiếp theo là QT-55.
+- Sửa mã trong từng tệp (dòng tiêu đề và dòng "Mã quy trình") và ba tham chiếu chéo bị ảnh hưởng: QT-23 → QT-50, QT-39 → QT-27, QT-46 → QT-48.
+- Viết lại **QT-24 Quản trị Khách hàng** theo mô hình thương mại điện tử. Bằng chứng chính: `src/components/Customers.tsx:1597` — ERP từ chối tạo tài khoản ảo và yêu cầu khách đã đăng ký trên eCommerce; `src/components/Customers.tsx:1045` — biểu mẫu tạo tay duy nhất; `src/services/dbService.ts:2532` — đăng ký tài khoản.
+
+**Tệp bị ảnh hưởng:**
+
+- `tai-lieu-thiet-ke/_Tam_huy/` (bốn tệp CRM dời vào, hai tệp tài chính đổi tên, README viết lại)
+- `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/` (31 tệp đổi tên và sửa mã, `QT-24_Quan_tri_Khach_hang.md` viết lại, `index.md` viết lại)
+- `tai-lieu-thiet-ke/index.md`, `Checklist_cong_viec.md`, `Nhat_ky_du_an.md`
+
+**Kết quả kiểm tra:**
+
+- Mục lục khớp 54 dòng với 54 tệp trên đĩa; dãy mã liền mạch QT-01 … QT-54, không để trống số.
+- Không còn tham chiếu trỏ tới mã cũ trong cây hoạt động; sáu tệp lưu trữ không mang tiền tố mã.
+
+**Ghi chú:**
+
+- Xung đột cần Eric chốt: mô-đun **Đội ngũ Kinh doanh** (`/sales`, MOD-38, `src/components/Sales.tsx`) vẫn còn phần quản lý tiềm năng trong mã nguồn và đang có mục menu. Quy trình Tiềm năng đã bị hủy theo mô hình thương mại điện tử, nên cần quyết định mô-đun này có bị hủy theo hay không. Đã ghi thành câu hỏi mở Q-03 trong QT-24.
+- Nút "Thêm Khách hàng" hiện chưa có kiểm tra quyền quản trị viên trong thành phần `Customers`; đã ghi vào mục "Chưa xác minh được" của QT-24.
+- Ba quyết định còn để mở từ trước vẫn giữ nguyên: nguồn tài liệu duy nhất, lệch nhãn năm và mục đích sử dụng quỹ trong hai bản kế hoạch tài chính XLSX, và danh mục tính năng chi tiết theo module cần một lượt BA.

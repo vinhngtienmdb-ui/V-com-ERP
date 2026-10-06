@@ -5,7 +5,7 @@
 - Phiên bản: 1.0
 - Trạng thái: Chờ duyệt
 - Ngày tạo: 2026-10-05
-- Ngày cập nhật: 2026-10-05
+- Ngày cập nhật: 2026-10-09
 - Nhóm nghiệp vụ: Kế toán
 - Nguồn nghiệp vụ: `Mo ta nghiep vu/MD_ERP/1_accounting/05_invoice.md (§2.1, §2.2)`
 - Mô-đun hệ thống: MOD-11 Quản lý Đơn hàng (`/orders`) và MOD-31 Đối soát (`/settlement`)

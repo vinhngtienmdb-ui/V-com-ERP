@@ -5,7 +5,7 @@
 - Phiên bản: 1.0
 - Trạng thái: Chờ duyệt
 - Ngày tạo: 2026-10-05
-- Ngày cập nhật: 2026-10-05
+- Ngày cập nhật: 2026-10-09
 - Nhóm nghiệp vụ: Kế toán
 - Nguồn nghiệp vụ: `Mo ta nghiep vu/MD_ERP/1_accounting/08_assets.md (§2.1, §2.2)`
 - Mô-đun hệ thống: MOD-29 Tài chính - Kế toán (`/finance`)

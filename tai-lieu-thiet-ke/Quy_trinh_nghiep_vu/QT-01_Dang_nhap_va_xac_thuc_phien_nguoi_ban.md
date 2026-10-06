@@ -5,7 +5,7 @@
 - Phiên bản: 1.0
 - Trạng thái: Chờ duyệt
 - Ngày tạo: 2026-10-05
-- Ngày cập nhật: 2026-10-05
+- Ngày cập nhật: 2026-10-09
 - Liên quan: FR-01, FR-09 (`07_Yeu_cau_chuc_nang.md`); M1 (`Checklist_cong_viec.md`)
 
 ## 1. Tác nhân và quyền

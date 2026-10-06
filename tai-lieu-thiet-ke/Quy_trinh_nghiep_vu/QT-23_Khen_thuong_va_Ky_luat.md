@@ -5,7 +5,7 @@
 - Phiên bản: 1.0
 - Trạng thái: Chờ duyệt
 - Ngày tạo: 2026-10-05
-- Ngày cập nhật: 2026-10-05
+- Ngày cập nhật: 2026-10-09
 - Nhóm nghiệp vụ: Nhân sự
 - Nguồn nghiệp vụ: `Mo ta nghiep vu/MD_ERP/2_hrm/22_rewards_discipline.md (§2)`
 - Mô-đun hệ thống: MOD-39 Quản trị Nhân sự (`/hr`) và MOD-06 Đề xuất và Trình ký (`/requests`)
@@ -23,7 +23,7 @@
 ## 2. Điều kiện trước
 
 - Đã có quy chế khen thưởng và nội quy lao động.
-- Đã có luồng đề xuất và trình ký hoạt động (xem QT-56).
+- Đã có luồng đề xuất và trình ký hoạt động (xem QT-50).
 
 ## 3. Luồng chính
 
