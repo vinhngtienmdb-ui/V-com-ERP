@@ -737,3 +737,36 @@ Khi phát triển tính năng mới hoặc sửa lỗi trong bất kỳ phân h�
 **Ghi chú:**
 
 - Việc 8 (rà trích dẫn) đã xong toàn bộ 30/30 QT Nhóm 5. Bước tiếp theo theo chỉ đạo của Eric: triển khai #156/#159 — gập vật lý `Ke_hoach` (42 mô-đun `MOD-*` / cấu trúc `N1…N7`) thành 5 thư mục miền. Đầu việc này cần chủ dự án duyệt riêng trước khi di chuyển file (tránh xáo trộn lớn).
+
+### 2026-10-09 (tiếp 2) — Gập vật lý Ke_hoach N1…N7 thành 5 thư mục miền (#156/#159)
+
+**Người thực hiện:** AI (Minh) theo chỉ đạo của Eric (triển khai sau khi #158 xong)
+
+**Nội dung:**
+- Thực hiện #156/#159: di chuyển vật lý 42 tệp MOD-* từ 7 thư mục `Ke_hoach/02_ERP_Module/N1…N7` vào 5 thư mục miền, theo ánh xạ 5 nhóm chức năng (`Ke_hoach/00_INDEX.md` mục "Cấu trúc chức năng chuẩn hóa (5 nhóm)").
+- Ánh xạ MOD → thư mục miền:
+  - `01_Ke_toan` (2): MOD-29, MOD-30
+  - `02_Nhan_su` (4): MOD-39, MOD-40, MOD-41, MOD-42
+  - `03_CRM_Khach_hang` (2): MOD-36, MOD-37
+  - `04_Van_phong_Dieu_hanh` (10): MOD-01…05, MOD-06…09, MOD-43
+  - `05_Thuong_mai_Nen_tang_mo_rong` (24): MOD-10…28, MOD-31, MOD-32, MOD-35, MOD-38, MOD-44
+- Phân loại vài module chéo (dựa mục "Tài chính mở rộng & Đối soát" và cụm năng lực N5 ở `00_INDEX.md`): MOD-31/32 (đối soát, ví/thanh toán) và MOD-35 (nhà bán hàng)/MOD-38 (đội ngũ kinh doanh) → Nhóm 5; MOD-43 (không gian làm việc) → Nhóm 4; MOD-29/30 (kế toán) → Nhóm 1.
+- Cập nhật nhãn "Nhóm chức năng" trong 42 tệp MOD-* (2 chỗ/tệp) thành tên miền mới.
+- Cập nhật đường dẫn trong `00_INDEX.md` (Cấp 2, 42 dòng) và `00_KE_HOACH_TONG_THE.md` (§5, 42 dòng + dòng 74 mẫu đường dẫn + dòng 81 "bảy nhóm" → "năm nhóm").
+- Re-point `_Tam_huy/README.md` (2 dòng MOD-33/34) sang tên thư mục miền mới (`05_Thuong_mai_Nen_tang_mo_rong`) tại vị trí lưu trữ gốc.
+- Không đứt liên kết: dòng "Backend" của 42 MOD dùng đường dẫn gốc `Ke_hoach/01_He_thong/HS-02_VComm_Core_Backend.md` (không tương đối với vị trí tệp) nên giữ nguyên.
+
+**Tệp bị ảnh hưởng:**
+- 42 tệp MOD-* (di chuyển vào 5 thư mục miền)
+- `Ke_hoach/00_INDEX.md`, `Ke_hoach/00_KE_HOACH_TONG_THE.md`, `_Tam_huy/README.md`, `Checklist_cong_viec.md`
+- `Ke_hoach/02_ERP_Module/N1…N7` (xóa sau khi rỗng)
+
+**Kiểm chứng:**
+- Đếm thư mục miền: 01(2), 02(4), 03(2), 04(10), 05(24) = 42. N1…N7 đã xóa hết.
+- Grep `02_ERP_Module/N[1-7]_` toàn `tai-lieu-thiet-ke` → 0 kết quả (chỉ còn tham chiếu `_Tam_huy/MOD-33/34` đúng).
+- Grep nhãn "Nhóm chức năng" trong MOD-01, MOD-29, MOD-36 → khớp tên miền mới.
+
+**Ghi chú:**
+- Di chuyển thực hiện bằng script Python (`kehoach_collapse.py`), chạy tắt sandbox (D:\ ghi bị sandbox nuốt).
+- Lệch cân bằng: Nhóm 5 có 24/42 module (VComm là nền tảng thương mại, phần lớn module thuộc thương mại/mở rộng) — nhất quán với taxonomy 5 nhóm ở `00_INDEX.md`.
+- Còn mở: MOD-38 "Đội ngũ Kinh doanh" (`/sales`) vẫn có phần quản lý tiềm năng trong mã nguồn (`Sales.tsx`) dù quy trình Tiềm năng đã hủy — cần Eric chốt có hủy module này theo hay không (Q-03).

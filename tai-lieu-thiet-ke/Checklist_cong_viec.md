@@ -78,7 +78,7 @@
 | Mã | Công việc | Giai đoạn | Người thực hiện | Trạng thái | Hạn | Ghi chú |
 |---|---|---|---|---|---|---|
 | — | Khảo sát lại toàn bộ quy trình (20 tệp thiết kế) | BA / Thiết kế | AI (Minh) | ✅ hoàn thành khảo sát | 2026-10-05 | `tai-lieu-thiet-ke/*` |
-| #156 | Gập vật lý `Ke_hoach/N1…N7` thành 5 thư mục miền (theo ánh xạ 5 nhóm) | Tài liệu | AI (Minh) | ⬜ chưa làm — chờ chủ dự án duyệt riêng | — | Tránh xáo trộn lớn; mới ghi ánh xạ logic trong `Ke_hoach/00_INDEX.md` |
+| #156 | Gập vật lý `Ke_hoach/N1…N7` thành 5 thư mục miền (theo ánh xạ 5 nhóm) | Tài liệu | AI (Minh) | ✅ hoàn thành (2026-10-09) | — | 42 tệp MOD-* → `01_Ke_toan`(2), `02_Nhan_su`(4), `03_CRM_Khach_hang`(2), `04_Van_phong_Dieu_hanh`(10), `05_Thuong_mai_Nen_tang_mo_rong`(24); cập nhật `00_INDEX.md`, `00_KE_HOACH_TONG_THE.md`, `_Tam_huy/README.md` |
 
 ## 5. Tạm dừng
 
@@ -101,6 +101,7 @@
 | — | Chuẩn hóa 5 nhóm chức năng, hợp nhất 24 QT trùng MD_ERP, xóa rác (Request F) | Tài liệu | 2026-10-09 | `tai-lieu-thiet-ke/` | commit `154d8a4` — 30 QT hoạt động, 24 hợp nhất vào MD_ERP, 6 tạm hủy; xóa `.workbuddy-ai/`, `_Luu-tru`; giữ `(1).xlsx` sau content-diff |
 | — | Viết lại 7 QT theo 4 quyết định Pinduoduo (QT-31/35/37/34/36/53/54) | Tài liệu | 2026-10-09 | `tai-lieu-thiet-ke/Quy_trinh_nghiep_vu/` | V-Xu động cơ điểm duy nhất (QT-35/37); Hub bán tại quầy phân loại trạm (QT-34); Siêu thị/E-Menu POS nội bộ VComm khác iPOS (QT-53/54); Affiliate/KOL gánh gom nhu cầu (QT-36). Sửa lệch `znsService.ts:212`; ghi nhận `hubService.ts` mã chết |
 | #158 | Rà soát 23 QT Nhóm 5 còn lại (việc 8) — kiểm chứng 211 trích dẫn `đường-dẫn:dòng` | Tài liệu | 2026-10-09 | `Quy_trinh_nghiep_vu/` | `server.ts` (8 dòng) + toàn bộ tầng service (`crmService`, `escrowService`, `dbService`, `consentService`, `f2b2bService`, `dropshipService`, `sellerKycService`, `integrationConfigService`, ...) KHỚP nội dung; component `.tsx:dòng` nằm trong phạm vi tệp. 1 mã chết: `SellerFinance.tsx` (chỉ còn ở `_tam_huy/2026-10-05`, dòng 1280 trích sai — thực tế là xác minh vận đơn, quy tắc xác minh tài khoản nhận tiền dùng MOCK bank) → re-point sang bản lưu trữ + ghi chú "Chưa xác minh được" trong QT-43, QT-44. Chi tiết `Phan_tich_...` §6.2 việc 8 |
+| #156 | Gập vật lý `Ke_hoach/N1…N7` thành 5 thư mục miền — 42 mô-đun MOD-* | Tài liệu | 2026-10-09 | `Ke_hoach/02_ERP_Module/` | 42 tệp MOD-* chuyển từ 7 thư mục `N1…N7` vào 5 thư mục miền (`01_Ke_toan` 2, `02_Nhan_su` 4, `03_CRM_Khach_hang` 2, `04_Van_phong_Dieu_hanh` 10, `05_Thuong_mai_Nen_tang_mo_rong` 24); cập nhật đường dẫn trong `00_INDEX.md` (Cấp 2) và `00_KE_HOACH_TONG_THE.md` (§5); cập nhật nhãn "Nhóm chức năng" trong 42 MOD; re-point `_Tam_huy/README.md`. Không đứt liên kết (Backend dùng đường dẫn gốc `Ke_hoach/01_He_thong/...`). Phân loại vài module chéo: MOD-31/32 (thanh toán/đối soát) và MOD-35/38 (nhà bán hàng/đội ngũ kinh doanh) → Nhóm 5; MOD-43 (không gian làm việc) → Nhóm 4 |
 
 ## 7. Quy ước mã
 

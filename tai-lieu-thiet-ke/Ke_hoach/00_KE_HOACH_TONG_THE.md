@@ -6,7 +6,7 @@
 - Phạm vi: toàn bộ hệ sinh thái VComm
 - Trạng thái: Đang soạn
 - Ngày tạo: 2026-10-05
-- Ngày cập nhật: 2026-10-05
+- Ngày cập nhật: 2026-10-09
 - Mục lục bộ kế hoạch: `00_INDEX.md`
 
 ## 1. Mục đích
@@ -71,17 +71,41 @@ eCommerce      Store Retail    Seller Centre      iPOS           Nexthub
 |---|---|---|---|
 | 0 | `00_KE_HOACH_TONG_THE.md` | 1 | Bức tranh chung, thứ tự ưu tiên |
 | 1 | `01_He_thong/HS-nn_*.md` | 8 | Phạm vi và chức năng của từng hệ thống con |
-| 2 | `02_ERP_Module/N<n>_*/MOD-nn_*.md` | 42 | Kiểm soát tính năng của từng module ERP đang hoạt động |
+| 2 | `02_ERP_Module/{01_Ke_toan,02_Nhan_su,03_CRM_Khach_hang,04_Van_phong_Dieu_hanh,05_Thuong_mai_Nen_tang_mo_rong}/MOD-nn_*.md` | 42 | Kiểm soát tính năng của từng module ERP đang hoạt động |
 | — | `00_INDEX.md` | 1 | Mục lục toàn bộ |
 
 Quy ước mã: `HS-nn` cho hệ thống, `MOD-nn` cho module ERP, `MOD-nn-Fxx` cho tính năng trong module.
 
 ## 5. Bản đồ 42 module ERP
 
-Tổng quy mô giao diện: **52,825 dòng** trên 42 module đang hoạt động, chia bảy nhóm (chưa tính hai mô-đun tạm hủy).
+Tổng quy mô giao diện: **52,825 dòng** trên 42 module đang hoạt động, chia năm nhóm chức năng (chưa tính hai mô-đun tạm hủy).
 
 
-**N1 — Tổng quan & Điều hành (5 module)**
+
+**Nhóm 1 — Kế toán (2 module)**
+
+| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
+|---|---|---|---|---|---|
+| MOD-29 | Tài chính - Kế toán | `/finance` | `src/components/Finance.tsx` | 2336 | Có |
+| MOD-30 | Kế toán TT99/2025 | `/ke-toan-tt99` | `src/components/TT99Accounting.tsx` | 2307 | — |
+
+**Nhóm 2 — Nhân sự (4 module)**
+
+| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
+|---|---|---|---|---|---|
+| MOD-39 | Quản trị Nhân sự (HRM) | `/hr` | `src/components/HR.tsx` | 3721 | Có |
+| MOD-40 | Hồ sơ Nhân sự (EasyHRM) | `/easyhrm` | `src/components/EasyHRM.tsx` | 2080 | — |
+| MOD-41 | Sơ đồ tổ chức | `/org` | `src/components/OrgStructure.tsx` | 488 | — |
+| MOD-42 | Hiệu suất & Đào tạo | `/performance` | `src/components/Performance.tsx` | 307 | — |
+
+**Nhóm 3 — CRM & Khách hàng (2 module)**
+
+| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
+|---|---|---|---|---|---|
+| MOD-36 | Khách hàng (CRM) | `/customers` | `src/components/Customers.tsx` | 2221 | — |
+| MOD-37 | Chăm sóc Khách hàng | `/cskh` | `src/components/CustomerService.tsx` | 1723 | — |
+
+**Nhóm 4 — Văn phòng & Điều hành (10 module)**
 
 | Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
 |---|---|---|---|---|---|
@@ -90,17 +114,13 @@ Tổng quy mô giao diện: **52,825 dòng** trên 42 module đang hoạt độn
 | MOD-03 | Phân tích dữ liệu | `/bi` | `src/components/AnalyticsBI.tsx` | 1031 | — |
 | MOD-04 | Điều hành & Workflow | `/workflow` | `src/components/WorkflowHub.tsx` | 743 | — |
 | MOD-05 | Quản lý Công việc | `/tasks` | `src/components/TasksPage.tsx` | 215 | — |
-
-**N2 — Hành chính & Pháp lý (4 module)**
-
-| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
-|---|---|---|---|---|---|
 | MOD-06 | Đề xuất & Trình ký | `/requests` | `src/components/RequestHub.tsx` | 1628 | Có |
 | MOD-07 | Hợp đồng & Pháp chế | `/contracts` | `src/components/ContractManager.tsx` | 822 | — |
 | MOD-08 | Quản lý Công văn | `/documents` | `src/components/DocumentManager.tsx` | 1126 | — |
 | MOD-09 | Trung tâm Ký số | `/signature` | `src/components/SignatureHub.tsx` | 1213 | — |
+| MOD-43 | Không gian làm việc | `/workspace` | `src/components/Workspace.tsx` | 493 | Có |
 
-**N3 — Kinh doanh & Tiếp thị (15 module)**
+**Nhóm 5 — Thương mại & Nền tảng mở rộng (24 module)**
 
 | Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
 |---|---|---|---|---|---|
@@ -119,43 +139,14 @@ Tổng quy mô giao diện: **52,825 dòng** trên 42 module đang hoạt độn
 | MOD-22 | KOL/KOC & Affiliate | `/affiliate` | `src/components/Affiliate.tsx` | 288 | — |
 | MOD-23 | Khách hàng thân thiết | `/loyalty` | `src/components/Loyalty.tsx` | 500 | Có |
 | MOD-24 | Quản lý Quảng cáo (Ads) | `/ads` | `src/components/AdManager.tsx` | 372 | — |
-
-**N4 — Kho & Chuỗi cung ứng (4 module)**
-
-| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
-|---|---|---|---|---|---|
 | MOD-25 | Quản trị Kho vận | `/warehouse` | `src/components/Warehouse.tsx` | 3794 | Có |
 | MOD-26 | Vận chuyển (Logistics) | `/logistics` | `src/components/Logistics.tsx` | 544 | — |
 | MOD-27 | Mua hàng & NCC | `/scm` | `src/components/Procurement.tsx` | 817 | — |
 | MOD-28 | Tuân thủ & Pháp chế | `/compliance` | `src/components/Compliance.tsx` | 344 | — |
-
-**N5 — Tài chính & Thanh toán (4 module)**
-
-| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
-|---|---|---|---|---|---|
-| MOD-29 | Tài chính - Kế toán | `/finance` | `src/components/Finance.tsx` | 2336 | Có |
-| MOD-30 | Kế toán TT99/2025 | `/ke-toan-tt99` | `src/components/TT99Accounting.tsx` | 2307 | — |
 | MOD-31 | Đối soát & Công nợ | `/settlement` | `src/components/Settlement.tsx` | 886 | — |
 | MOD-32 | Ví & Thanh toán | `/wallet` | `src/components/Wallet.tsx` | 1051 | Có |
-
-**N6 — Khách hàng & Nhân sự (9 module)**
-
-| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
-|---|---|---|---|---|---|
 | MOD-35 | Nhà bán hàng | `/sellers` | `src/components/Sellers.tsx` | 1338 | — |
-| MOD-36 | Khách hàng (CRM) | `/customers` | `src/components/Customers.tsx` | 2221 | — |
-| MOD-37 | Chăm sóc Khách hàng | `/cskh` | `src/components/CustomerService.tsx` | 1723 | — |
 | MOD-38 | Đội ngũ Kinh doanh | `/sales` | `src/components/Sales.tsx` | 412 | — |
-| MOD-39 | Quản trị Nhân sự (HRM) | `/hr` | `src/components/HR.tsx` | 3721 | Có |
-| MOD-40 | Hồ sơ Nhân sự (EasyHRM) | `/easyhrm` | `src/components/EasyHRM.tsx` | 2080 | — |
-| MOD-41 | Sơ đồ tổ chức | `/org` | `src/components/OrgStructure.tsx` | 488 | — |
-| MOD-42 | Hiệu suất & Đào tạo | `/performance` | `src/components/Performance.tsx` | 307 | — |
-| MOD-43 | Không gian làm việc | `/workspace` | `src/components/Workspace.tsx` | 493 | Có |
-
-**N7 — Cấu hình (1 module)**
-
-| Mã | Module | Tuyến đường | Tệp giao diện | Dòng | Kiểm thử |
-|---|---|---|---|---|---|
 | MOD-44 | Cấu hình hệ thống | `/settings` | `src/components/Settings.tsx` | 6328 | Có |
 
 ### 5.1. Mô-đun tạm hủy

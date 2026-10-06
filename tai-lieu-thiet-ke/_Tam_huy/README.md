@@ -69,8 +69,8 @@ Khác với tạm hủy, đây là **hợp nhất (merge)** — nội dung đã 
 |---|---|---|
 | `Quy_trinh_nghiep_vu/QT-49_Ho_tro_Tai_chinh_Nha_ban.md` | `_Tam_huy/Ho_tro_Tai_chinh_Nha_ban.md` | QT-49 |
 | `Quy_trinh_nghiep_vu/QT-50_Cho_thue_va_Tra_gop_Thiet_bi.md` | `_Tam_huy/Cho_thue_va_Tra_gop_Thiet_bi.md` | QT-50 |
-| `Ke_hoach/02_ERP_Module/N5_Tai_chinh_va_Thanh_toan/MOD-33_Ho_tro_Tai_chinh_Nha_ban.md` | `_Tam_huy/MOD-33_Ho_tro_Tai_chinh_Nha_ban.md` | — |
-| `Ke_hoach/02_ERP_Module/N5_Tai_chinh_va_Thanh_toan/MOD-34_Cho_thue_thiet_bi_Tra_gop.md` | `_Tam_huy/MOD-34_Cho_thue_thiet_bi_Tra_gop.md` | — |
+| `Ke_hoach/02_ERP_Module/05_Thuong_mai_Nen_tang_mo_rong/MOD-33_Ho_tro_Tai_chinh_Nha_ban.md` | `_Tam_huy/MOD-33_Ho_tro_Tai_chinh_Nha_ban.md` | — |
+| `Ke_hoach/02_ERP_Module/05_Thuong_mai_Nen_tang_mo_rong/MOD-34_Cho_thue_thiet_bi_Tra_gop.md` | `_Tam_huy/MOD-34_Cho_thue_thiet_bi_Tra_gop.md` | — |
 | `Quy_trinh_nghiep_vu/QT-24_Quan_ly_Tiem_nang_Leads.md` | `_Tam_huy/Quan_ly_Tiem_nang_Leads.md` | QT-24 |
 | `Quy_trinh_nghiep_vu/QT-26_Quan_ly_Lien_he.md` | `_Tam_huy/Quan_ly_Lien_he.md` | QT-26 |
 | `Quy_trinh_nghiep_vu/QT-27_Co_hoi_ban_hang.md` | `_Tam_huy/Co_hoi_ban_hang.md` | QT-27 |
