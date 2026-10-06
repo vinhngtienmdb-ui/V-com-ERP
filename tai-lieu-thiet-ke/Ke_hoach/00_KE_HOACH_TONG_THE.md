@@ -80,7 +80,7 @@ Quy ước mã: `HS-nn` cho hệ thống, `MOD-nn` cho module ERP, `MOD-nn-Fxx` 
 
 Theo tái cấu trúc ngày 2026-10-06, ERP chuyển thành **cổng Portal**, các chức năng thành **mini-app** (mỗi app một cổng riêng, nối qua API server HS-02). Tổng quy mô giao diện: **41,922 dòng** trên 29 module đang hoạt động (chưa tính 13 module đã gộp/loại bỏ và 2 tạm hủy trước đó).
 
-> **Cập nhật 2026-09-09 (kiểm chứng thực tế):** Cột “Dòng” và con số 41.922 ở trên là **ảnh chụp (snapshot)** tại thời điểm viết tài liệu và **không còn khớp mã nguồn hiện tại**. Kiểm tra ngày 2026-09-09: chỉ **25/29** tệp giao diện còn tồn tại tại đường dẫn đã ghi, tổng thực tế **36.876 dòng**; 4 tệp (`TT99Accounting.tsx`, `TasksPage.tsx`, `VCommHub.tsx`, `VXu.tsx`) đã không còn tồn tại trong `vcomm-erp/src/components/`. Các chỉ số quy mô giao diện ở mục 6 cũng theo snapshot này và cần đo lại khi bắt đầu tách source (S1–S7).
+> **Cập nhật 2026-10-06 (kiểm chứng thực tế):** Cột “Dòng” và con số 41.922 ở trên là **ảnh chụp (snapshot)** tại thời điểm viết tài liệu và **không còn khớp mã nguồn hiện tại**. Kiểm tra ngày 2026-10-06: chỉ **25/29** tệp giao diện còn tồn tại tại đường dẫn đã ghi, tổng thực tế **36.876 dòng**; 4 tệp (`TT99Accounting.tsx`, `TasksPage.tsx`, `VCommHub.tsx`, `VXu.tsx`) đã không còn tồn tại trong `vcomm-erp/src/components/`. Các chỉ số quy mô giao diện ở mục 6 cũng theo snapshot này và cần đo lại khi bắt đầu tách source (S1–S7).
 
 > Cổng trong bảng là **cổng giả định** của mini-app (dải 3101–3402); cổng thật cố định khi tách source. Mọi dữ liệu qua HS-02 (5000).
 

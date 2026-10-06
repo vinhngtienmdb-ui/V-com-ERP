@@ -2,7 +2,7 @@
 
 - **Mã**: KH-03 (kế hoạch kỹ thuật)
 - **Trạng thái**: 🟡 Chờ duyệt — **chưa thực thi mã nguồn**
-- **Ngày soạn**: 2026-09-09 (theo yêu cầu chủ dự án 2026-10-06)
+- **Ngày soạn**: 2026-10-06 (theo yêu cầu chủ dự án 2026-10-06)
 - **Nguồn**: `Checklist_cong_viec.md` §2.5 (S1–S7) · `HS-01_VComm_ERP.md` §7, §8 · `00_INDEX.md` · `00_KE_HOACH_TONG_THE.md` §5
 - **Phạm vi**: tài liệu hóa kế hoạch. Không sửa mã nguồn, không đổi cổng, không đổi hạ tầng cho tới khi chủ dự án duyệt.
 
@@ -29,21 +29,21 @@ Mục tiêu đo lường được:
 | HS-01 VComm ERP | Monolith hợp nhất: một tiến trình Node chạy cả API (Express `server.ts`) và render giao diện (Vite SSR); không microservice, không message broker | `09_Kien_truc_he_thong.md:12` |
 | HS-02 VComm Core Backend | **Đã tồn tại** — NestJS, "Enterprise Core Backend API for VComm Ecosystem (ERP, eCommerce, iPOS, Seller Portal)", dùng `passport-jwt`; cổng mặc định **5000** | `D:/VComm/vcomm-core-backend/package.json`; `vcomm-core-backend/src/main.ts:82` (`process.env.PORT || 5000`) |
 | Định tuyến giao diện ERP | `react-router-dom` (`BrowserRouter`, `Routes`, `Route`) + lazy-load từng component | `vcomm-erp/src/App.tsx:2`, `:11–29` |
-| Số component giao diện | 95 tệp `.tsx` trong `vcomm-erp/src/components/` | `find` đếm 2026-09-09 |
+| Số component giao diện | 95 tệp `.tsx` trong `vcomm-erp/src/components/` | `find` đếm 2026-10-06 |
 | Menu điều hướng | `navGroups` trong `vcomm-erp/src/constants.ts:41` — **42 mục `path`** | `grep -c "path: '"` = 42 |
 | Xác thực người bán | Đã có `src/lib/sellerAuth.ts` (HMAC `node:crypto`) + guard `/api/seller/*` | `Checklist_cong_viec.md:39,111` (commit `c384e46`) |
 | Multi-tenant / RLS | Đã siết `domain_events`; còn nợ M2.1 (JWT mang claim `tenant_id`) | `Checklist_cong_viec.md:40` |
 
 ---
 
-## 3. Lệch mã nguồn ↔ tài liệu (phát hiện 2026-09-09) — phải xử lý trước khi tách
+## 3. Lệch mã nguồn ↔ tài liệu (phát hiện 2026-10-06) — phải xử lý trước khi tách
 
 Đây là **phát hiện quan trọng nhất** và là lý do bắt buộc có bước S0 (§5). Bản đồ "29 module" trong tài liệu **chưa khớp mã nguồn thật**:
 
 1. **Mã nguồn chưa giảm về 29.** `src/constants.ts` (navGroups) vẫn còn **42 mục menu**, không phải 29. Tài liệu `00_KE_HOACH_TONG_THE.md:184` từng ghi "29 theo menu điều hướng thật (`src/constants.ts`)" — **đã sửa** thành "29 là mục tiêu tài liệu".
 2. **3 module tài liệu nói đã loại bỏ vẫn còn trong mã nguồn**: `/live` (MOD-12 Livestream), `/social` (MOD-13 Mạng xã hội), `/sales` (MOD-38 Đội ngũ Kinh doanh) — có trong `constants.ts` và được nối ở `App.tsx` (`LiveCommerce`, `SocialCommerce`, `Sales`).
 3. **4 module tài liệu nói đang hoạt động nhưng KHÔNG có trong mã nguồn**: MOD-30 Kế toán (`/ke-toan-tt99`, `TT99Accounting.tsx`), MOD-05 Công việc (`/tasks`, `TasksPage.tsx`), MOD-20 Hub O2O (`/vcomm-hub`, `VCommHub.tsx`), MOD-21 V-Xu (`/vxu`, `VXu.tsx`). Cả tuyến đường lẫn tệp component đều không tồn tại trong `vcomm-erp/src`.
-4. **Cột "Dòng" và con số 41.922 là ảnh chụp lỗi thời**: chỉ **25/29** tệp giao diện còn tồn tại tại đường dẫn đã ghi; tổng thực tế **36.876 dòng**; 4 tệp nêu ở mục 3 không còn (chi tiết tại `00_KE_HOACH_TONG_THE.md` §5, ghi chú "Cập nhật 2026-09-09").
+4. **Cột "Dòng" và con số 41.922 là ảnh chụp lỗi thời**: chỉ **25/29** tệp giao diện còn tồn tại tại đường dẫn đã ghi; tổng thực tế **36.876 dòng**; 4 tệp nêu ở mục 3 không còn (chi tiết tại `00_KE_HOACH_TONG_THE.md` §5, ghi chú "Cập nhật 2026-10-06").
 
 **Hệ quả**: không thể tách 29 mini-app theo bản đồ tài liệu khi bản đồ đó chưa đối chiếu được với mã nguồn. S0 phải làm rõ từng điểm trên.
 
