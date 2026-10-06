@@ -1,7 +1,7 @@
 # Mục lục bộ tài liệu thiết kế
 
 - Dự án: VComm
-- Ngày cập nhật gần nhất: 2026-10-05
+- Ngày cập nhật gần nhất: 2026-10-06
 
 ## Tài liệu quản lý
 
@@ -11,11 +11,11 @@
 | Nhat_ky_du_an.md | Nhật ký dự án — nguồn duy nhất: Phần I nhật ký phát hành hệ sinh thái, Phần II nhật ký công việc theo ngày |
 | Checklist_cong_viec.md | Checklist công việc và roadmap sản phẩm |
 | Ke_hoach/00_KE_HOACH_TONG_THE.md | Kế hoạch tổng thể toàn dự án VComm |
-| Ke_hoach/00_INDEX.md | Mục lục bộ kế hoạch: 1 kế hoạch tổng thể, 8 kế hoạch hệ thống con, 42 kế hoạch module ERP đang hoạt động (2 mô-đun tạm hủy) |
-| Quy_trinh_nghiep_vu/index.md | Mục lục các quy trình nghiệp vụ — 5 nhóm chức năng (4 cốt lõi từ MD_ERP + 1 Thương mại & Nền tảng mở rộng); 30 quy trình Nhóm 5 đang hoạt động, 24 hợp nhất vào MD_ERP, 6 tạm hủy |
+| Ke_hoach/00_INDEX.md | Mục lục bộ kế hoạch: 1 kế hoạch tổng thể, 8 kế hoạch hệ thống con, **26 kế hoạch module ERP đang hoạt động** (Vỏ Portal + 5 nhóm; 15 mô-đun lưu trữ) |
+| Quy_trinh_nghiep_vu/index.md | Mục lục các quy trình nghiệp vụ — 5 nhóm chức năng (4 cốt lõi từ MD_ERP + 1 Thương mại & Nền tảng mở rộng); **27 quy trình Nhóm 5 đang hoạt động**, 24 hợp nhất vào MD_ERP, 9 lưu trữ/chuyển phạm vi |
 | Quy_trinh_nghiep_vu/Phieu_yeu_cau.md | Phiếu yêu cầu trống để điền |
-| Quy_trinh_nghiep_vu/QT-nn_*.md | Quy trình nghiệp vụ Nhóm 5 (QT-01, QT-24, QT-27…QT-54), đều ở trạng thái Chờ duyệt; 4 nhóm cốt lõi lấy từ MD_ERP |
-| _Tam_huy/ | Tài liệu lưu trữ: 2026-10-05 (QT-49, QT-50, MOD-33, MOD-34), 2026-10-09 (4 quy trình CRM cũ) và 2026-10-09 (24 quy trình hợp nhất vào MD_ERP) — xem `_Tam_huy/README.md` |
+| Quy_trinh_nghiep_vu/QT-nn_*.md | Quy trình nghiệp vụ Nhóm 5 (QT-01, QT-24, QT-27…QT-51), đều ở trạng thái Chờ duyệt; 4 nhóm cốt lõi lấy từ MD_ERP |
+| _Tam_huy/ | Tài liệu lưu trữ: 2026-10-05 (QT-49, QT-50, MOD-33, MOD-34), **2026-10-06 (6 mô-đun gộp/tách + QT-32, QT-39)**, 2026-10-09 (4 quy trình CRM cũ) và 2026-10-09 (24 quy trình hợp nhất vào MD_ERP) — xem `_Tam_huy/README.md` |
 
 ## Tài liệu thiết kế
 

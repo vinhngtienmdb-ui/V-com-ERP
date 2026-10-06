@@ -1,4 +1,4 @@
-# 03 — Kế hoạch tách source: Cổng Portal + 29 mini-app (S1–S7)
+# 03 — Kế hoạch tách source: Cổng Portal + 26 mini-app (S1–S7)
 
 - **Mã**: KH-03 (kế hoạch kỹ thuật)
 - **Trạng thái**: 🟡 Chờ duyệt — **chưa thực thi mã nguồn**
@@ -15,8 +15,8 @@
 Theo yêu cầu chủ dự án ngày 2026-10-06, ERP chuyển thành **cổng Portal**: các chức năng trở thành **mini-app**, mỗi mini-app có giao diện và cổng riêng, kết nối dữ liệu qua **API server HS-02 (VComm Core Backend, cổng 5000)**. Kế hoạch này là bước kỹ thuật theo sau.
 
 Mục tiêu đo lường được:
-1. Vỏ Portal (shell) chỉ còn 3 module: MOD-01 Trang chủ, MOD-02 Bảng điều khiển, MOD-03 Phân tích dữ liệu.
-2. 26 module còn lại (29 hoạt động trừ 3 ở shell) thành mini-app độc lập, mỗi app một cổng riêng.
+1. Vỏ Portal (shell) chỉ còn 1 module: **MOD-01 Dashboard** (gộp Trang chủ + Bảng điều khiển + Phân tích dữ liệu + Điều hành & Workflow + Không gian làm việc).
+2. 25 mini-app còn lại (26 module trừ 1 ở shell) thành mini-app độc lập, mỗi app một cổng riêng.
 3. Mọi mini-app truy cập dữ liệu **qua HS-02**, không truy cập cơ sở dữ liệu trực tiếp.
 4. Đăng nhập một lần (SSO), menu động dẫn tới từng mini-app theo cổng.
 
@@ -32,8 +32,8 @@ Mục tiêu đo lường được:
 | HS-02 VComm Core Backend | **Đã tồn tại, đầy đủ** — NestJS, cổng **5000**, tiền tố `/api/v1/`, Swagger. Module: `auth, catalog, crm, gateway, hr, integrations, inventory, orders, payments, seller, wallets` | `vcomm-core-backend/src/modules/`; `main.ts:82` |
 | Xác thực HS-02 | JWT Bearer; `JwtAuthGuard` verify `JWT_SECRET`; `auth.service` ký payload **`{ id, role }`** (access 1h, refresh 30d) — **CHƯA có claim `tenant_id`** | `common/guards/jwt-auth.guard.ts`; `modules/auth/auth.service.ts:109-117` |
 | ERP → HS-02 | **Chưa nối**: không có tham chiếu `:5000`/`core-backend` trong `src/lib`, `src/services`, `src/routes`; ERP gọi Supabase trực tiếp (`dbService.ts`) | grep |
-| Số component giao diện | 29/29 tệp của bản đồ module **tồn tại**; tổng **41.892 dòng** (khớp 41.922, lệch 30 dòng) | đo trên `_recovery_V-com-ERP/src/components` |
-| Menu điều hướng | `navGroups` = **42 mục `path`** (chưa giảm về 29) | `src/constants.ts` |
+| Số component giao diện | Bản đồ v1: 29/29 tệp **tồn tại**; tổng **41.892 dòng** (khớp 41.922, lệch 30 dòng) | đo trên `_recovery_V-com-ERP/src/components` |
+| Menu điều hướng | `navGroups` = **42 mục `path`** (chưa giảm về 25 mini-app) | `src/constants.ts` |
 | Xác thực người bán (ERP) | Đã có `src/lib/sellerAuth.ts` (HMAC) + guard `/api/seller/*` | `Checklist_cong_viec.md:39,111` |
 
 ---
@@ -42,7 +42,7 @@ Mục tiêu đo lường được:
 
 | Mã | Quyết định | Chủ dự án chốt | Ghi chú triển khai |
 |---|---|---|---|
-| D1 | Đơn vị tách | **Monorepo (workspaces)** | 29 mini-app trong một monorepo, dùng npm/pnpm workspaces |
+| D1 | Đơn vị tách | **Monorepo (workspaces)** | 26 app (1 vỏ Portal + 25 mini-app) trong một monorepo, dùng npm/pnpm workspaces |
 | D2 | Cổng mini-app | **Cổng thật** | Chốt phân bổ chính thức tại §6 (3101–3402) |
 | D3 | Ranh giới shell ↔ mini-app | **Dùng chung giao diện + CSDL** | Chia sẻ design system/component; chung một CSDL (HS-08) qua HS-02 |
 | D4 | HS-02 là cổng dữ liệu | **Duy nhất** | Mọi mini-app gọi HS-02; bỏ truy cập Supabase trực tiếp |
@@ -57,12 +57,12 @@ Rà trên **nguồn chuẩn** `_recovery_V-com-ERP/src/components/`:
 
 | Module | Tuyến đường | Tệp thật | Dòng |
 |---|---|---|---|
-| MOD-30 Kế toán (TT99) | `/ke-toan-tt99` | `TT99Accounting.tsx` (+ thư mục `accounting/`) | 2306 |
-| MOD-05 Quản lý Công việc | `/tasks` | `TasksPage.tsx` | 214 |
-| MOD-20 VComm Hub (O2O) | `/vcomm-hub` | `VCommHub.tsx` (+ `services/vcommHubService.ts`, `services/hubService.ts`) | 684 |
-| MOD-21 V-Xu | `/vxu` | `VXu.tsx` (+ `services/vxuService.ts`) | 546 |
+| MOD-02 Kế toán (TT99) | `/ke-toan-tt99` | `TT99Accounting.tsx` (+ thư mục `accounting/`) | 2306 |
+| MOD-20 Quản lý Công việc | `/tasks` | `TasksPage.tsx` | 214 |
+| MOD-12 VComm Hub (O2O) | `/vcomm-hub` | `VCommHub.tsx` (+ `services/vcommHubService.ts`, `services/hubService.ts`) | 684 |
+| MOD-13 V-Xu | `/vxu` | `VXu.tsx` (+ `services/vxuService.ts`) | 546 |
 
-Cả 4 đều có trong `navGroups` và được nối ở `App.tsx`. **Kết luận: bản đồ 29 module của kế hoạch tổng thể là ĐÚNG.**
+Cả 4 đều có trong `navGroups` và được nối ở `App.tsx`. **Kết luận: 4 module này KHÔNG mất — bản đồ 29 module (v1) là đúng; cấu trúc v2 gộp/tách còn 26 app.**
 
 > ⚠️ **Vấn đề thật cần chốt (không phải 4 module "mất"):** có **hai cây mã nguồn ERP song song** — nguồn chuẩn `_recovery_V-com-ERP` (`main`, 2026-10-06) và bản cũ `D:/VComm/vcomm-erp` (`feat/digital-signature-upgrade`, 2026-09-24). Hai bản **khác cấu trúc component** và bản cũ **thiếu bản vá bảo mật M1/M2**. Cần chủ dự án xác nhận **nguồn chuẩn để tách là `_recovery_V-com-ERP`** và xử lý bản cũ (dừng dùng / đồng bộ / xóa). Việc này chặn S0.
 
@@ -72,7 +72,7 @@ Cả 4 đều có trong `navGroups` và được nối ở `App.tsx`. **Kết lu
 
 ```
 ┌──────────────────── Vỏ Portal (shell) — cổng 3000 ────────────────────┐
-│  MOD-01 Trang chủ · MOD-02 Bảng điều khiển · MOD-03 Phân tích dữ liệu   │
+│  MOD-01 Dashboard (cá nhân)                                            │
 │  + Gateway/SSO: đăng nhập một lần, menu động dẫn tới mini-app theo cổng │
 │  + Design system dùng chung (D3)                                        │
 └───────────────┬─────────────────────────────────────────────────────────┘
@@ -100,11 +100,11 @@ Nguyên tắc: một nguồn dữ liệu duy nhất (HS-02); SSO ở Portal; men
 ### S0 — Đối chiếu và xác nhận nguồn chuẩn (bắt buộc trước S1)
 
 - **Mục tiêu**: chốt nguồn chuẩn (§3.1) và bản đồ `MOD-nn ↔ tuyến đường ↔ component ↔ cổng`.
-- **Việc**: (a) chủ dự án xác nhận `_recovery_V-com-ERP` là nguồn tách; (b) xử lý bản cũ `D:/VComm/vcomm-erp`; (c) lập bảng đối chiếu 42 mục `navGroups` ↔ 44 mã MOD ↔ 29 module mục tiêu.
-- **Nghiệm thu**: một nguồn chuẩn duy nhất; 29/29 module có tuyến đường + component thật.
+- **Việc**: (a) chủ dự án xác nhận `_recovery_V-com-ERP` là nguồn tách; (b) xử lý bản cũ `D:/VComm/vcomm-erp`; (c) lập bảng đối chiếu 42 mục `navGroups` ↔ 44 mã MOD ↔ 26 module mục tiêu (v2).
+- **Nghiệm thu**: một nguồn chuẩn duy nhất; 26/26 module có tuyến đường + component thật.
 
 ### S1 — Tách vỏ Portal
-- **Việc**: `vcomm-erp` thành shell (cổng 3000) chỉ còn MOD-01/02/03; gỡ 26 module khỏi `App.tsx`/`constants.ts`; thay bằng liên kết sang mini-app.
+- **Việc**: `vcomm-erp` thành shell (cổng 3000) chỉ còn MOD-01 Dashboard; gỡ 25 module còn lại khỏi `App.tsx`/`constants.ts`; thay bằng liên kết sang mini-app.
 - **Phụ thuộc**: S0, S3, S2. **Nghiệm thu**: shell chỉ còn 3 tuyến đường nội bộ.
 
 ### S2 — Tạo 26 mini-app (monorepo, D1)
@@ -116,7 +116,7 @@ Nguyên tắc: một nguồn dữ liệu duy nhất (HS-02); SSO ở Portal; men
 - **Phụ thuộc**: S4/S5. **Nghiệm thu**: đăng nhập một lần; menu dựng từ cấu hình.
 
 ### S4 — Chuẩn hóa giao tiếp qua HS-02 (D4)
-- **Việc**: liệt kê API HS-02 hiện có; bổ sung API còn thiếu cho 26 module; thay `dbService.ts`/`supabase-js` trong ERP bằng client HS-02; chuẩn hóa lỗi + validation (liên quan M6).
+- **Việc**: liệt kê API HS-02 hiện có; bổ sung API còn thiếu cho 25 mini-app; thay `dbService.ts`/`supabase-js` trong ERP bằng client HS-02; chuẩn hóa lỗi + validation (liên quan M6).
 - **Rủi ro**: ERP hiện gọi Supabase trực tiếp; HS-02 phải phủ đủ nghiệp vụ.
 - **Nghiệm thu**: không còn lời gọi Supabase trực tiếp; 100% qua HS-02.
 
@@ -139,12 +139,12 @@ Phân bổ **chính thức** (thay cho "giả định"). Không trùng cổng đ
 
 | Nhóm | Module | Cổng |
 |---|---|---|
-| **Vỏ Portal (shell)** | MOD-01, MOD-02, MOD-03 | **3000** |
-| Nhóm 1 — Kế toán | MOD-30 | 3101 |
-| Nhóm 2 — Nhân sự | MOD-39 | 3102 |
-| Nhóm 3 — Kinh doanh (15) | MOD-36/37/35/11/14/15/16/20/21/22/24/10/32/25/27 | 3201–3215 |
-| Nhóm 4 — Văn phòng (7) | MOD-04/05/06/07/08/09/43 | 3301–3307 |
-| Nhóm 5 — Chia sẻ & Nền tảng (2) | MOD-28, MOD-44 | 3401–3402 |
+| **Vỏ Portal (shell)** | MOD-01 | **3000** |
+| Nhóm 1 — Kế toán | MOD-02 | 3101 |
+| Nhóm 2 — Nhân sự | MOD-03, MOD-04 | 3102–3103 |
+| Nhóm 3 — Kinh doanh (15) | MOD-05 … MOD-19 | 3201–3215 |
+| Nhóm 4 — Văn phòng (5) | MOD-20 … MOD-24 | 3301–3305 |
+| Nhóm 5 — Chia sẻ & Nền tảng (2) | MOD-25, MOD-26 | 3401–3402 |
 
 > Dải 3101–3402 không trùng cổng hệ thống nào đang dùng. **Chờ chủ dự án xác nhận** trước khi cố định.
 
@@ -157,11 +157,11 @@ Nguyên tắc: mỗi thực thể có **một chủ ghi (write owner)**; các h�
 | Thực thể | Chủ ghi (write owner) | Đọc | Bằng chứng |
 |---|---|---|---|
 | **Khách hàng** | eCommerce (khách tự đăng ký); quản trị viên ERP là ngoại lệ | ERP/CRM, Seller, iPOS | `supabase.auth.signUp`; QT-24 |
-| **Sản phẩm (master)** | ERP PIM (MOD-14, `/pim`) | eCommerce, iPOS, Seller, Hub | `navGroups` `/pim` "thông tin sản phẩm tập trung" |
+| **Sản phẩm (master)** | ERP PIM (MOD-09, `/pim`) | eCommerce, iPOS, Seller, Hub | `navGroups` `/pim` "thông tin sản phẩm tập trung" |
 | **Đơn hàng online** | eCommerce (khách checkout) | ERP (quản trị), Seller | bảng `orders` |
 | **Đơn hàng tại quầy** | iPOS (shop đối tác) và POS nội bộ VComm (Siêu thị, E-Menu, Hub `standard`/`freeze`) | ERP | `server.ts:3074` (`source === 'ipos'`), overlap doc §4.1 |
 | **Đơn nhận tại Hub** | VComm Hub (trạm `locker`: chỉ nhận/giữ/giao/đồng kiểm/hoàn tiền) | ERP | overlap doc §2.1, §4.1 |
-| **Tồn kho** | ERP Kho vận (MOD-25) cho kho VComm; iPOS kho riêng đối tác; Hub tồn trạm | — | `navGroups` `/warehouse` |
+| **Tồn kho** | ERP Kho vận (MOD-18) cho kho VComm; iPOS kho riêng đối tác; Hub tồn trạm | — | `navGroups` `/warehouse` |
 | **Ví / V-Xu (điểm)** | V-Xu (động cơ điểm duy nhất) | ERP Loyalty (giao diện + giữ chân) | overlap doc §4.3 |
 | **Thanh toán / ví tiền** | HS-02 `payments`/`wallets` | ERP | `modules/payments`, `modules/wallets` |
 
@@ -192,7 +192,7 @@ Hiện trạng: HS-02 ký JWT `{ id, role }`, **thiếu `tenant_id`**; RLS còn 
 
 ## 9. Cơ chế tạm cách ly 3 module (D6)
 
-Ba module tài liệu nói đã loại bỏ nhưng mã nguồn còn: MOD-12 Livestream (`/live`), MOD-13 Mạng xã hội (`/social`), MOD-38 Đội ngũ Kinh doanh (`/sales`).
+Ba module tài liệu nói đã loại bỏ nhưng mã nguồn còn: **Livestream** (`/live`, mã v0 `MOD-12`), **Mạng xã hội người dùng** (`/social`, mã v0 `MOD-13`), **Đội ngũ Kinh doanh** (`/sales`, mã v0 `MOD-38` — đã hủy theo Q-03). Lưu ý: các mã v0 này **đã được cấp lại** ở v2 (v2 `MOD-12` = VComm Hub O2O, v2 `MOD-13` = V-Xu) — tra theo tuyến đường, không tra theo mã.
 
 "Cách ly" (không xóa, theo nguyên tắc không xóa chức năng):
 1. Gỡ khỏi `navGroups` (không hiện trong menu).
@@ -206,7 +206,7 @@ Ba module tài liệu nói đã loại bỏ nhưng mã nguồn còn: MOD-12 Live
 
 - Chủ dự án chưa xác nhận **nguồn chuẩn** (`_recovery_V-com-ERP`) và cách xử lý bản cũ `D:/VComm/vcomm-erp`.
 - Cổng 3101–3402 là đề xuất, chưa được chốt cứng.
-- HS-02 có phủ đủ API cho cả 26 module hay không (chưa liệt kê hết route HS-02).
+- HS-02 có phủ đủ API cho cả 25 mini-app hay không (chưa liệt kê hết route HS-02).
 - Chủ ghi thật của **sản phẩm** (PIM ERP hay AdminProducts eCommerce) — mới suy từ nhãn menu, chưa đọc mã ghi.
 - Tồn kho: siêu thị VComm và E-Menu có dùng chung tồn kho với kênh trực tuyến hay không (overlap doc cũng nêu).
 - Mô hình tenant của VComm: đơn tenant (VComm) hay đa tenant (có cả shop đối tác) — ảnh hưởng D8.

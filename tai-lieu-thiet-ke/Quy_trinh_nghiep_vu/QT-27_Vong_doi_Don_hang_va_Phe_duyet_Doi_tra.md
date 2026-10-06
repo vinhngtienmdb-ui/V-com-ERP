@@ -8,7 +8,7 @@
 - Ngày cập nhật: 2026-10-09
 - Nhóm nghiệp vụ: Thương mại và Vận hành
 - Nguồn nghiệp vụ: Bộ đề án `Mo ta nghiep vu/` (9 đề án) và mã nguồn `_recovery_V-com-ERP`
-- Mô-đun hệ thống: MOD-11 Quản lý Đơn hàng (`/orders`)
+- Mô-đun hệ thống: MOD-08 Quản lý Đơn hàng (`/orders`)
 - Hiện trạng mã nguồn: Đã có — màn hình vận hành đơn hàng và đổi trả đã có trong mã nguồn
 
 ## 1. Tác nhân và quyền

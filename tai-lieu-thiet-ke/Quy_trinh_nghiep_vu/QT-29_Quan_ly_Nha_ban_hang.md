@@ -8,7 +8,7 @@
 - Ngày cập nhật: 2026-10-09
 - Nhóm nghiệp vụ: Thương mại và Vận hành
 - Nguồn nghiệp vụ: Bộ đề án `Mo ta nghiep vu/` (9 đề án) và mã nguồn `_recovery_V-com-ERP`
-- Mô-đun hệ thống: MOD-35 Nhà bán hàng (`/sellers`)
+- Mô-đun hệ thống: MOD-07 Nhà bán hàng (`/sellers`)
 - Hiện trạng mã nguồn: Đã có — màn hình quản lý người bán, quy trình đăng ký và duyệt, và dịch vụ xác minh hồ sơ
 
 ## 1. Tác nhân và quyền

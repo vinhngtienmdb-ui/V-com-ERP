@@ -1,11 +1,11 @@
 # 05 — Cấu trúc đích ERP sau chốt của chủ dự án (2026-10-06)
 
 - **Mã**: KH-05 (cấu trúc đích + đánh số MOD lần cuối)
-- **Trạng thái**: 🟡 Chờ chủ dự án xác nhận lần cuối trước khi thực thi đổi tên tệp
+- **Trạng thái**: ✅ **Đã chốt và đã thực thi (2026-10-06)** — xem §7
 - **Ngày soạn**: 2026-10-06
 - **Nguồn**: KH-04 (§1 đề xuất đánh số, §3 ánh xạ QT), `Quy_trinh_nghiep_vu/index.md`, `Ke_hoach/00_INDEX.md`
 - **Quan hệ**: **thay thế bảng đánh số ở KH-04 §1**. KH-04 giữ nguyên làm bản đề xuất để truy vết.
-- **Phạm vi**: ghi lại 8 quyết định của chủ dự án ngày 2026-10-06 và cấu trúc đích rút ra (**26 app**). **Chưa đổi tên tệp, chưa sửa mã nguồn.**
+- **Phạm vi**: ghi lại 8 quyết định của chủ dự án ngày 2026-10-06 và cấu trúc đích rút ra (**26 app**). Đã đổi tên tệp MOD và dồn mã QT. **Chưa sửa mã nguồn.**
 
 > Mục đích: chốt cấu trúc cuối để làm cơ sở thực thi hai việc còn lại — (1) đổi tên/đánh số lại tệp MOD, (2) xây lại quy trình QT tương ứng.
 
@@ -202,15 +202,19 @@
 
 ---
 
-## 5. Việc cần chủ dự án xác nhận (trước khi thực thi)
+## 5. Việc đã được chủ dự án xác nhận (2026-10-06)
 
-1. **Cách đánh số:** đồng ý đánh số lại **v2** (Vỏ Portal 01 → Nhóm 1→5 liên tục 02–26) như §2 chưa? Hay muốn **giữ số v1** và để trống các mã đã gộp (v1-02, 03, 21, 27)?
-2. **Q8 — hiểu đúng chưa?** Tôi hiểu "MOD-21 (Điều hành & Workflow) + MOD-27 (Không gian làm việc)" là **hai mã v1**, gộp vào Dashboard cá nhân. Nếu anh đang dùng số khác, xin chỉnh.
-3. **Q5 — BI:** gộp cả "Phân tích dữ liệu (BI)" vào Dashboard cá nhân sẽ làm mất vai trò **công cụ phân tích toàn hệ** cho quản trị. Đồng ý gộp, hay tách BI thành màn hình riêng của quản trị?
-4. **Q6 — phân bổ chức năng 2 cổng Nhân sự:** đồng ý cách chia ở §2 (Phòng Nhân sự = nghiệp vụ; Tự phục vụ = nghỉ phép, phiếu lương, thông tin cá nhân…) chưa?
-5. **QT-32/QT-39:** có **dồn số** các QT còn lại không? (xem §4.3)
-6. **QT-54:** dời hẳn sang phạm vi HS-04 iPOS (khỏi bộ QT ERP), hay giữ tệp trong `Quy_trinh_nghiep_vu/` nhưng ghi rõ "thuộc iPOS"?
-7. **Thực thi:** xác nhận để tôi bắt đầu **đổi tên 26 tệp MOD + cập nhật mọi tham chiếu** và **lưu trữ QT-32/QT-39**.
+Chủ dự án đã trả lời cả 7 câu: **(1)** chọn đánh số **v2**; **(2)** xác nhận Q8 đúng (MOD-21 v1 + MOD-27 v1); **(3)** BI **chưa xây dựng trong giai đoạn này**; **(4)** đồng ý cách chia 2 cổng Nhân sự; **(5)** QT **dồn mã, đánh số lại**; **(6)** QT-54 **dời hẳn sang iPOS**; **(7)** **đồng ý thực thi**.
+
+Ghi chú lại các câu hỏi gốc:
+
+1. **Cách đánh số:** ✅ đánh số lại **v2** (Vỏ Portal 01 → Nhóm 1→5 liên tục 02–26).
+2. **Q8:** ✅ đúng — "MOD-21 (Điều hành & Workflow) + MOD-27 (Không gian làm việc)" là hai mã v1, gộp vào Dashboard cá nhân.
+3. **Q5 — BI:** ✅ gộp vào Dashboard nhưng **chưa xây dựng trong giai đoạn này** (MOD-01-F03).
+4. **Q6 — 2 cổng Nhân sự:** ✅ đồng ý cách chia (Phòng Nhân sự = nghiệp vụ; Tự phục vụ = nghỉ phép, phiếu lương, thông tin cá nhân…).
+5. **QT-32/QT-39:** ✅ **dồn số** các QT còn lại.
+6. **QT-54:** ✅ **dời hẳn sang iPOS**.
+7. **Thực thi:** ✅ đồng ý.
 
 ## 6. Chưa xác minh được
 
@@ -218,3 +222,14 @@
 - "Dashboard cho từng cá nhân" — chưa rõ có cần phân quyền theo vai trò/vị trí không, và BI toàn hệ có bị mất không (§5 câu 3).
 - Chưa đối chiếu từng màn hình mã nguồn để xác nhận `WorkflowHub.tsx` và `Workspace.tsx` đủ nội dung cho một Dashboard cá nhân.
 - Số phận 3 module tài liệu nói đã loại bỏ nhưng mã nguồn còn (`/live`, `/social`, `/sales`) vẫn chưa gỡ — nằm ngoài phạm vi tệp này (xem KH-03 §9, D6).
+
+## 7. Đã thực thi (2026-10-06)
+
+| Việc | Kết quả |
+|---|---|
+| Tạo 6 thư mục nhóm | `00_Vo_Portal`, `01_Ke_toan`, `02_Nhan_su`, `03_Kinh_doanh`, `04_Van_phong`, `05_Chia_se_Nen_tang` (bỏ 3 tên cũ `04_Van_phong_Dieu_hanh`, `05_Kinh_doanh`, `06_Chia_se_Nen_tang`) |
+| Đổi tên 26 tệp MOD | 23 tệp di chuyển + đổi mã/nhãn nhóm; 3 tệp mới: `MOD-01_Dashboard`, `MOD-03_Cong_Phong_Nhan_su`, `MOD-04_Cong_Tu_phuc_vu_Nhan_vien` |
+| Lưu trữ 6 tệp MOD gộp/tách | `_Tam_huy/` không mang tiền tố mã: `Trang_chu`, `Bang_dieu_khien`, `Phan_tich_du_lieu`, `Dieu_hanh_Workflow`, `Khong_gian_lam_viec`, `Quan_tri_Nhan_su_HRM` |
+| Dồn mã QT | Loại bỏ QT-32/QT-39 (→ `_Tam_huy/`); QT-54 → `Quy_trinh_nghiep_vu/iPOS/`; 27 QT còn lại đánh số QT-01, QT-24, QT-27…QT-51 |
+| Cập nhật tài liệu | `00_INDEX.md`, `00_KE_HOACH_TONG_THE.md`, `HS-01_VComm_ERP.md`, `Checklist_cong_viec.md`, `_Tam_huy/README.md`, `Quy_trinh_nghiep_vu/index.md`, và mọi dòng `Mô-đun hệ thống` trong 27 tệp QT |
+| **Chưa làm** | **Không sửa mã nguồn** — việc gỡ 42 mục menu về 26, tách `HR.tsx`, gộp Dashboard là đầu việc tách source S1–S7 |

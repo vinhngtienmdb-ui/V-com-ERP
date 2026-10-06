@@ -8,7 +8,7 @@
 - Ngày cập nhật: 2026-10-09
 - Nhóm nghiệp vụ: Thương mại và Vận hành
 - Nguồn nghiệp vụ: Bộ đề án `Mo ta nghiep vu/` (9 đề án) và mã nguồn `_recovery_V-com-ERP`
-- Mô-đun hệ thống: MOD-17 Mua chung (`/group-buy`)
+- Mô-đun hệ thống: MOD-11 Quản lý khuyến mại — **tính năng con Mua chung** (`/group-buy`)
 - Hiện trạng mã nguồn: Đã có — dịch vụ mua chung đầy đủ vòng đời, kiểu dữ liệu đúng mô hình 拼团; còn thiếu 免拼, bộ kích hoạt hết hạn và giới hạn mua mỗi người
 
 > Bản 1.0 của quy trình này mô tả "giá theo bậc số lượng" và trích hàm `resolveTierPrice`. **Mô hình đó không tồn tại trong mua chung.** Xem mục 12.

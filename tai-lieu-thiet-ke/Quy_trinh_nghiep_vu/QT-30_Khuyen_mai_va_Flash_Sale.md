@@ -8,7 +8,7 @@
 - Ngày cập nhật: 2026-10-09
 - Nhóm nghiệp vụ: Thương mại và Vận hành
 - Nguồn nghiệp vụ: Bộ đề án `Mo ta nghiep vu/` (9 đề án) và mã nguồn `_recovery_V-com-ERP`
-- Mô-đun hệ thống: MOD-15 Marketing và Social (`/marketing`) và MOD-16 Flash Sale và Mua chung (`/flash-sale`)
+- Mô-đun hệ thống: MOD-10 Social (`/social`, cũ `/marketing`) và MOD-11 Quản lý khuyến mại (`/flash-sale`)
 - Hiện trạng mã nguồn: Đã có — màn hình marketing và màn hình khuyến mãi với các mốc giảm giá nhiều bậc
 
 ## 1. Tác nhân và quyền

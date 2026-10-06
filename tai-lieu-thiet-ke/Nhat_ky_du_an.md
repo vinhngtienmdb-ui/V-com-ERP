@@ -825,3 +825,37 @@ Khi phát triển tính năng mới hoặc sửa lỗi trong bất kỳ phân h�
 
 **Ghi chú:**
 - Tách ERP thành các mini-app có cổng riêng là đầu việc kỹ thuật theo sau (S1–S7), nằm ngoài phạm vi tài liệu; cổng (3101–3402) giả định.
+
+
+### 2026-10-06 (tiếp 2) — Chốt cấu trúc đích v2 (26 app) và dồn mã QT (#182–#188)
+
+**Người thực hiện:** AI (Minh) theo 8 quyết định và 7 xác nhận của Eric
+
+**Nội dung:**
+
+- Eric chốt **8 quyết định** (Q1–Q8) và **7 xác nhận** cho KH-05. Cấu trúc đích **v2 = 26 app**: Vỏ Portal `MOD-01 Dashboard` + Nhóm 1 Kế toán `MOD-02` + Nhóm 2 Nhân sự `MOD-03`/`MOD-04` + Nhóm 3 Kinh doanh `MOD-05…MOD-19` + Nhóm 4 Văn phòng `MOD-20…MOD-24` + Nhóm 5 Nền tảng `MOD-25`/`MOD-26`.
+- **Gộp:** MOD-01 (Home) + MOD-02 (Dashboard) + MOD-03 (Analytics/BI) + MOD-43 (WorkflowHub) + MOD-44 (Workspace) → `MOD-01 Dashboard` (Dashboard cá nhân; tính năng Phân tích dữ liệu & BI ghi "Chưa xây dựng trong giai đoạn này"). Tổng mã nguồn gộp: Home.tsx 857 + Dashboard.tsx 978 + AnalyticsBI.tsx 1031 + WorkflowHub.tsx 743 + Workspace.tsx 493 = 4.102 dòng.
+- **Tách:** Nhóm Nhân sự tách thành hai cổng — `MOD-03 Cổng Phòng Nhân sự` (`/hr`, cổng 3102) nghiệp vụ; `MOD-04 Cổng Tự phục vụ Nhân viên` (`/ess`, cổng 3103) nghỉ phép, phiếu lương, thông tin cá nhân.
+- **Đổi tên:** `MOD-24 Quản lý chữ ký số` (trước là "Ký số").
+- **Cổng thật (D2):** shell 3000 · Nhóm 1 = 3101 · Nhóm 2 = 3102–3103 · Nhóm 3 = 3201–3215 · Nhóm 4 = 3301–3305 · Nhóm 5 = 3401–3402.
+- **Lưu trữ không mã:** 6 tệp MOD bị gộp/tách đưa vào `_Tam_huy/` **bỏ tiền tố mã** (vì mã v0 đã cấp lại).
+- **QT:** loại bỏ QT-32 (Gom đơn B2B/F2B2B) và QT-39 (Livestream bán hàng) → `_Tam_huy/` không mã; dời QT-54 (E-Menu & Đặt món tại bàn) sang `Quy_trinh_nghiep_vu/iPOS/`; **dồn mã** 27 QT còn lại (QT-01..QT-51), số tiếp theo **QT-52**.
+
+**Tệp bị ảnh hưởng:**
+
+- 26 tệp MOD (23 đổi tên/di chuyển + 3 tệp mới: `MOD-01_Dashboard.md`, `MOD-03_Cong_Phong_Nhan_su.md`, `MOD-04_Cong_Tu_phuc_vu_Nhan_vien.md`)
+- Thư mục nhóm mới: `00_Vo_Portal`, `01_Ke_toan`, `02_Nhan_su`, `03_Kinh_doanh`, `04_Van_phong`, `05_Chia_se_Nen_tang` (gỡ `04_Van_phong_Dieu_hanh`, `05_Kinh_doanh` cũ, `06_Chia_se_Nen_tang` cũ)
+- 6 tệp MOD lưu trữ không mã trong `_Tam_huy/`
+- 27 tệp QT viết lại mã; 2 QT lưu trữ; 1 QT chuyển sang `iPOS/`
+- `Ke_hoach/00_INDEX.md`, `Ke_hoach/00_KE_HOACH_TONG_THE.md`, `Ke_hoach/01_He_thong/HS-01_VComm_ERP.md`, `Ke_hoach/03_Ke_hoach_Tach_Source_Portal_MiniApp.md`, `Checklist_cong_viec.md`, `_Tam_huy/README.md`, `Quy_trinh_nghiep_vu/index.md`, `index.md`
+
+**Kiểm chứng:**
+
+- Đếm MOD: Vỏ Portal(1) + Kế toán(1) + Nhân sự(2) + Kinh doanh(15) + Văn phòng(5) + Nền tảng(2) = **26**.
+- Đếm QT hoạt động: **27** tệp `QT-nn_*.md`; không còn tệp `__tmp__`.
+- Mọi tham chiếu `QT-nn` và `MOD-nn` được viết lại qua bảng ánh xạ một lượt; kiểm tra chéo không có va chạm mã.
+
+**Ghi chú:**
+
+- Cấu trúc v2 **thay thế** đề xuất v1 (29 app) tại KH-04 §1 — đã ghi chú "ĐÃ THAY THẾ" trỏ sang KH-05.
+- Vỏ Portal là **1 app** duy nhất (Dashboard), không còn 3 module shell như bản 29.

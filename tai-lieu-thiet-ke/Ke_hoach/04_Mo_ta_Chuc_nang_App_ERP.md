@@ -1,12 +1,14 @@
-# 04 — Mô tả chức năng các app ERP (Cổng Portal + 29 mini-app)
+# 04 — Mô tả chức năng các app ERP (bản đề xuất v1 — ĐÃ THAY THẾ)
 
 - **Mã**: KH-04 (mô tả chức năng — để chủ dự án kiểm tra mức độ hiểu đúng)
-- **Trạng thái**: 🟡 Chờ chủ dự án xác nhận
+- **Trạng thái**: 🔵 Đã thay thế bởi KH-05 (giữ để truy vết)
 - **Ngày soạn**: 2026-10-06
 - **Nguồn**: `02_ERP_Module/*` (§1 Mục tiêu, §3 Khối giao diện ghi nhận từ mã nguồn), `00_INDEX.md`, `00_KE_HOACH_TONG_THE.md`, `Quy_trinh_nghiep_vu/index.md`
 - **Phạm vi**: mô tả chức năng + đề xuất đánh số lại MOD. Chưa đổi tên tệp.
 
 > Mục đích: để chủ dự án đọc và xác nhận "Minh có hiểu đúng từng app không" **trước khi** thực hiện đánh số lại và xây lại quy trình.
+
+> ⚠️ **TOÀN BỘ TÀI LIỆU NÀY DÙNG ĐÁNH SỐ v1 (29 app) — ĐÃ THAY THẾ.** Chủ dự án đã chốt cấu trúc đích **v2 = 26 app** tại **`05_Cau_truc_dich_ERP.md`**. Mọi mã `MOD-nn` trong tài liệu này là mã **v1** và **KHÔNG** dùng để tra cứu hiện hành: mã v1 đã được cấp lại cho module khác ở v2 (ví dụ v1 `MOD-05` = Nhân sự, nhưng v2 `MOD-05` = Khách hàng CRM). Bảng đối chiếu v0 → v1 → v2 xem KH-05 §3.
 
 ---
 

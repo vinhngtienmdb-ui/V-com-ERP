@@ -9,7 +9,7 @@
 
 ## 1. Vai trò trong hệ sinh thái
 
-Cổng Portal điều hành doanh nghiệp. Theo yêu cầu chủ dự án ngày 2026-10-06, VComm ERP không còn là một ứng dụng đơn mà chuyển thành **cổng Portal**: toàn bộ chức năng được chia nhỏ thành **29 module (mini-app) đang hoạt động**, phân theo **6 nhóm**. Mỗi mini-app có giao diện và cổng riêng, kết nối dữ liệu với nhau qua API server trung tâm (HS-02 VComm Core Backend, cổng 5000).
+Cổng Portal điều hành doanh nghiệp. Theo yêu cầu chủ dự án ngày 2026-10-06, VComm ERP không còn là một ứng dụng đơn mà chuyển thành **cổng Portal**: toàn bộ chức năng được chia nhỏ thành **26 module (mini-app) đang hoạt động**, phân theo **Vỏ Portal + 5 nhóm**. Mỗi mini-app có giao diện và cổng riêng, kết nối dữ liệu với nhau qua API server trung tâm (HS-02 VComm Core Backend, cổng 5000).
 
 Vỏ Portal (HS-01, cổng 3000) chỉ giữ vai trò trung chuyển: Trang chủ, Bảng điều khiển, Phân tích dữ liệu. Các mini-app còn lại chạy ở các cổng riêng (dải giả định 3101–3402) và gọi chung HS-02 để chia sẻ dữ liệu.
 
@@ -24,9 +24,9 @@ Mô hình này khớp với các hệ thống con đã có cổng riêng: HS-03 
 | Cổng vỏ Portal | 3000 |
 | Cổng mini-app | 3101–3402 (giả định, xem §8) |
 | Bằng chứng cấu trúc hiện tại | `src/constants.ts` (navGroups), `src/App.tsx` (51 tuyến đường), `src/components` (78 tệp) — cấu trúc đơn ứng dụng trước tái cấu trúc. |
-| Bằng chứng tái cấu trúc | `Ke_hoach/00_INDEX.md` (mục "Cấu trúc Portal VComm và 6 nhóm mini-app"), `Ke_hoach/00_KE_HOACH_TONG_THE.md` (mục 2, 3, 5.1). |
-| Thư mục kế hoạch module | `Ke_hoach/02_ERP_Module/` — 29 tệp trong 5 thư mục nhóm. |
-| Đối tượng phục vụ chính | 29 mini-app — xem `Ke_hoach/02_ERP_Module/` và `Ke_hoach/00_INDEX.md` mục 3. |
+| Bằng chứng tái cấu trúc | `Ke_hoach/00_INDEX.md` (mục "Cấu trúc Vỏ Portal + 5 nhóm mini-app — 26 module"), `Ke_hoach/00_KE_HOACH_TONG_THE.md` (mục 2, 3, 5.1), `Ke_hoach/05_Cau_truc_dich_ERP.md`. |
+| Thư mục kế hoạch module | `Ke_hoach/02_ERP_Module/` — 26 tệp trong 6 thư mục nhóm. |
+| Đối tượng phục vụ chính | 26 mini-app — xem `Ke_hoach/02_ERP_Module/` và `Ke_hoach/00_INDEX.md` mục 3. |
 
 ## 3. Bản đồ chức năng
 
@@ -44,17 +44,17 @@ Kiến trúc mục tiêu (tài liệu, chưa tách source):
                 [ HS-02 VComm Core Backend — cổng 5000 ]  (API server chung, chia sẻ dữ liệu)
 ```
 
-Bản đồ chi tiết 29 mini-app theo 6 nhóm được liệt kê ở `Ke_hoach/00_INDEX.md` mục 3 (Vỏ Portal / Nhóm 1 Kế toán / Nhóm 2 Nhân sự / Nhóm 3 Kinh doanh / Nhóm 4 Văn phòng / Nhóm 5 Chia sẻ & Nền tảng), mỗi module có một tệp riêng trong `Ke_hoach/02_ERP_Module/`.
+Bản đồ chi tiết 26 mini-app theo Vỏ Portal + 5 nhóm được liệt kê ở `Ke_hoach/00_INDEX.md` mục 3 (Vỏ Portal / Nhóm 1 Kế toán / Nhóm 2 Nhân sự / Nhóm 3 Kinh doanh / Nhóm 4 Văn phòng / Nhóm 5 Chia sẻ & Nền tảng), mỗi module có một tệp riêng trong `Ke_hoach/02_ERP_Module/`.
 
 ## 4. Danh sách tính năng
 
 | Mã | Tính năng | Trạng thái | Ghi chú |
 |---|---|---|---|
 | HS-01-F01 | Vỏ Portal điều hành: Trang chủ, Bảng điều khiển, Phân tích dữ liệu (cổng 3000). | Chưa bắt đầu | Vai trò cổng trung chuyển |
-| HS-01-F02 | 29 mini-app theo 6 nhóm, mỗi app giao diện và cổng riêng. | Chưa bắt đầu | Chi tiết tại `00_INDEX.md` mục 3 |
+| HS-01-F02 | 26 mini-app theo Vỏ Portal + 5 nhóm, mỗi app giao diện và cổng riêng. | Chưa bắt đầu | Chi tiết tại `00_INDEX.md` mục 3 |
 | HS-01-F03 | Kết nối dữ liệu liên mini-app qua API server HS-02 (5000). | Chưa bắt đầu | Đầu việc tách source — xem §8 |
 
-> Phân nhóm hiện tại (số module hoạt động): Vỏ Portal (3) · Kế toán (1) · Nhân sự (1) · Kinh doanh (15) · Văn phòng (7) · Chia sẻ & Nền tảng (2). Tổng 29. 15 module khác đã gộp hoặc loại bỏ ngày 2026-10-06, xem `00_INDEX.md` mục 3.1.
+> Phân nhóm hiện tại (số module hoạt động): Vỏ Portal (1) · Kế toán (1) · Nhân sự (2) · Kinh doanh (15) · Văn phòng (5) · Chia sẻ & Nền tảng (2). Tổng 26. 15 module khác đã gộp/loại bỏ/tạm hủy, xem `00_INDEX.md` mục 3.1.
 
 ## 5. Phụ thuộc
 
@@ -66,7 +66,7 @@ Bản đồ chi tiết 29 mini-app theo 6 nhóm được liệt kê ở `Ke_hoac
 
 - [ ] Vỏ Portal khởi động được ở cổng 3000.
 - [ ] Kết nối được cổng API trung tâm HS-02 (5000).
-- [ ] 29 mini-app được phân nhóm đúng theo `00_INDEX.md` mục 3.
+- [ ] 26 mini-app được phân nhóm đúng theo `00_INDEX.md` mục 3.
 - [ ] Mỗi mini-app có tệp kế hoạch riêng trong `02_ERP_Module/`.
 - [ ] Danh mục tính năng ở mục 4 đã được duyệt.
 

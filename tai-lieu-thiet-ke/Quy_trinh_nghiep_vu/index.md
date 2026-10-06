@@ -1,11 +1,11 @@
 # Mục lục quy trình nghiệp vụ
 
 - Dự án: VComm
-- Ngày cập nhật gần nhất: 2026-10-09
-- Số quy trình đang hoạt động: 30 (xem Nhóm 5)
+- Ngày cập nhật gần nhất: 2026-10-06
+- Số quy trình đang hoạt động: 27 (xem Nhóm 5)
 - Số quy trình đã hợp nhất vào MD_ERP (nguồn gốc): 24
-- Số quy trình tạm hủy (không mang mã): 6
-- Số tiếp theo: QT-55
+- Số quy trình lưu trữ / chuyển phạm vi (không mang mã): 9
+- Số tiếp theo: QT-52
 
 ## Nguyên tắc phân nhóm (chuẩn hóa 2026-10-09)
 
@@ -84,9 +84,11 @@ Bốn nhóm này **không có quy trình QT riêng** — nội dung đầy đủ
 
 ---
 
-## Nhóm 5 — Thương mại & Nền tảng mở rộng (30 quy trình, không có trong MD_ERP)
+## Nhóm 5 — Thương mại & Nền tảng mở rộng (27 quy trình, không có trong MD_ERP)
 
-> Bảy quy trình QT-31, QT-35, QT-37, QT-34, QT-36, QT-53, QT-54 đã được viết lại theo **bốn quyết định chốt ngày 2026-10-09** về mô hình Pinduoduo (xem `Phan_tich_chong_cheo_iPOS_Hub_MuaChung_VXu.md`, mục 6.1): (1) **V-Xu là động cơ điểm duy nhất**, Loyalty thành tầng giao diện/giữ chân (QT-35, QT-37); (2) **Hub bán tại quầy phân theo loại trạm** — `standard`/`freeze` bán được, `locker` chỉ nhận hàng (QT-34); (3) **Siêu thị và E-Menu là POS nội bộ do VComm vận hành**, khác iPOS đối tác (QT-53, QT-54); (4) **Mạng Affiliate/KOL gánh vai trò gom nhu cầu** (团长), không xây vai trò mới (QT-36).
+> ⚠️ **Dồn mã 2026-10-06:** loại bỏ **QT-32** (F2B2B) và **QT-39** (Livestream) — dời `_Tam_huy/`, bỏ tiền tố mã; **QT-54** (E-Menu) dời hẳn sang iPOS (HS-04). 27 quy trình còn lại **được dồn số liên tục**: QT-33…QT-38 → QT-32…QT-37; QT-40…QT-53 → QT-38…QT-51. Bảng dưới đây là mã **sau dồn**.
+
+> Bảy quy trình QT-31, QT-34, QT-36, QT-33, QT-35, QT-51 (và QT-54 cũ, nay thuộc iPOS) đã được viết lại theo **bốn quyết định chốt ngày 2026-10-09** về mô hình Pinduoduo (xem `Phan_tich_chong_cheo_iPOS_Hub_MuaChung_VXu.md`, mục 6.1): (1) **V-Xu là động cơ điểm duy nhất**, Loyalty thành tầng giao diện/giữ chân (QT-34, QT-36); (2) **Hub bán tại quầy phân theo loại trạm** — `standard`/`freeze` bán được, `locker` chỉ nhận hàng (QT-33); (3) **Siêu thị và E-Menu là POS nội bộ do VComm vận hành**, khác iPOS đối tác (QT-51, QT-54 cũ); (4) **Mạng Affiliate/KOL gánh vai trò gom nhu cầu** (团长), không xây vai trò mới (QT-35).
 
 ### 5A — Xác thực & Khách hàng
 
@@ -102,51 +104,54 @@ Bốn nhóm này **không có quy trình QT riêng** — nội dung đầy đủ
 | QT-27 | `QT-27_Vong_doi_Don_hang_va_Phe_duyet_Doi_tra.md` | Vòng đời Đơn hàng & Đổi trả | Chờ duyệt |
 | QT-28 | `QT-28_Quan_ly_Thong_tin_San_pham_PIM.md` | Quản lý Thông tin Sản phẩm (PIM) | Chờ duyệt |
 | QT-29 | `QT-29_Quan_ly_Nha_ban_hang.md` | Quản lý Nhà bán hàng | Chờ duyệt |
-| QT-53 | `QT-53_Sieu_thi_Offline_va_Ban_le_tai_quay.md` | Siêu thị Offline & Bán lẻ tại quầy | Chờ duyệt |
-| QT-54 | `QT-54_E_Menu_va_Dat_mon_tai_ban.md` | E-Menu & Đặt món tại bàn | Chờ duyệt |
+| QT-51 | `QT-51_Sieu_thi_Offline_va_Ban_le_tai_quay.md` | Siêu thị Offline & Bán lẻ tại quầy | Chờ duyệt |
+
+> E-Menu & Đặt món tại bàn (**QT-54 cũ**) đã **chuyển sang iPOS (HS-04)** — xem `iPOS/E_Menu_va_Dat_mon_tai_ban.md`.
 
 ### 5C — Xúc tiến & Marketing
 
 | Mã | Tệp | Tên quy trình | Trạng thái |
 |---|---|---|---|
 | QT-30 | `QT-30_Khuyen_mai_va_Flash_Sale.md` | Khuyến mãi & Flash Sale | Chờ duyệt |
-| QT-31 | `QT-31_Mua_chung_Group_Buy.md` | Mua chung (Pinduoduo 拼团) | Chờ duyệt |
-| QT-36 | `QT-36_KOL_KOC_va_Tiep_thi_lien_ket.md` | KOL, KOC & Tiếp thị liên kết | Chờ duyệt |
-| QT-38 | `QT-38_Quan_ly_Quang_cao_Ads.md` | Quản lý Quảng cáo | Chờ duyệt |
-| QT-39 | `QT-39_Livestream_ban_hang.md` | Livestream bán hàng | Chờ duyệt |
+| QT-31 | `QT-31_Mua_chung_Group_Buy.md` | Mua chung (Pinduoduo 拼团) — tính năng con của MOD-11 | Chờ duyệt |
+| QT-35 | `QT-35_KOL_KOC_va_Tiep_thi_lien_ket.md` | KOL, KOC & Tiếp thị liên kết | Chờ duyệt |
+| QT-37 | `QT-37_Quan_ly_Quang_cao_Ads.md` | Quản lý Quảng cáo | Chờ duyệt |
+
+> Livestream bán hàng (**QT-39 cũ**) đã **loại bỏ** — lưu tại `_Tam_huy/Livestream_ban_hang.md`.
 
 ### 5D — Mô hình hợp tác & Hậu cần
 
 | Mã | Tệp | Tên quy trình | Trạng thái |
 |---|---|---|---|
-| QT-32 | `QT-32_Gom_don_B2B_F2B2B.md` | Gom đơn B2B (F2B2B) | Chờ duyệt |
-| QT-33 | `QT-33_Ban_hang_Dropship.md` | Bán hàng Dropship | Chờ duyệt |
-| QT-34 | `QT-34_Van_hanh_VComm_Hub_O2O.md` | Vận hành VComm Hub (O2O) | Chờ duyệt |
-| QT-40 | `QT-40_Quan_tri_Kho_van.md` | Quản trị Kho vận | Chờ duyệt |
-| QT-41 | `QT-41_Van_chuyen_va_Logistics.md` | Vận chuyển & Logistics | Chờ duyệt |
-| QT-42 | `QT-42_Mua_hang_va_Nha_cung_cap_SCM.md` | Mua hàng & Nhà cung cấp (SCM) | Chờ duyệt |
+| QT-32 | `QT-32_Ban_hang_Dropship.md` | Bán hàng Dropship — tính năng con của MOD-07 | Chờ duyệt |
+| QT-33 | `QT-33_Van_hanh_VComm_Hub_O2O.md` | Vận hành VComm Hub (O2O) | Chờ duyệt |
+| QT-38 | `QT-38_Quan_tri_Kho_van.md` | Quản trị Kho vận | Chờ duyệt |
+| QT-39 | `QT-39_Van_chuyen_va_Logistics.md` | Vận chuyển & Logistics — tính năng con của MOD-18 | Chờ duyệt |
+| QT-40 | `QT-40_Mua_hang_va_Nha_cung_cap_SCM.md` | Mua hàng & Nhà cung cấp (SCM) | Chờ duyệt |
+
+> Gom đơn B2B F2B2B (**QT-32 cũ**) đã **loại bỏ** — lưu tại `_Tam_huy/Gom_don_B2B_F2B2B.md`.
 
 ### 5E — Tài chính mở rộng & Đối soát
 
 | Mã | Tệp | Tên quy trình | Trạng thái |
 |---|---|---|---|
-| QT-35 | `QT-35_VXu_Diem_thuong_va_Hoan_tien.md` | V-Xu — Điểm thưởng & Hoàn tiền (động cơ điểm duy nhất) | Chờ duyệt |
-| QT-37 | `QT-37_Khach_hang_than_thiet_Loyalty.md` | Khách hàng thân thiết (lớp UI trên V-Xu) | Chờ duyệt |
-| QT-43 | `QT-43_Doi_soat_va_Cong_no_doi_tac.md` | Đối soát & Công nợ đối tác | Chờ duyệt |
-| QT-44 | `QT-44_Vi_Ky_quy_va_Thanh_toan.md` | Ví, Ký quỹ & Thanh toán | Chờ duyệt |
+| QT-34 | `QT-34_VXu_Diem_thuong_va_Hoan_tien.md` | V-Xu — Điểm thưởng & Hoàn tiền (động cơ điểm duy nhất) | Chờ duyệt |
+| QT-36 | `QT-36_Khach_hang_than_thiet_Loyalty.md` | Khách hàng thân thiết (lớp UI trên V-Xu) | Chờ duyệt |
+| QT-41 | `QT-41_Doi_soat_va_Cong_no_doi_tac.md` | Đối soát & Công nợ đối tác — tính năng con của MOD-19 | Chờ duyệt |
+| QT-42 | `QT-42_Vi_Ky_quy_va_Thanh_toan.md` | Ví, Ký quỹ & Thanh toán | Chờ duyệt |
 
 ### 5F — Nền tảng, Tuân thủ & Cấu hình
 
 | Mã | Tệp | Tên quy trình | Trạng thái |
 |---|---|---|---|
-| QT-45 | `QT-45_Cham_soc_Khach_hang_va_Tong_dai.md` | Chăm sóc Khách hàng & Tổng đài | Chờ duyệt |
-| QT-46 | `QT-46_Hop_dong_va_Phap_che.md` | Hợp đồng & Pháp chế | Chờ duyệt |
-| QT-47 | `QT-47_Quan_ly_Cong_van.md` | Quản lý Công văn | Chờ duyệt |
-| QT-48 | `QT-48_Ky_so.md` | Ký số | Chờ duyệt |
-| QT-49 | `QT-49_Tuan_thu_va_Bao_ve_Thuong_hieu.md` | Tuân thủ & Bảo vệ Thương hiệu | Chờ duyệt |
-| QT-50 | `QT-50_De_xuat_va_Trinh_ky.md` | Đề xuất & Trình ký | Chờ duyệt |
-| QT-51 | `QT-51_Phan_tich_Du_lieu_va_BI.md` | Phân tích Dữ liệu & BI | Chờ duyệt |
-| QT-52 | `QT-52_Cau_hinh_He_thong_va_Tich_hop.md` | Cấu hình Hệ thống & Tích hợp | Chờ duyệt |
+| QT-43 | `QT-43_Cham_soc_Khach_hang_va_Tong_dai.md` | Chăm sóc Khách hàng & Tổng đài | Chờ duyệt |
+| QT-44 | `QT-44_Hop_dong_va_Phap_che.md` | Hợp đồng & Pháp chế | Chờ duyệt |
+| QT-45 | `QT-45_Quan_ly_Cong_van.md` | Quản lý Công văn | Chờ duyệt |
+| QT-46 | `QT-46_Ky_so.md` | Ký số | Chờ duyệt |
+| QT-47 | `QT-47_Tuan_thu_va_Bao_ve_Thuong_hieu.md` | Tuân thủ & Bảo vệ Thương hiệu | Chờ duyệt |
+| QT-48 | `QT-48_De_xuat_va_Trinh_ky.md` | Đề xuất & Trình ký | Chờ duyệt |
+| QT-49 | `QT-49_Phan_tich_Du_lieu_va_BI.md` | Phân tích Dữ liệu & BI | Chờ duyệt |
+| QT-50 | `QT-50_Cau_hinh_He_thong_va_Tich_hop.md` | Cấu hình Hệ thống & Tích hợp | Chờ duyệt |
 
 ---
 
@@ -201,7 +206,7 @@ Chỉ dùng các giá trị: Chưa bắt đầu, Đang soạn, Chờ duyệt, Đ
 - QT-01: mã nguồn `server.ts` (luồng xác thực) và `src/lib/sellerAuth.ts`.
 - Nhóm 1–4: đặc tả `Mo ta nghiep vu/MD_ERP/` (Kế toán 01–11, Nhân sự 12–22, CRM 23–27, Văn phòng 28–29) — **nguồn gốc duy nhất**.
 - QT-24: mã nguồn `_recovery_V-com-ERP` (mô hình thương mại điện tử); đặc tả `3_crm/24_accounts.md` không còn áp dụng.
-- QT-27 … QT-54: bộ đề án nghiệp vụ và mã nguồn hiện có trong `_recovery_V-com-ERP`.
+- QT-27 … QT-51: bộ đề án nghiệp vụ và mã nguồn hiện có trong `_recovery_V-com-ERP`.
 
 ## Lịch sử đánh số
 
@@ -209,9 +214,10 @@ Chỉ dùng các giá trị: Chưa bắt đầu, Đang soạn, Chờ duyệt, Đ
 - 2026-10-05 — Tạm hủy QT-49, QT-50 (giữ nguyên mã).
 - 2026-10-09 — Tạm hủy bốn quy trình CRM cũ (tiềm năng, liên hệ, cơ hội, báo giá); dồn số: QT-25→QT-24, QT-29…QT-48→QT-25…QT-44, QT-51…QT-60→QT-45…QT-54.
 - 2026-10-09 — Hợp nhất 24 quy trình cốt lõi (QT-02…QT-23, QT-25, QT-26) vào MD_ERP: đưa vào `_Tam_huy/`, bỏ tiền tố mã. **Các mã này nghỉ hưu, không dồn số, không tái sử dụng** để bảo toàn truy vết ngược về đặc tả nguồn. Quy trình đang hoạt động còn 30 (QT-01, QT-24, QT-27…QT-54); số tiếp theo QT-55.
+- **2026-10-06 — Dồn mã theo chốt cấu trúc v2 (KH-05):** loại bỏ **QT-32** (Gom đơn B2B F2B2B) và **QT-39** (Livestream bán hàng) → dời `_Tam_huy/`, bỏ tiền tố mã; **QT-54** (E-Menu & Đặt món tại bàn) **chuyển sang iPOS (HS-04)**. Dồn số liên tục: QT-33→QT-32, QT-34→QT-33, QT-35→QT-34, QT-36→QT-35, QT-37→QT-36, QT-38→QT-37, QT-40→QT-38, QT-41→QT-39, QT-42→QT-40, QT-43→QT-41, QT-44→QT-42, QT-45→QT-43, QT-46→QT-44, QT-47→QT-45, QT-48→QT-46, QT-49→QT-47, QT-50→QT-48, QT-51→QT-49, QT-52→QT-50, QT-53→QT-51. Còn **27 quy trình** hoạt động (QT-01, QT-24, QT-27…QT-51); số tiếp theo **QT-52**.
 
 ## Việc còn lại
 
-- Toàn bộ 30 quy trình Nhóm 5 đang ở trạng thái "Chờ duyệt".
+- Toàn bộ 27 quy trình Nhóm 5 đang ở trạng thái "Chờ duyệt".
 - Bốn nhóm cốt lõi (1–4) chưa có quy trình QT riêng — nội dung nằm ở MD_ERP; cần chủ dự án xác nhận có viết lại thành QT theo mô hình VComm hay giữ nguyên MD_ERP.
 - Các mục "Chưa xác minh được" trong từng tệp là câu hỏi mở cần người dùng trả lời trước khi chuyển sang "Đã duyệt".

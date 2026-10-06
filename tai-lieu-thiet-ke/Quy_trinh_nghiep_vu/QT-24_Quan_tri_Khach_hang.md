@@ -8,7 +8,7 @@
 - Ngày cập nhật: 2026-10-09
 - Nhóm nghiệp vụ: CRM
 - Nguồn nghiệp vụ: mã nguồn `_recovery_V-com-ERP` và quyết định của chủ dự án ngày 2026-10-09 (mô hình thương mại điện tử). Đặc tả `Mo ta nghiep vu/MD_ERP/3_crm/24_accounts.md` mô tả mô hình CRM doanh nghiệp cũ, không còn áp dụng.
-- Mô-đun hệ thống: MOD-36 Khách hàng (CRM) (`/customers`)
+- Mô-đun hệ thống: MOD-05 Khách hàng (CRM) (`/customers`)
 - Hiện trạng mã nguồn: Đã có một phần — có màn hình hồ sơ khách hàng 360 độ, hạng thành viên và cấu hình tích điểm; cổng đăng ký eCommerce không nằm trong kho mã này
 
 ## 1. Tác nhân và quyền
@@ -122,7 +122,7 @@ Hạng thành viên: Mới --> Bạc --> Vàng --> Kim cương
 - **GD-01.** Cổng đăng ký eCommerce ghi vào cùng bảng tài khoản mà ERP đọc.
 - **Q-01.** Điều kiện lên hạng và quyền lợi theo hạng như thế nào?
 - **Q-02.** Khách vãng lai mua không đăng ký có được tạo hồ sơ không?
-- **Q-03 (ĐÃ CHỐT 2026-10-09).** Mô-đun "Đội ngũ Kinh doanh" (`/sales`, MOD-38) còn phần quản lý tiềm năng trong mã nguồn — **chủ dự án quyết định: không còn bất kỳ quản lý khách hàng tiềm năng nào**, mô-đun này bị hủy theo mô hình thương mại điện tử. Vị trí cần xóa trong `src/components/Sales.tsx`: dòng 87 ("Tạo Lead mới"), 113 ("45 Leads"), 181 ("Lead mới từ Facebook: VNPT Corp"), 341 ("Phân bổ Leads"). Việc xóa mã nguồn là nhiệm vụ kỹ thuật theo sau, nằm ngoài phạm vi chiến dịch tài liệu này.
+- **Q-03 (ĐÃ CHỐT 2026-10-09).** Mô-đun "Đội ngũ Kinh doanh" (`/sales`, mã v0 `MOD-38` — nay đã hủy) còn phần quản lý tiềm năng trong mã nguồn — **chủ dự án quyết định: không còn bất kỳ quản lý khách hàng tiềm năng nào**, mô-đun này bị hủy theo mô hình thương mại điện tử. Vị trí cần xóa trong `src/components/Sales.tsx`: dòng 87 ("Tạo Lead mới"), 113 ("45 Leads"), 181 ("Lead mới từ Facebook: VNPT Corp"), 341 ("Phân bổ Leads"). Việc xóa mã nguồn là nhiệm vụ kỹ thuật theo sau, nằm ngoài phạm vi chiến dịch tài liệu này.
 
 ## 14. Ghi chú kỹ thuật
 

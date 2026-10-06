@@ -7,22 +7,22 @@
 - Ngày tạo: 2026-10-05
 - Ngày cập nhật: 2026-10-06
 
-## Cấu trúc Portal VComm và 6 nhóm mini-app — 2026-10-06
+## Cấu trúc Vỏ Portal + 5 nhóm mini-app — 26 module (chốt 2026-10-06)
 
-Theo yêu cầu chủ dự án ngày 2026-10-06, ERP được chuyển thành **cổng Portal**: các chức năng trở thành **mini-app**, mỗi mini-app có giao diện và cổng riêng, kết nối dữ liệu với nhau qua API server (HS-02 VComm Core Backend, cổng 5000). Bộ module được tái cấu trúc từ 5 nhóm chức năng thành **Portal + 6 nhóm mini-app**:
+Theo yêu cầu chủ dự án, ERP được chuyển thành **cổng Portal**: các chức năng trở thành **mini-app**, mỗi mini-app có giao diện và cổng riêng, kết nối dữ liệu với nhau qua API server (HS-02 VComm Core Backend, cổng 5000). Bộ module đánh số lại (bản **v2**) theo nhóm phân hệ:
 
-| Nhóm | Tên | Module tiêu biểu |
-|---|---|---|
-| Vỏ Portal (shell) | Trang chủ, Bảng điều khiển, Phân tích dữ liệu | MOD-01, MOD-02, MOD-03 |
-| 1 | Kế toán | MOD-30 |
-| 2 | Nhân sự (HRM) | MOD-39 |
-| 3 | Kinh doanh | MOD-36, MOD-37, MOD-35, MOD-11, MOD-14, MOD-15, MOD-16, MOD-20, MOD-21, MOD-22, MOD-24, MOD-10, MOD-32, MOD-25, MOD-27 |
-| 4 | Văn phòng | MOD-04, MOD-05, MOD-06, MOD-07, MOD-08, MOD-09, MOD-43 |
-| 5 | Chia sẻ & Nền tảng | MOD-28, MOD-44 |
+| Nhóm | Tên | Module | Cổng |
+|---|---|---|---|
+| Vỏ Portal (shell) | Dashboard cá nhân | MOD-01 | 3000 |
+| 1 | Kế toán | MOD-02 | 3101 |
+| 2 | Nhân sự (HRM) | MOD-03, MOD-04 | 3102–3103 |
+| 3 | Kinh doanh | MOD-05 … MOD-19 (15) | 3201–3215 |
+| 4 | Văn phòng | MOD-20 … MOD-24 (5) | 3301–3305 |
+| 5 | Chia sẻ & Nền tảng | MOD-25, MOD-26 | 3401–3402 |
 
-Mô hình này khớp với các hệ thống con đã có cổng riêng: HS-03 eCommerce :5173, HS-04 iPOS :3002, HS-05 Seller :3004, HS-06 Store Retail :3003, HS-07 Nexthub :3005 (xem `01_He_thong/`). Mini-app ERP được gán **cổng giả định** (dải 3101–3402) — cổng thật sẽ được cố định khi tách source (xem mục "Chưa xác minh được").
+**Tổng: 26 module.** Mô hình này khớp với các hệ thống con đã có cổng riêng: HS-03 eCommerce :5173, HS-04 iPOS :3002, HS-05 Seller :3004, HS-06 Store Retail :3003, HS-07 Nexthub :3005 (xem `01_He_thong/`). Mini-app ERP được gán **cổng giả định** (dải 3101–3402) — cổng thật sẽ được cố định khi tách source (xem mục "Chưa xác minh được").
 
-> Ghi chú: ngày 2026-10-06, 13 module bị gộp (MOD-29, 40, 41, 42, 17, 23, 26, 31, 19) hoặc loại bỏ (MOD-12, 13, 18, 38) theo tái cấu trúc này; số module hoạt động giảm từ 42 xuống 29. Xem mục 3.1.
+> Ghi chú: số module hoạt động giảm 42 → 29 (2026-10-06, tái cấu trúc Portal) rồi 29 → **26** (chốt 2026-10-06: gộp Dashboard, tách Nhóm 2 Nhân sự, nhập Workflow/Workspace vào Portal). Chi tiết xem mục 3.1 và `Ke_hoach/05_Cau_truc_dich_ERP.md`.
 
 ## 1. Cấu trúc bộ kế hoạch
 
@@ -30,10 +30,10 @@ Mô hình này khớp với các hệ thống con đã có cổng riêng: HS-03 
 |---|---|---|---|
 | 0 | `00_KE_HOACH_TONG_THE.md` | 1 | Kế hoạch tổng thể toàn dự án |
 | 1 | `01_He_thong/` | 8 | Kế hoạch từng hệ thống con |
-| 2 | `02_ERP_Module/` | 29 | Kế hoạch từng module chức năng của ERP đang hoạt động (15 mô-đun tạm hủy/đã gộp, xem mục 3.1) |
-| 3 | `03_Ke_hoach_Tach_Source_Portal_MiniApp.md` | 1 | Kế hoạch kỹ thuật tách source: vỏ Portal + 29 mini-app (S1–S7) — 🟡 chờ duyệt |
-| 4 | `04_Mo_ta_Chuc_nang_App_ERP.md` | 1 | Mô tả chức năng 29 app + đề xuất đánh số lại MOD theo nhóm phân hệ — 🟡 chờ xác nhận |
-| 5 | `05_Cau_truc_dich_ERP.md` | 1 | **Cấu trúc đích sau chốt 2026-10-06: 26 app, đánh số lại v2 + ánh xạ QT** — 🟡 chờ xác nhận lần cuối |
+| 2 | `02_ERP_Module/` | 26 | Kế hoạch từng module ERP đang hoạt động (15 mô-đun lưu trữ, xem mục 3.1) |
+| 3 | `03_Ke_hoach_Tach_Source_Portal_MiniApp.md` | 1 | Kế hoạch kỹ thuật tách source: vỏ Portal + 26 mini-app (S1–S7) — 🟡 chờ duyệt |
+| 4 | `04_Mo_ta_Chuc_nang_App_ERP.md` | 1 | Mô tả chức năng 29 app + đề xuất đánh số lần đầu (v1) — ✅ đã chốt, thay bằng KH-05 |
+| 5 | `05_Cau_truc_dich_ERP.md` | 1 | **Cấu trúc đích sau chốt 2026-10-06: 26 app, đánh số v2 + ánh xạ QT** — ✅ đã chốt, đã thực thi |
 
 ## 2. Cấp 1 — Kế hoạch hệ thống con
 
@@ -48,96 +48,96 @@ Mô hình này khớp với các hệ thống con đã có cổng riêng: HS-03 
 | HS-07 | VComm Nexthub | `vcomm-nexthub` | 3005 | `01_He_thong/HS-07_VComm_Nexthub.md` |
 | HS-08 | Hạ tầng CSDL trung tâm và Cloud | `Root SQL / Cloud` | Cloud | `01_He_thong/HS-08_Ha_tang_CSDL_trung_tam_va_Cloud.md` |
 
-## 3. Cấp 2 — Kế hoạch module ERP (Portal + 6 nhóm mini-app)
+## 3. Cấp 2 — Kế hoạch module ERP (Vỏ Portal + 5 nhóm mini-app)
 
 > Cột "Cổng (Portal)" là cổng giả định của mỗi mini-app; dữ liệu đều qua API server HS-02 (5000).
 
-
-### Vỏ Portal (shell) — 3 module
+### Vỏ Portal (shell) — 1 module
 
 | Mã | Module | Tuyến đường | Cổng (Portal) | Tệp |
 |---|---|---|---|---|
-| MOD-01 | Trang chủ | `/` | 3000 (shell) | `02_ERP_Module/04_Van_phong_Dieu_hanh/MOD-01_Trang_chu.md` |
-| MOD-02 | Bảng điều khiển | `/dashboard` | 3000 (shell) | `02_ERP_Module/04_Van_phong_Dieu_hanh/MOD-02_Bang_dieu_khien.md` |
-| MOD-03 | Phân tích dữ liệu | `/bi` | 3000 (shell) | `02_ERP_Module/04_Van_phong_Dieu_hanh/MOD-03_Phan_tich_du_lieu.md` |
+| MOD-01 | Dashboard (cá nhân) | `/dashboard` | 3000 (shell) | `02_ERP_Module/00_Vo_Portal/MOD-01_Dashboard.md` |
 
 ### Nhóm 1 — Kế toán (1 module)
 
 | Mã | Module | Tuyến đường | Cổng (Portal) | Tệp |
 |---|---|---|---|---|
-| MOD-30 | Kế toán (TT99/2025) | `/ke-toan-tt99` | 3101 | `02_ERP_Module/01_Ke_toan/MOD-30_Ke_toan_TT99_2025.md` |
+| MOD-02 | Kế toán (TT99/2025) | `/ke-toan-tt99` | 3101 | `02_ERP_Module/01_Ke_toan/MOD-02_Ke_toan_TT99_2025.md` |
 
-### Nhóm 2 — Nhân sự (HRM) (1 module)
+### Nhóm 2 — Nhân sự (HRM) (2 module)
 
 | Mã | Module | Tuyến đường | Cổng (Portal) | Tệp |
 |---|---|---|---|---|
-| MOD-39 | Quản trị Nhân sự (HRM) | `/hr` | 3102 | `02_ERP_Module/02_Nhan_su/MOD-39_Quan_tri_Nhan_su_HRM.md` |
+| MOD-03 | Cổng Phòng Nhân sự (HR Portal) | `/hr` | 3102 | `02_ERP_Module/02_Nhan_su/MOD-03_Cong_Phong_Nhan_su.md` |
+| MOD-04 | Cổng Tự phục vụ Nhân viên (ESS Portal) | `/ess` | 3103 | `02_ERP_Module/02_Nhan_su/MOD-04_Cong_Tu_phuc_vu_Nhan_vien.md` |
 
 ### Nhóm 3 — Kinh doanh (15 module)
 
 | Mã | Module | Tuyến đường | Cổng (Portal) | Tệp |
 |---|---|---|---|---|
-| MOD-36 | Khách hàng (CRM) | `/customers` | 3201 | `02_ERP_Module/05_Kinh_doanh/MOD-36_Khach_hang_CRM.md` |
-| MOD-37 | Chăm sóc Khách hàng | `/cskh` | 3202 | `02_ERP_Module/05_Kinh_doanh/MOD-37_Cham_soc_Khach_hang.md` |
-| MOD-35 | Nhà bán hàng | `/sellers` | 3203 | `02_ERP_Module/05_Kinh_doanh/MOD-35_Nha_ban_hang.md` |
-| MOD-11 | Quản lý Đơn hàng | `/orders` | 3204 | `02_ERP_Module/05_Kinh_doanh/MOD-11_Quan_ly_Don_hang.md` |
-| MOD-14 | Quản lý sản phẩm | `/pim` | 3205 | `02_ERP_Module/05_Kinh_doanh/MOD-14_Quan_ly_san_pham.md` |
-| MOD-15 | Social | `/social` | 3206 | `02_ERP_Module/05_Kinh_doanh/MOD-15_Social.md` |
-| MOD-16 | Quản lý khuyến mại | `/flash-sale` | 3207 | `02_ERP_Module/05_Kinh_doanh/MOD-16_Flash_Sale_Mua_chung.md` |
-| MOD-20 | VComm Hub (O2O) | `/vcomm-hub` | 3208 | `02_ERP_Module/05_Kinh_doanh/MOD-20_VComm_Hub_O2O.md` |
-| MOD-21 | V-Xu | `/vxu` | 3209 | `02_ERP_Module/05_Kinh_doanh/MOD-21_V_Xu.md` |
-| MOD-22 | KOL/KOC & Affiliate | `/affiliate` | 3210 | `02_ERP_Module/05_Kinh_doanh/MOD-22_KOL_KOC_Affiliate.md` |
-| MOD-24 | Quản lý Quảng cáo (Ads) | `/ads` | 3211 | `02_ERP_Module/05_Kinh_doanh/MOD-24_Quan_ly_Quang_cao_Ads.md` |
-| MOD-10 | Siêu thị VComm (Offline) | `/vcomm-supermarket` | 3212 | `02_ERP_Module/05_Kinh_doanh/MOD-10_Sieu_thi_VComm_Offline.md` |
-| MOD-32 | Ví & Thanh toán | `/wallet` | 3213 | `02_ERP_Module/05_Kinh_doanh/MOD-32_Vi_Thanh_toan.md` |
-| MOD-25 | Kho vận & Logistics | `/warehouse` | 3214 | `02_ERP_Module/05_Kinh_doanh/MOD-25_Quan_tri_Kho_van.md` |
-| MOD-27 | Mua hàng, NCC & Đối soát | `/scm` | 3215 | `02_ERP_Module/05_Kinh_doanh/MOD-27_Mua_hang_NCC.md` |
+| MOD-05 | Khách hàng (CRM) | `/customers` | 3201 | `02_ERP_Module/03_Kinh_doanh/MOD-05_Khach_hang_CRM.md` |
+| MOD-06 | Chăm sóc Khách hàng | `/cskh` | 3202 | `02_ERP_Module/03_Kinh_doanh/MOD-06_Cham_soc_Khach_hang.md` |
+| MOD-07 | Nhà bán hàng | `/sellers` | 3203 | `02_ERP_Module/03_Kinh_doanh/MOD-07_Nha_ban_hang.md` |
+| MOD-08 | Quản lý Đơn hàng | `/orders` | 3204 | `02_ERP_Module/03_Kinh_doanh/MOD-08_Quan_ly_Don_hang.md` |
+| MOD-09 | Quản lý sản phẩm (PIM) | `/pim` | 3205 | `02_ERP_Module/03_Kinh_doanh/MOD-09_Quan_ly_san_pham.md` |
+| MOD-10 | Social | `/social` | 3206 | `02_ERP_Module/03_Kinh_doanh/MOD-10_Social.md` |
+| MOD-11 | Quản lý khuyến mại | `/flash-sale` | 3207 | `02_ERP_Module/03_Kinh_doanh/MOD-11_Quan_ly_khuyen_mai.md` |
+| MOD-12 | VComm Hub (O2O) | `/vcomm-hub` | 3208 | `02_ERP_Module/03_Kinh_doanh/MOD-12_VComm_Hub_O2O.md` |
+| MOD-13 | V-Xu | `/vxu` | 3209 | `02_ERP_Module/03_Kinh_doanh/MOD-13_V_Xu.md` |
+| MOD-14 | KOL/KOC & Affiliate | `/affiliate` | 3210 | `02_ERP_Module/03_Kinh_doanh/MOD-14_KOL_KOC_Affiliate.md` |
+| MOD-15 | Quản lý Quảng cáo (Ads) | `/ads` | 3211 | `02_ERP_Module/03_Kinh_doanh/MOD-15_Quan_ly_Quang_cao_Ads.md` |
+| MOD-16 | Siêu thị VComm (Offline) | `/vcomm-supermarket` | 3212 | `02_ERP_Module/03_Kinh_doanh/MOD-16_Sieu_thi_VComm_Offline.md` |
+| MOD-17 | Ví & Thanh toán | `/wallet` | 3213 | `02_ERP_Module/03_Kinh_doanh/MOD-17_Vi_Thanh_toan.md` |
+| MOD-18 | Kho vận & Logistics | `/warehouse` | 3214 | `02_ERP_Module/03_Kinh_doanh/MOD-18_Kho_van_Logistics.md` |
+| MOD-19 | Mua hàng, NCC & Đối soát | `/scm` | 3215 | `02_ERP_Module/03_Kinh_doanh/MOD-19_Mua_hang_NCC_Doi_soat.md` |
 
-### Nhóm 4 — Văn phòng (7 module)
+### Nhóm 4 — Văn phòng (5 module)
 
 | Mã | Module | Tuyến đường | Cổng (Portal) | Tệp |
 |---|---|---|---|---|
-| MOD-04 | Điều hành & Workflow | `/workflow` | 3301 | `02_ERP_Module/04_Van_phong_Dieu_hanh/MOD-04_Dieu_hanh_Workflow.md` |
-| MOD-05 | Quản lý Công việc | `/tasks` | 3302 | `02_ERP_Module/04_Van_phong_Dieu_hanh/MOD-05_Quan_ly_Cong_viec.md` |
-| MOD-06 | Đề xuất & Trình ký | `/requests` | 3303 | `02_ERP_Module/04_Van_phong_Dieu_hanh/MOD-06_De_xuat_Trinh_ky.md` |
-| MOD-07 | Hợp đồng & Pháp chế | `/contracts` | 3304 | `02_ERP_Module/04_Van_phong_Dieu_hanh/MOD-07_Hop_dong_Phap_che.md` |
-| MOD-08 | Quản lý Công văn | `/documents` | 3305 | `02_ERP_Module/04_Van_phong_Dieu_hanh/MOD-08_Quan_ly_Cong_van.md` |
-| MOD-09 | Trung tâm Ký số | `/signature` | 3306 | `02_ERP_Module/04_Van_phong_Dieu_hanh/MOD-09_Trung_tam_Ky_so.md` |
-| MOD-43 | Không gian làm việc | `/workspace` | 3307 | `02_ERP_Module/04_Van_phong_Dieu_hanh/MOD-43_Khong_gian_lam_viec.md` |
+| MOD-20 | Quản lý Công việc | `/tasks` | 3301 | `02_ERP_Module/04_Van_phong/MOD-20_Quan_ly_Cong_viec.md` |
+| MOD-21 | Đề xuất & Trình ký | `/requests` | 3302 | `02_ERP_Module/04_Van_phong/MOD-21_De_xuat_Trinh_ky.md` |
+| MOD-22 | Hợp đồng & Pháp chế | `/contracts` | 3303 | `02_ERP_Module/04_Van_phong/MOD-22_Hop_dong_Phap_che.md` |
+| MOD-23 | Quản lý Công văn | `/documents` | 3304 | `02_ERP_Module/04_Van_phong/MOD-23_Quan_ly_Cong_van.md` |
+| MOD-24 | Quản lý chữ ký số | `/signature` | 3305 | `02_ERP_Module/04_Van_phong/MOD-24_Quan_ly_chu_ky_so.md` |
 
 ### Nhóm 5 — Chia sẻ & Nền tảng (2 module)
 
 | Mã | Module | Tuyến đường | Cổng (Portal) | Tệp |
 |---|---|---|---|---|
-| MOD-28 | Tuân thủ & Pháp chế | `/compliance` | 3401 | `02_ERP_Module/06_Chia_se_Nen_tang/MOD-28_Tuan_thu_Phap_che.md` |
-| MOD-44 | Cấu hình hệ thống | `/settings` | 3402 | `02_ERP_Module/06_Chia_se_Nen_tang/MOD-44_Cau_hinh_he_thong.md` |
+| MOD-25 | Tuân thủ & Pháp chế | `/compliance` | 3401 | `02_ERP_Module/05_Chia_se_Nen_tang/MOD-25_Tuan_thu_Phap_che.md` |
+| MOD-26 | Cấu hình hệ thống | `/settings` | 3402 | `02_ERP_Module/05_Chia_se_Nen_tang/MOD-26_Cau_hinh_he_thong.md` |
 
-### 3.1. Mô-đun đã gộp / tạm hủy / loại bỏ
+### 3.1. Mô-đun lưu trữ (gộp / tách / loại bỏ / tạm hủy)
 
-Ngày 2026-10-06, 13 module bị gộp hoặc loại bỏ theo tái cấu trúc ERP thành Portal. Mã đã cấp được giữ nguyên, không tái sử dụng. Chi tiết xem `_Tam_huy/README.md`.
+**Chốt 2026-10-06 — gộp và tách (bản v2):**
 
-**Đã gộp (chức năng hợp nhất vào module đích):**
-
-| Mã | Tên | Gộp vào |
+| Mã cũ | Tên | Kết quả |
 |---|---|---|
-| MOD-29 | Tài chính - Kế toán | MOD-30 Kế toán |
-| MOD-40 | Hồ sơ Nhân sự (EasyHRM) | MOD-39 HRM |
-| MOD-41 | Sơ đồ tổ chức | MOD-39 HRM |
-| MOD-42 | Hiệu suất & Đào tạo | MOD-39 HRM |
-| MOD-17 | Mua chung (Group Buy) | MOD-16 Quản lý khuyến mại |
-| MOD-23 | Khách hàng thân thiết | MOD-21 V-Xu |
-| MOD-26 | Vận chuyển (Logistics) | MOD-25 Kho vận & Logistics |
-| MOD-31 | Đối soát & Công nợ | MOD-27 Mua hàng, NCC & Đối soát |
-| MOD-19 | Dropship | MOD-35 Nhà bán hàng |
+| MOD-01 | Trang chủ | Gộp vào **MOD-01 Dashboard** |
+| MOD-02 | Bảng điều khiển | Gộp vào **MOD-01 Dashboard** |
+| MOD-03 | Phân tích dữ liệu (BI) | Gộp vào **MOD-01 Dashboard** (chưa xây dựng giai đoạn này) |
+| MOD-04 | Điều hành & Workflow | Gộp vào **MOD-01 Dashboard** |
+| MOD-43 | Không gian làm việc | Gộp vào **MOD-01 Dashboard** |
+| MOD-39 | Quản trị Nhân sự (HRM) | Tách thành **MOD-03** (Phòng Nhân sự) + **MOD-04** (Tự phục vụ Nhân viên) |
 
-**Loại bỏ / Tạm hủy:**
+**Tái cấu trúc 2026-10-06 (bản 29, trước chốt v2) — gộp / loại bỏ / tạm hủy:**
 
-| Mã | Tên | Trạng thái | Ghi chú |
-|---|---|---|---|
-| MOD-12 | Quản lý Livestream | Loại bỏ | Loại bỏ theo tái cấu trúc Portal |
-| MOD-13 | Mạng xã hội người dùng | Loại bỏ | Loại bỏ theo tái cấu trúc Portal |
-| MOD-18 | F2B2B — Gom đơn B2B | Loại bỏ | Trước đây giữ nguyên Trụ cột 4, nay loại bỏ |
-| MOD-38 | Đội ngũ Kinh doanh | Tạm hủy | Q-03 đã chốt: không còn quản lý khách hàng tiềm năng |
+| Mã cũ | Tên | Kết quả |
+|---|---|---|
+| MOD-29 | Tài chính - Kế toán | Gộp vào Kế toán |
+| MOD-40 | Hồ sơ Nhân sự (EasyHRM) | Gộp vào Nhân sự |
+| MOD-41 | Sơ đồ tổ chức | Gộp vào Nhân sự |
+| MOD-42 | Hiệu suất & Đào tạo | Gộp vào Nhân sự |
+| MOD-17 | Mua chung (Group Buy) | Gộp vào Quản lý khuyến mại |
+| MOD-23 | Khách hàng thân thiết | Gộp vào V-Xu |
+| MOD-26 | Vận chuyển (Logistics) | Gộp vào Kho vận & Logistics |
+| MOD-31 | Đối soát & Công nợ | Gộp vào Mua hàng, NCC & Đối soát |
+| MOD-19 | Dropship | Gộp vào Nhà bán hàng |
+| MOD-12 | Quản lý Livestream | Loại bỏ |
+| MOD-13 | Mạng xã hội người dùng | Loại bỏ |
+| MOD-18 | F2B2B — Gom đơn B2B | Loại bỏ (trước giữ nguyên Trụ cột 4, nay loại bỏ) |
+| MOD-38 | Đội ngũ Kinh doanh | Tạm hủy (Q-03: không còn quản lý khách hàng tiềm năng) |
 
 **Tạm hủy trước đó (2026-10-05):**
 
@@ -146,10 +146,12 @@ Ngày 2026-10-06, 13 module bị gộp hoặc loại bỏ theo tái cấu trúc 
 | MOD-33 | Hỗ trợ Tài chính Nhà bán | `_Tam_huy/MOD-33_Ho_tro_Tai_chinh_Nha_ban.md` |
 | MOD-34 | Cho thuê thiết bị (Trả góp) | `_Tam_huy/MOD-34_Cho_thue_thiet_bi_Tra_gop.md` |
 
+> Tổng lưu trữ: **15 mô-đun** (13 bản 29 + MOD-33/34). Riêng 6 mô-đun gộp/tách ngày 2026-10-06 lưu tại `_Tam_huy/` **không mang tiền tố mã** (Trang_chu, Bang_dieu_khien, Phan_tich_du_lieu, Dieu_hanh_Workflow, Khong_gian_lam_viec, Quan_tri_Nhan_su_HRM) để tránh trùng mã đã cấp lại.
+
 ## 4. Quy ước mã
 
 - `HS-nn`: hệ thống con trong hệ sinh thái VComm.
-- `MOD-nn`: module chức năng của VComm ERP, đánh số liên tục theo thứ tự menu.
+- `MOD-nn`: module chức năng của VComm ERP, **đánh số liên tục theo nhóm phân hệ** (Vỏ Portal → Nhóm 1→5). Bản **v2** (2026-10-06) là bản hiện hành; bản v0 (42 mã gốc) và v1 (KH-04) chỉ dùng để truy vết — xem `Ke_hoach/05_Cau_truc_dich_ERP.md` §3.
 - `MOD-nn-Fxx`: tính năng trong một module.
 - Trạng thái dùng một trong các giá trị: Chưa bắt đầu, Đang làm, Chờ duyệt, Đã xong, Tạm dừng.
 
@@ -165,3 +167,4 @@ Ngày 2026-10-06, 13 module bị gộp hoặc loại bỏ theo tái cấu trúc 
 - Cổng (Portal) gán cho mỗi mini-app là **giả định** (dải 3101–3402); cổng thật sẽ cố định khi tách source thành các ứng dụng riêng — chưa chốt.
 - Một số module có thể trùng chức năng với hệ thống con (ví dụ luồng đơn hàng xuất hiện ở cả ERP và eCommerce) — chưa chốt ranh giới trách nhiệm.
 - Việc tách ERP thành các mini-app có cổng riêng (mỗi app một process/port, nối qua API server) là **đầu việc kỹ thuật theo sau**, nằm ngoài phạm vi tài liệu này (xem `Checklist_cong_viec.md`).
+- Cơ chế "Dashboard cho từng cá nhân" (MOD-01) và ranh giới MOD-03/MOD-04 trong `HR.tsx` chưa rà từng màn hình.

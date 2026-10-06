@@ -4,6 +4,8 @@ Thư mục này chứa các tài liệu thiết kế **tạm hủy** theo yêu c
 
 Tệp lưu trữ **không mang tiền tố mã**. Mã cũ ghi trong bảng dưới đây và trong banner đầu mỗi tệp. Mã của quy trình bị hủy **không giữ chỗ**: các quy trình còn lại được dồn số liên tục (xem `Quy_trinh_nghiep_vu/index.md`, mục "Lịch sử đánh số").
 
+> **Trạng thái hiện hành (chốt cấu trúc v2, 2026-10-06):** cây hoạt động còn **27 quy trình QT** (số tiếp theo **QT-52**) và **26 mô-đun ERP** (Vỏ Portal + 5 nhóm). Các mục theo ngày bên dưới là **bản ghi lịch sử**; con số trong mục "2026-10-09" (54 quy trình, tiếp theo QT-55) phản ánh trạng thái tại thời điểm đó và **đã bị thay thế** bởi lần dồn mã ngày 2026-10-06 (thực thi sau) — xem mục "Dồn số QT kèm theo" bên dưới.
+
 ## 2026-10-05 — Cho thuê trả góp và Hỗ trợ tài chính Nhà bán
 
 Hai mô-đun bị tạm hủy:
@@ -12,6 +14,33 @@ Hai mô-đun bị tạm hủy:
 - **Hỗ trợ Tài chính Nhà bán** — tuyến đường `/seller-finance` — mã MOD-33, quy trình cũ QT-49
 
 **Giữ nguyên:** F2B2B — Gom đơn B2B (MOD-18, Trụ cột 4) theo xác nhận của chủ dự án.
+
+## 2026-10-06 — Gộp năm mô-đun vào Dashboard và tách Nhóm Nhân sự (chốt cấu trúc v2)
+
+Theo chốt của chủ dự án ngày 2026-10-06, sáu mô-đun ERP được đưa vào lưu trữ (nội dung đã hợp nhất vào tệp mới, không mất thông tin). Vì mã cũ được **cấp lại** cho cấu trúc mới, các tệp lưu trữ này **không mang tiền tố mã**:
+
+| Mã cũ | Tệp lưu trữ | Kết quả |
+|---|---|---|
+| MOD-01 | `Trang_chu.md` | Gộp vào MOD-01 Dashboard |
+| MOD-02 | `Bang_dieu_khien.md` | Gộp vào MOD-01 Dashboard |
+| MOD-03 | `Phan_tich_du_lieu.md` | Gộp vào MOD-01 Dashboard (BI — chưa xây dựng giai đoạn này) |
+| MOD-04 | `Dieu_hanh_Workflow.md` | Gộp vào MOD-01 Dashboard |
+| MOD-43 | `Khong_gian_lam_viec.md` | Gộp vào MOD-01 Dashboard |
+| MOD-39 | `Quan_tri_Nhan_su_HRM.md` | Tách thành MOD-03 (Phòng Nhân sự) + MOD-04 (Tự phục vụ Nhân viên) |
+
+Chi tiết cấu trúc đích xem `Ke_hoach/05_Cau_truc_dich_ERP.md`.
+
+### Dồn số QT kèm theo (2026-10-06)
+
+Hai quy trình bị **loại bỏ** và một quy trình **chuyển phạm vi**:
+
+| Mã cũ | Tệp lưu trữ | Kết quả |
+|---|---|---|
+| QT-32 | `Gom_don_B2B_F2B2B.md` | Loại bỏ (Gom đơn B2B F2B2B) |
+| QT-39 | `Livestream_ban_hang.md` | Loại bỏ (Livestream bán hàng) |
+| QT-54 | *(chuyển sang `Quy_trinh_nghiep_vu/iPOS/E_Menu_va_Dat_mon_tai_ban.md`)* | Dời hẳn sang iPOS (HS-04) |
+
+**Dồn số liên tục:** QT-33→QT-32, QT-34→QT-33, QT-35→QT-34, QT-36→QT-35, QT-37→QT-36, QT-38→QT-37, QT-40→QT-38, QT-41→QT-39, QT-42→QT-40, QT-43→QT-41, QT-44→QT-42, QT-45→QT-43, QT-46→QT-44, QT-47→QT-45, QT-48→QT-46, QT-49→QT-47, QT-50→QT-48, QT-51→QT-49, QT-52→QT-50, QT-53→QT-51. Cây hoạt động còn **27 quy trình**, số tiếp theo **QT-52**. Xem `Quy_trinh_nghiep_vu/index.md`, mục "Lịch sử đánh số".
 
 ## 2026-10-09 — Bốn quy trình CRM không hợp mô hình thương mại điện tử
 

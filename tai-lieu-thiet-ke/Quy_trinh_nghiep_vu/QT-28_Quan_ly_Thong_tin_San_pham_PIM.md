@@ -8,7 +8,7 @@
 - Ngày cập nhật: 2026-10-09
 - Nhóm nghiệp vụ: Thương mại và Vận hành
 - Nguồn nghiệp vụ: Bộ đề án `Mo ta nghiep vu/` (9 đề án) và mã nguồn `_recovery_V-com-ERP`
-- Mô-đun hệ thống: MOD-14 Quản lý sản phẩm (`/pim`)
+- Mô-đun hệ thống: MOD-09 Quản lý sản phẩm (PIM) (`/pim`)
 - Hiện trạng mã nguồn: Đã có — màn hình quản lý sản phẩm với nhập tệp, chuẩn hóa dữ liệu và kiểm tra hợp lệ
 
 ## 1. Tác nhân và quyền
