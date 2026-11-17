@@ -63,30 +63,8 @@ function readLicenses(): any[] {
   } catch (e) {
     logger.error('Failed to read ipos_licenses.json:', e);
   }
-  return [
-    {
-      id: 'LIC-001',
-      storeId: 'ST-01',
-      storeName: 'VComm Retail - Chi nhánh Quận 1',
-      licenseType: 'SaaS Premium',
-      statusLabel: 'Hoạt động',
-      expiresAt: '2027-12-31 23:59:59',
-      customDomain: 'pos.q1.vcommretail.vn',
-      apiToken: 'vcomm_live_ipos_key_xyz123',
-      maxRegisters: 5,
-    },
-    {
-      id: 'LIC-002',
-      storeId: 'ST-02',
-      storeName: 'VComm SmartMart - Cầu Giấy',
-      licenseType: 'SaaS Standard',
-      statusLabel: 'Hoạt động',
-      expiresAt: '2026-12-31 23:59:59',
-      customDomain: 'pos.caugiay.smartmart.vn',
-      apiToken: 'vcomm_live_ipos_key_cg456',
-      maxRegisters: 2,
-    }
-  ];
+  // Không có tệp giấy phép thì không có giấy phép nào; không cấp mã mặc định.
+  return [];
 }
 
 function writeLicenses(licenses: any[]) {
@@ -2713,22 +2691,9 @@ Format:
 
     const activeLicense = licenses.find(l => l.apiToken === token && l.statusLabel === 'Hoạt động');
 
-    // Support simulated keys from the API Management Center as fallback
-    const validKeys = [
-      'vcomm_live_key_ghtk_8a2f9b8c',
-      'vcomm_live_key_pbi_3d7e5f1b',
-      'vcomm_live_ipos_key_xyz123'
-    ];
-    if (activeLicense || token.startsWith('vcomm_live_') || validKeys.includes(token)) {
-      (req as any).iposLicense = activeLicense || {
-        storeName: 'VComm Retail - Chi nhánh Quận 1',
-        licenseType: 'SaaS Premium',
-        statusLabel: 'Hoạt động',
-        expiresAt: '2027-12-31 23:59:59',
-        customDomain: 'pos.q1.vcommretail.vn',
-        apiToken: token,
-        maxRegisters: 5
-      };
+    // Chỉ chấp nhận mã của giấy phép đang hoạt động; đã bỏ mã giả lập ghi cứng và việc chấp nhận mọi mã có tiền tố.
+    if (activeLicense) {
+      (req as any).iposLicense = activeLicense;
       next();
     } else {
       return res.status(403).json({ status: 'error', message: 'Forbidden: Invalid or inactive OpenAPI token.' });
