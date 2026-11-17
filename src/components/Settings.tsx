@@ -753,7 +753,9 @@ export function SettingsPage() {
       addNotification('Lỗi', 'Vui lòng nhập tên ứng dụng kết nối.');
       return;
     }
-    const generatedToken = 'vcomm_live_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
+    const tokenBytes = new Uint8Array(24);
+    crypto.getRandomValues(tokenBytes);
+    const generatedToken = 'vcomm_live_' + Array.from(tokenBytes, (b) => b.toString(16).padStart(2, '0')).join('');
     const newKey: OpenApiKey = {
       id: 'key-' + Date.now(),
       name: newOpenApiKey.name,
@@ -5825,11 +5827,9 @@ function IPosLicensesPanel() {
   };
 
   const generateToken = () => {
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    let rand = '';
-    for (let i = 0; i < 16; i++) {
-      rand += chars[Math.floor(Math.random() * chars.length)];
-    }
+    const bytes = new Uint8Array(24);
+    crypto.getRandomValues(bytes);
+    const rand = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
     return `vcomm_live_ipos_key_${rand}`;
   };
 
